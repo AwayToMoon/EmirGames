@@ -3,12 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Emir Games</title>
+    <title>Gaming Hub</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h1>Willkommen zu Emir Games</h1>
+    <h1>Willkommen zu Gaming Hub</h1>
+    <button id="add-game-btn">Spiel hinzufügen</button>
     <div id="game-list"></div>
+    
+    <div id="game-form" class="hidden">
+        <input type="text" id="game-name" placeholder="Spielname">
+        <input type="text" id="game-link" placeholder="Spiel-URL">
+        <input type="text" id="game-image" placeholder="Bild-URL">
+        <button id="save-game">Speichern</button>
+    </div>
+    
     <script src="script.js"></script>
 </body>
 </html>

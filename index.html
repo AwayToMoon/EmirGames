@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HigherCellF Games</title>
+    <title>Gaming Hub</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <style>
         body {
             background-color: #1a0b2e;
@@ -17,7 +18,7 @@
         h1 {
             margin-top: 20px;
         }
-        #admin-panel, #game-form, #edit-game-form {
+        #admin-panel, #game-form, #edit-game-form, #login-form {
             margin: 20px auto;
             padding: 15px;
             background: #2e1b4b;
@@ -65,6 +66,7 @@
         .edit-game, .delete-game {
             background: #ff9800;
             margin-top: 5px;
+            display: none;
         }
         .delete-game {
             background: red;
@@ -72,8 +74,16 @@
     </style>
 </head>
 <body>
-    <h1>Willkommen zu HigherCellF Games</h1>
+    <h1>Willkommen zu Gaming Hub</h1>
     <button id="admin-login-btn">Admin Login</button>
+    <button id="logout-btn" class="hidden">Logout</button>
+    
+    <div id="login-form" class="hidden">
+        <input type="email" id="admin-email" placeholder="Email">
+        <input type="password" id="admin-password" placeholder="Passwort">
+        <button id="login-btn">Login</button>
+    </div>
+
     <div id="admin-panel" class="hidden">
         <button id="add-game-btn">Spiel hinzufügen</button>
         <button id="clear-games-btn">Alle Spiele entfernen</button>
@@ -97,7 +107,7 @@
     </div>
     
     <script>
-      const firebaseConfig = {
+        const firebaseConfig = {
             apiKey: "AIzaSyC6YCY-gq1pVt5xJlC2VoeONl8FH_PsSO8",
             authDomain: "emirgames-b3441.firebaseapp.com",
             projectId: "emirgames-b3441",
@@ -108,8 +118,44 @@
         
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        document.getElementById("admin-login-btn").addEventListener("click", function() {
+            document.getElementById("login-form").classList.remove("hidden");
+        });
+
+        document.getElementById("login-btn").addEventListener("click", function() {
+            const email = document.getElementById("admin-email").value;
+            const password = document.getElementById("admin-password").value;
+            auth.signInWithEmailAndPassword(email, password)
+                .then(() => {
+                    document.getElementById("admin-panel").classList.remove("hidden");
+                    document.getElementById("login-form").classList.add("hidden");
+                    document.getElementById("logout-btn").classList.remove("hidden");
+                    document.querySelectorAll(".edit-game, .delete-game").forEach(btn => btn.style.display = "inline-block");
+                })
+                .catch(error => alert("Login fehlgeschlagen: " + error.message));
+        });
+
+        document.getElementById("logout-btn").addEventListener("click", function() {
+            auth.signOut().then(() => {
+                document.getElementById("admin-panel").classList.add("hidden");
+                document.getElementById("logout-btn").classList.add("hidden");
+                document.querySelectorAll(".edit-game, .delete-game").forEach(btn => btn.style.display = "none");
+            });
+        });
+
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                document.getElementById("admin-panel").classList.remove("hidden");
+                document.getElementById("logout-btn").classList.remove("hidden");
+                document.querySelectorAll(".edit-game, .delete-game").forEach(btn => btn.style.display = "inline-block");
+            } else {
+                document.getElementById("admin-panel").classList.add("hidden");
+                document.getElementById("logout-btn").classList.add("hidden");
+                document.querySelectorAll(".edit-game, .delete-game").forEach(btn => btn.style.display = "none");
+            }
+        });
     </script>
-    
-    <script src="script.js"></script>
 </body>
 </html>

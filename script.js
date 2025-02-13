@@ -1,95 +1,72 @@
-document.addEventListener("DOMContentLoaded", function () {
-    const gameList = document.getElementById("game-list");
-    const gameForm = document.getElementById("game-form");
-    const editGameForm = document.getElementById("edit-game-form");
+const gameLinkInput = document.getElementById("game-link");
+const gameImageInput = document.getElementById("game-image");
 
-    const gameNameInput = document.getElementById("game-name");
-    const gameLinkInput = document.getElementById("game-link");
-    const gameImageInput = document.getElementById("game-image");
-    const saveGameButton = document.getElementById("save-game");
+const ADMIN_PASSWORD = "ilnaruto9966"; // Ändere dies zu deinem gewünschten Passwort
+let games = JSON.parse(localStorage.getItem("games")) || [
+    { name: "Minecraft", link: "https://minecraft.net", image: "https://upload.wikimedia.org/wikipedia/en/5/51/Minecraft_cover.png" },
+    { name: "Fortnite", link: "https://www.epicgames.com/fortnite/", image: "https://upload.wikimedia.org/wikipedia/en/thumb/a/a7/Fortnite_cover.jpeg/220px-Fortnite_cover.jpeg" },
+    { name: "Among Us", link: "https://innersloth.com/gameAmongUs.php", image: "https://upload.wikimedia.org/wikipedia/en/9/9a/Among_Us_cover_art.jpg" }
+];
+const ADMIN_PASSWORD = "9966";
 
-    const editGameNameInput = document.getElementById("edit-game-name");
-    const editGameLinkInput = document.getElementById("edit-game-link");
-    const editGameImageInput = document.getElementById("edit-game-image");
-    const updateGameButton = document.getElementById("update-game");
-    const closeEditButton = document.getElementById("close-edit");
+adminLoginBtn.addEventListener("click", () => {
+    const password = prompt("Bitte Admin-Passwort eingeben:");
+@@ -30,20 +24,20 @@ addGameBtn.addEventListener("click", () => {
+    gameForm.classList.toggle("hidden");
+});
 
-    let editingGameId = null;
-
-    function renderGames() {
-        gameList.innerHTML = "";
-        db.collection("games").get().then(snapshot => {
-            snapshot.forEach(doc => {
-                const game = doc.data();
-                const gameElement = document.createElement("div");
-                gameElement.classList.add("game");
-
-                gameElement.innerHTML = `
-                    <img src="${game.image}" alt="${game.name}" onclick="window.open('${game.link}', '_blank')">
-                    <h3>${game.name}</h3>
-                    <button class="edit-game" data-id="${doc.id}">Bearbeiten</button>
-                    <button class="delete-game" data-id="${doc.id}">Löschen</button>
-                `;
-
-                gameList.appendChild(gameElement);
-            });
-
-            document.querySelectorAll(".edit-game").forEach(button => {
-                button.addEventListener("click", function () {
-                    const gameId = this.getAttribute("data-id");
-                    db.collection("games").doc(gameId).get().then(doc => {
-                        if (doc.exists) {
-                            const game = doc.data();
-                            editingGameId = gameId;
-                            editGameNameInput.value = game.name;
-                            editGameLinkInput.value = game.link;
-                            editGameImageInput.value = game.image;
-                            editGameForm.classList.remove("hidden");
-                        }
-                    });
-                });
-            });
-
-            document.querySelectorAll(".delete-game").forEach(button => {
-                button.addEventListener("click", function () {
-                    const gameId = this.getAttribute("data-id");
-                    db.collection("games").doc(gameId).delete().then(() => {
-                        renderGames();
-                    });
-                });
-            });
-        });
-    }
-
-    saveGameButton.addEventListener("click", function () {
-        const newGame = {
-            name: gameNameInput.value,
-            link: gameLinkInput.value,
-            image: gameImageInput.value
-        };
-
-        db.collection("games").add(newGame).then(() => {
-            gameForm.classList.add("hidden");
-            renderGames();
-        });
-    });
-
-    updateGameButton.addEventListener("click", function () {
-        if (editingGameId) {
-            db.collection("games").doc(editingGameId).update({
-                name: editGameNameInput.value,
-                link: editGameLinkInput.value,
-                image: editGameImageInput.value
-            }).then(() => {
-                editGameForm.classList.add("hidden");
-                renderGames();
-            });
-        }
-    });
-
-    closeEditButton.addEventListener("click", function () {
-        editGameForm.classList.add("hidden");
-    });
-
+clearGamesBtn.addEventListener("click", () => {
+    games = [];
+    localStorage.setItem("games", JSON.stringify(games));
+clearGamesBtn.addEventListener("click", async () => {
+    const gamesRef = db.collection("games");
+    const snapshot = await gamesRef.get();
+    snapshot.forEach(doc => doc.ref.delete());
     renderGames();
 });
+
+saveGameBtn.addEventListener("click", () => {
+saveGameBtn.addEventListener("click", async () => {
+    const name = gameNameInput.value;
+    const link = gameLinkInput.value;
+    const image = gameImageInput.value;
+
+    if (name && link && image) {
+        games.push({ name, link, image });
+        localStorage.setItem("games", JSON.stringify(games));
+        await db.collection("games").add({ name, link, image });
+        renderGames();
+        gameNameInput.value = "";
+        gameLinkInput.value = "";
+@@ -52,9 +46,11 @@ saveGameBtn.addEventListener("click", () => {
+    }
+});
+
+function renderGames() {
+async function renderGames() {
+    gameList.innerHTML = "";
+    games.forEach((game, index) => {
+    const snapshot = await db.collection("games").get();
+    snapshot.forEach(doc => {
+        const game = doc.data();
+        const div = document.createElement("div");
+        div.classList.add("game");
+        div.innerHTML = `<img src="${game.image}" alt="${game.name}" onclick="window.open('${game.link}', '_blank')"><h2>${game.name}</h2>`;
+@@ -63,9 +59,8 @@ function renderGames() {
+            const deleteBtn = document.createElement("button");
+            deleteBtn.classList.add("delete-game");
+            deleteBtn.innerText = "X";
+            deleteBtn.addEventListener("click", () => {
+                games.splice(index, 1);
+                localStorage.setItem("games", JSON.stringify(games));
+            deleteBtn.addEventListener("click", async () => {
+                await db.collection("games").doc(doc.id).delete();
+                renderGames();
+            });
+            div.appendChild(deleteBtn);
+@@ -75,4 +70,4 @@ function renderGames() {
+    });
+}
+
+renderGames();
+document.addEventListener("DOMContentLoaded", renderGames);

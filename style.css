@@ -17,4 +17,11 @@ h1 {
     padding: 10px;
     background: #333;
     border-radius: 8px;
+    text-align: center;
+}
+.game img {
+    width: 150px;
+    height: auto;
+    border-radius: 8px;
+    margin-bottom: 10px;
 }

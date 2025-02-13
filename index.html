@@ -126,7 +126,7 @@
 
         // Nur Admin kann Spiele bearbeiten oder löschen
         function checkAdmin() {
-            const adminUser = "deine-email@example.com"; // Setze hier deine Admin-E-Mail
+            const adminUser = "noblesseraizl@gmail.com"; // Setze hier deine Admin-E-Mail
             firebase.auth().onAuthStateChanged(user => {
                 if (user && user.email === adminUser) {
                     document.getElementById("admin-panel").classList.remove("hidden");

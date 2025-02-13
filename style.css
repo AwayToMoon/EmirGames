@@ -1,0 +1,20 @@
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background-color: #222;
+    color: white;
+}
+h1 {
+    color: #f1c40f;
+}
+#game-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+.game {
+    margin: 10px;
+    padding: 10px;
+    background: #333;
+    border-radius: 8px;
+}

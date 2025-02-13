@@ -7,6 +7,16 @@ body {
 h1 {
     color: #f1c40f;
 }
+#add-game-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 10px;
+    background-color: #f1c40f;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
 #game-list {
     display: flex;
     flex-wrap: wrap;
@@ -25,4 +35,10 @@ h1 {
     border-radius: 8px;
     margin-bottom: 10px;
     cursor: pointer;
+}
+#game-form {
+    margin-top: 20px;
+}
+.hidden {
+    display: none;
 }

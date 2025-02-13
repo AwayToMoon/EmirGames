@@ -3,14 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gaming Hub</title>
+    <title>HigherCellF Games</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
-    <style>
+        <style>
         body {
-            background-color: #1a0b2e;
+            background-color: #121212;
             color: white;
             font-family: Arial, sans-serif;
             text-align: center;
@@ -18,15 +17,15 @@
         h1 {
             margin-top: 20px;
         }
-        #admin-panel, #game-form, #edit-game-form, #login-form {
+        #admin-panel, #game-form {
             margin: 20px auto;
             padding: 15px;
-            background: #2e1b4b;
+            background: #1e1e1e;
             border-radius: 10px;
             width: 300px;
         }
         button {
-            background: #9c27b0;
+            background: #8617b3;
             color: white;
             border: none;
             padding: 10px;
@@ -36,16 +35,16 @@
             transition: background 0.3s ease;
         }
         button:hover {
-            background: #7b1fa2;
+            background: #8617b3;
         }
-        #game-list {
+       #game-list {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 15px;
             padding: 20px;
         }
         .game {
-            background: #2e1b4b;
+            background: #1e1e1e;
             border-radius: 10px;
             padding: 10px;
             text-align: center;
@@ -53,37 +52,25 @@
         }
         .game img {
             width: 100%;
-            height: 150px;
-            object-fit: cover;
+            height: 150px; /* Einheitliche Höhe für alle Bilder */
+            object-fit: cover; /* Bilder werden zugeschnitten, um gleich groß zu bleiben */
             border-radius: 5px;
             cursor: pointer;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
         .game img:hover {
             transform: scale(1.1);
-            box-shadow: 0 0 15px rgba(156, 39, 176, 0.8);
-        }
-        .edit-game, .delete-game {
-            background: #ff9800;
-            margin-top: 5px;
-            display: none;
+            box-shadow: 0 0 15px rgba(124, 29, 179, 0.8);
         }
         .delete-game {
             background: red;
+            margin-top: 5px;
         }
     </style>
 </head>
 <body>
-    <h1>Willkommen zu Gaming Hub</h1>
+    <h1>Willkommen zu HigherCellF Games</h1>
     <button id="admin-login-btn">Admin Login</button>
-    <button id="logout-btn" class="hidden">Logout</button>
-    
-    <div id="login-form" class="hidden">
-        <input type="email" id="admin-email" placeholder="Email">
-        <input type="password" id="admin-password" placeholder="Passwort">
-        <button id="login-btn">Login</button>
-    </div>
-
     <div id="admin-panel" class="hidden">
         <button id="add-game-btn">Spiel hinzufügen</button>
         <button id="clear-games-btn">Alle Spiele entfernen</button>
@@ -95,15 +82,6 @@
         <input type="text" id="game-link" placeholder="Spiel-URL">
         <input type="text" id="game-image" placeholder="Bild-URL">
         <button id="save-game">Speichern</button>
-    </div>
-    
-    <div id="edit-game-form" class="hidden">
-        <h2>Spiel bearbeiten</h2>
-        <input type="text" id="edit-game-name" placeholder="Spielname">
-        <input type="text" id="edit-game-link" placeholder="Spiel-URL">
-        <input type="text" id="edit-game-image" placeholder="Bild-URL">
-        <button id="update-game">Speichern</button>
-        <button id="close-edit">Schließen</button>
     </div>
     
     <script>
@@ -118,44 +96,8 @@
         
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
-        const auth = firebase.auth();
-
-        document.getElementById("admin-login-btn").addEventListener("click", function() {
-            document.getElementById("login-form").classList.remove("hidden");
-        });
-
-        document.getElementById("login-btn").addEventListener("click", function() {
-            const email = document.getElementById("admin-email").value;
-            const password = document.getElementById("admin-password").value;
-            auth.signInWithEmailAndPassword(email, password)
-                .then(() => {
-                    document.getElementById("admin-panel").classList.remove("hidden");
-                    document.getElementById("login-form").classList.add("hidden");
-                    document.getElementById("logout-btn").classList.remove("hidden");
-                    document.querySelectorAll(".edit-game, .delete-game").forEach(btn => btn.style.display = "inline-block");
-                })
-                .catch(error => alert("Login fehlgeschlagen: " + error.message));
-        });
-
-        document.getElementById("logout-btn").addEventListener("click", function() {
-            auth.signOut().then(() => {
-                document.getElementById("admin-panel").classList.add("hidden");
-                document.getElementById("logout-btn").classList.add("hidden");
-                document.querySelectorAll(".edit-game, .delete-game").forEach(btn => btn.style.display = "none");
-            });
-        });
-
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                document.getElementById("admin-panel").classList.remove("hidden");
-                document.getElementById("logout-btn").classList.remove("hidden");
-                document.querySelectorAll(".edit-game, .delete-game").forEach(btn => btn.style.display = "inline-block");
-            } else {
-                document.getElementById("admin-panel").classList.add("hidden");
-                document.getElementById("logout-btn").classList.add("hidden");
-                document.querySelectorAll(".edit-game, .delete-game").forEach(btn => btn.style.display = "none");
-            }
-        });
     </script>
+    
+    <script src="script.js"></script>
 </body>
 </html>

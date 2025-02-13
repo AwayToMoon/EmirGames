@@ -9,7 +9,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
         <style>
         body {
-            background-color: #121212;
+            background-color: #1a0b2e;
             color: white;
             font-family: Arial, sans-serif;
             text-align: center;
@@ -20,12 +20,12 @@
         #admin-panel, #game-form {
             margin: 20px auto;
             padding: 15px;
-            background: #1e1e1e;
+            background: #2e1b4b;
             border-radius: 10px;
             width: 300px;
         }
         button {
-            background: #8617b3;
+            background: #9c27b0;
             color: white;
             border: none;
             padding: 10px;
@@ -35,16 +35,16 @@
             transition: background 0.3s ease;
         }
         button:hover {
-            background: #8617b3;
+            background: #7b1fa2;
         }
-       #game-list {
+        #game-list {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 15px;
             padding: 20px;
         }
         .game {
-            background: #1e1e1e;
+            background: #2e1b4b;
             border-radius: 10px;
             padding: 10px;
             text-align: center;
@@ -52,15 +52,15 @@
         }
         .game img {
             width: 100%;
-            height: 150px; /* Einheitliche Höhe für alle Bilder */
-            object-fit: cover; /* Bilder werden zugeschnitten, um gleich groß zu bleiben */
+            height: 150px;
+            object-fit: cover;
             border-radius: 5px;
             cursor: pointer;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
         .game img:hover {
             transform: scale(1.1);
-            box-shadow: 0 0 15px rgba(124, 29, 179, 0.8);
+            box-shadow: 0 0 15px rgba(156, 39, 176, 0.8);
         }
         .delete-game {
             background: red;

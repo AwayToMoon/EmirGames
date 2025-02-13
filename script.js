@@ -6,6 +6,7 @@ const games = [
 
 const gameList = document.getElementById("game-list");
 const addGameBtn = document.getElementById("add-game-btn");
+const clearGamesBtn = document.getElementById("clear-games-btn");
 const gameForm = document.getElementById("game-form");
 const saveGameBtn = document.getElementById("save-game");
 const gameNameInput = document.getElementById("game-name");
@@ -16,17 +17,17 @@ addGameBtn.addEventListener("click", () => {
     gameForm.classList.toggle("hidden");
 });
 
+clearGamesBtn.addEventListener("click", () => {
+    gameList.innerHTML = "";
+});
+
 saveGameBtn.addEventListener("click", () => {
     const name = gameNameInput.value;
     const link = gameLinkInput.value;
     const image = gameImageInput.value;
 
     if (name && link && image) {
-        const div = document.createElement("div");
-        div.classList.add("game");
-        div.innerHTML = `<img src="${image}" alt="${name}" onclick="window.open('${link}', '_blank')"><h2>${name}</h2>`;
-        gameList.appendChild(div);
-        
+        addGameToList(name, link, image);
         gameNameInput.value = "";
         gameLinkInput.value = "";
         gameImageInput.value = "";
@@ -34,9 +35,18 @@ saveGameBtn.addEventListener("click", () => {
     }
 });
 
-games.forEach(game => {
+function addGameToList(name, link, image) {
     const div = document.createElement("div");
     div.classList.add("game");
-    div.innerHTML = `<img src="${game.image}" alt="${game.name}" onclick="window.open('${game.link}', '_blank')"><h2>${game.name}</h2>`;
+    div.innerHTML = `<button class="delete-game">X</button><img src="${image}" alt="${name}" onclick="window.open('${link}', '_blank')"><h2>${name}</h2>`;
+    
+    div.querySelector(".delete-game").addEventListener("click", () => {
+        div.remove();
+    });
+    
     gameList.appendChild(div);
+}
+
+games.forEach(game => {
+    addGameToList(game.name, game.link, game.image);
 });

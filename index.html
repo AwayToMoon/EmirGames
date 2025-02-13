@@ -37,7 +37,7 @@
         button:hover {
             background: #8617b3;
         }
-        #game-list {
+       #game-list {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 15px;
@@ -52,14 +52,15 @@
         }
         .game img {
             width: 100%;
-            height: auto;
+            height: 150px; /* Einheitliche Höhe für alle Bilder */
+            object-fit: cover; /* Bilder werden zugeschnitten, um gleich groß zu bleiben */
             border-radius: 5px;
             cursor: pointer;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
         .game img:hover {
             transform: scale(1.1);
-            box-shadow: 0 0 15px rgba(134, 23, 179, 0.8);
+            box-shadow: 0 0 15px rgba(124, 29, 179, 0.8);
         }
         .delete-game {
             background: red;

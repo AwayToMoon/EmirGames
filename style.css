@@ -24,4 +24,5 @@ h1 {
     height: auto;
     border-radius: 8px;
     margin-bottom: 10px;
+    cursor: pointer;
 }

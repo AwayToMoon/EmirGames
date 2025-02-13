@@ -1,73 +1,95 @@
-const gameList = document.getElementById("game-list");
-const adminLoginBtn = document.getElementById("admin-login-btn");
-const adminPanel = document.getElementById("admin-panel");
-const addGameBtn = document.getElementById("add-game-btn");
-const clearGamesBtn = document.getElementById("clear-games-btn");
-const gameForm = document.getElementById("game-form");
-const saveGameBtn = document.getElementById("save-game");
-const gameNameInput = document.getElementById("game-name");
-const gameLinkInput = document.getElementById("game-link");
-const gameImageInput = document.getElementById("game-image");
+document.addEventListener("DOMContentLoaded", function () {
+    const gameList = document.getElementById("game-list");
+    const gameForm = document.getElementById("game-form");
+    const editGameForm = document.getElementById("edit-game-form");
 
-const ADMIN_PASSWORD = "9966";
+    const gameNameInput = document.getElementById("game-name");
+    const gameLinkInput = document.getElementById("game-link");
+    const gameImageInput = document.getElementById("game-image");
+    const saveGameButton = document.getElementById("save-game");
 
-adminLoginBtn.addEventListener("click", () => {
-    const password = prompt("Bitte Admin-Passwort eingeben:");
-    if (password === ADMIN_PASSWORD) {
-        adminPanel.classList.remove("hidden");
-    } else {
-        alert("Falsches Passwort!");
+    const editGameNameInput = document.getElementById("edit-game-name");
+    const editGameLinkInput = document.getElementById("edit-game-link");
+    const editGameImageInput = document.getElementById("edit-game-image");
+    const updateGameButton = document.getElementById("update-game");
+    const closeEditButton = document.getElementById("close-edit");
+
+    let editingGameId = null;
+
+    function renderGames() {
+        gameList.innerHTML = "";
+        db.collection("games").get().then(snapshot => {
+            snapshot.forEach(doc => {
+                const game = doc.data();
+                const gameElement = document.createElement("div");
+                gameElement.classList.add("game");
+
+                gameElement.innerHTML = `
+                    <img src="${game.image}" alt="${game.name}" onclick="window.open('${game.link}', '_blank')">
+                    <h3>${game.name}</h3>
+                    <button class="edit-game" data-id="${doc.id}">Bearbeiten</button>
+                    <button class="delete-game" data-id="${doc.id}">Löschen</button>
+                `;
+
+                gameList.appendChild(gameElement);
+            });
+
+            document.querySelectorAll(".edit-game").forEach(button => {
+                button.addEventListener("click", function () {
+                    const gameId = this.getAttribute("data-id");
+                    db.collection("games").doc(gameId).get().then(doc => {
+                        if (doc.exists) {
+                            const game = doc.data();
+                            editingGameId = gameId;
+                            editGameNameInput.value = game.name;
+                            editGameLinkInput.value = game.link;
+                            editGameImageInput.value = game.image;
+                            editGameForm.classList.remove("hidden");
+                        }
+                    });
+                });
+            });
+
+            document.querySelectorAll(".delete-game").forEach(button => {
+                button.addEventListener("click", function () {
+                    const gameId = this.getAttribute("data-id");
+                    db.collection("games").doc(gameId).delete().then(() => {
+                        renderGames();
+                    });
+                });
+            });
+        });
     }
-});
 
-addGameBtn.addEventListener("click", () => {
-    gameForm.classList.toggle("hidden");
-});
+    saveGameButton.addEventListener("click", function () {
+        const newGame = {
+            name: gameNameInput.value,
+            link: gameLinkInput.value,
+            image: gameImageInput.value
+        };
 
-clearGamesBtn.addEventListener("click", async () => {
-    const gamesRef = db.collection("games");
-    const snapshot = await gamesRef.get();
-    snapshot.forEach(doc => doc.ref.delete());
-    renderGames();
-});
+        db.collection("games").add(newGame).then(() => {
+            gameForm.classList.add("hidden");
+            renderGames();
+        });
+    });
 
-saveGameBtn.addEventListener("click", async () => {
-    const name = gameNameInput.value;
-    const link = gameLinkInput.value;
-    const image = gameImageInput.value;
-
-    if (name && link && image) {
-        await db.collection("games").add({ name, link, image });
-        renderGames();
-        gameNameInput.value = "";
-        gameLinkInput.value = "";
-        gameImageInput.value = "";
-        gameForm.classList.add("hidden");
-    }
-});
-
-async function renderGames() {
-    gameList.innerHTML = "";
-    const snapshot = await db.collection("games").get();
-    snapshot.forEach(doc => {
-        const game = doc.data();
-        const div = document.createElement("div");
-        div.classList.add("game");
-        div.innerHTML = `<img src="${game.image}" alt="${game.name}" onclick="window.open('${game.link}', '_blank')"><h2>${game.name}</h2>`;
-        
-        if (!adminPanel.classList.contains("hidden")) {
-            const deleteBtn = document.createElement("button");
-            deleteBtn.classList.add("delete-game");
-            deleteBtn.innerText = "X";
-            deleteBtn.addEventListener("click", async () => {
-                await db.collection("games").doc(doc.id).delete();
+    updateGameButton.addEventListener("click", function () {
+        if (editingGameId) {
+            db.collection("games").doc(editingGameId).update({
+                name: editGameNameInput.value,
+                link: editGameLinkInput.value,
+                image: editGameImageInput.value
+            }).then(() => {
+                editGameForm.classList.add("hidden");
                 renderGames();
             });
-            div.appendChild(deleteBtn);
         }
-        
-        gameList.appendChild(div);
     });
-}
 
-document.addEventListener("DOMContentLoaded", renderGames);
+    closeEditButton.addEventListener("click", function () {
+        editGameForm.classList.add("hidden");
+    });
+
+    renderGames();
+});

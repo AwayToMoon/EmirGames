@@ -22,10 +22,10 @@ async function initializeSocialLinks() {
     const socialDoc = await db.collection("settings").doc("social").get();
     if (!socialDoc.exists) {
         await db.collection("settings").doc("social").set({
-            tiktok: "#",
-            discord: "#",
-            instagram: "#",
-            kick: "#"
+            tiktok: "https://www.tiktok.com/@creator_emir999",
+            discord: "https://discord.com/invite/32HKVGXePw",
+            instagram: "https://www.instagram.com/highercellf/",
+            kick: "https://kick.com/higheronkick"
         });
     }
 }

@@ -29,10 +29,10 @@
         }
 
         h1 {
-        color: #9c09db;
-        margin-top: 20px;
-        padding-top: 100px; /* Erhöht für mehr Platz unter den Social Buttons */
-    }
+            color: #9c09db;
+            margin-top: 20px;
+            padding-top: 100px;
+        }
 
         #admin-panel {
             margin: 20px auto;
@@ -87,6 +87,7 @@
             width: 324px;
             box-sizing: border-box;
             transition: transform 0.3s ease;
+            padding-top: 35px;
         }
 
         .game:hover {
@@ -143,15 +144,15 @@
         }
 
         .social-media {
-        position: absolute;
-        top: 20px;
-        left: 50%;
-        transform: translateX(-50%);
-        display: flex;
-        flex-direction: row;
-        gap: 15px;
-        z-index: 1000;
-    }
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: row;
+            gap: 15px;
+            z-index: 1000;
+        }
 
         .social-btn {
             width: 40px;
@@ -243,10 +244,48 @@
             background-color: #2a0934;
             z-index: 1000;
         }
+
+        /* Neue Styles für Genres */
+        .genre-container {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+        }
+
+        .genre-option {
+            background: #2a0934;
+            padding: 8px;
+            border-radius: 5px;
+            cursor: pointer;
+            border: 1px solid #9c09db;
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .genre-option.selected {
+            background: #9c09db;
+            color: white;
+        }
+
+        .game-genres {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 10px;
+            justify-content: center;
+        }
+
+        .genre-tag {
+            background: #9c09db;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+        }
     </style>
 </head>
 <body>
-    <!-- Der Rest des Codes bleibt unverändert -->
     <script>
         document.addEventListener('keydown', function(e) {
             if(e.keyCode == 123) {
@@ -315,6 +354,17 @@
                 <span class="close-modal">&times;</span>
                 <h2>Spiel bearbeiten</h2>
                 <input type="text" id="game-name" placeholder="Spielname">
+                <div class="genre-container">
+                    <div class="genre-option" data-genre="Action">Action</div>
+                    <div class="genre-option" data-genre="Adventure">Adventure</div>
+                    <div class="genre-option" data-genre="RPG">RPG</div>
+                    <div class="genre-option" data-genre="Shooter">Shooter</div>
+                    <div class="genre-option" data-genre="Sport">Sport</div>
+                    <div class="genre-option" data-genre="Strategie">Strategie</div>
+                    <div class="genre-option" data-genre="Puzzle">Puzzle</div>
+                    <div class="genre-option" data-genre="Racing">Racing</div>
+                    <div class="genre-option" data-genre="Horror">Horror</div>
+                </div>
                 <input type="text" id="game-link" placeholder="Spiel-URL">
                 <input type="text" id="game-image" placeholder="Bild-URL">
                 <button id="save-game">Speichern</button>
@@ -339,10 +389,8 @@
     </div>
     
     <script>
-        // Verschlüsselte Firebase-Config
         const encryptedConfig = "U2FsdGVkX1/2h2jz/okQRoolhPVQPafedlkbIfYoDr/bEIj6Qe4Gz4D+GJsaaQ5i7XVMwWJ+cqe94PGWRSvfQKwZHwpHdIr9YhzTEVGwzq0yCkU/7ZsA1fNW0THeJjRP5W+tborqv2W5F8pHhVoVtYy104eDojx6YeaaKd4zyAr36a1eAY82nlgIUMhzbl8s7LEWqoqk/w+4brkq8Gt7zZ2zkCij2mwXb8LEyZJBFSa0j62QdI8cKkSwBRw3MxO56KTu4tLFcbv7hhehDtKwM0PNJMkuDp+xldtmmvIOS56fR64kvsLXlkN/DSV+3MHLWFCHv/ry06NtgMy6aEz3mfFQUqP0uaTR+ohi3niWSNYJ+wMNgQsV6xiXj+VmKleN";
         
-        // Firebase initialisieren
         function initFirebase() {
             const secretKey = "HigherCellF-Games-2024";
             const decrypted = CryptoJS.AES.decrypt(encryptedConfig, secretKey).toString(CryptoJS.enc.Utf8);

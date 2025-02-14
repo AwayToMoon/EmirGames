@@ -2,12 +2,15 @@ const gameList = document.getElementById("game-list");
 const adminLoginBtn = document.getElementById("admin-login-btn");
 const adminPanel = document.getElementById("admin-panel");
 const addGameBtn = document.getElementById("add-game-btn");
-const clearGamesBtn = document.getElementById("clear-games-btn");
+const editGamesBtn = document.getElementById("edit-games-btn");
 const gameForm = document.getElementById("game-form");
 const saveGameBtn = document.getElementById("save-game");
 const gameNameInput = document.getElementById("game-name");
 const gameLinkInput = document.getElementById("game-link");
 const gameImageInput = document.getElementById("game-image");
+
+let currentGameId = null;
+let isEditMode = false;
 
 const ADMIN_PASSWORD = "9966";
 
@@ -21,8 +24,20 @@ adminLoginBtn.addEventListener("click", () => {
 });
 
 addGameBtn.addEventListener("click", () => {
+    currentGameId = null;
+    isEditMode = false;
+    gameNameInput.value = "";
+    gameLinkInput.value = "";
+    gameImageInput.value = "";
+    document.querySelector('.modal h2').textContent = "Neues Spiel hinzufügen";
     gameForm.classList.remove("hidden");
     gameForm.style.display = 'block';
+});
+
+editGamesBtn.addEventListener("click", () => {
+    isEditMode = !isEditMode;
+    renderGames();
+    editGamesBtn.textContent = isEditMode ? "Bearbeiten beenden" : "Spiele bearbeiten";
 });
 
 // Schließen-Button Funktionalität
@@ -39,26 +54,30 @@ window.addEventListener('click', (event) => {
     }
 });
 
-clearGamesBtn.addEventListener("click", async () => {
-    const gamesRef = db.collection("games");
-    const snapshot = await gamesRef.get();
-    snapshot.forEach(doc => doc.ref.delete());
-    renderGames();
-});
-
 saveGameBtn.addEventListener("click", async () => {
     const name = gameNameInput.value;
     const link = gameLinkInput.value;
     const image = gameImageInput.value;
 
     if (name && link && image) {
-        await db.collection("games").add({ name, link, image });
-        renderGames();
+        if (currentGameId) {
+            // Spiel aktualisieren
+            await db.collection("games").doc(currentGameId).update({
+                name, link, image
+            });
+        } else {
+            // Neues Spiel hinzufügen
+            await db.collection("games").add({
+                name, link, image
+            });
+        }
+        
         gameNameInput.value = "";
         gameLinkInput.value = "";
         gameImageInput.value = "";
         gameForm.classList.add("hidden");
         gameForm.style.display = 'none';
+        renderGames();
     } else {
         alert('Bitte füllen Sie alle Felder aus');
     }
@@ -71,17 +90,40 @@ async function renderGames() {
         const game = doc.data();
         const div = document.createElement("div");
         div.classList.add("game");
-        div.innerHTML = `<img src="${game.image}" alt="${game.name}" onclick="window.open('${game.link}', '_blank')"><h2>${game.name}</h2>`;
+        div.innerHTML = `
+            <img src="${game.image}" alt="${game.name}" onclick="window.open('${game.link}', '_blank')">
+            <h2>${game.name}</h2>
+        `;
         
-        if (!adminPanel.classList.contains("hidden")) {
+        if (!adminPanel.classList.contains("hidden") && isEditMode) {
+            const buttonContainer = document.createElement("div");
+            
             const deleteBtn = document.createElement("button");
             deleteBtn.classList.add("delete-game");
             deleteBtn.innerText = "X";
             deleteBtn.addEventListener("click", async () => {
-                await db.collection("games").doc(doc.id).delete();
-                renderGames();
+                if (confirm('Möchten Sie dieses Spiel wirklich löschen?')) {
+                    await db.collection("games").doc(doc.id).delete();
+                    renderGames();
+                }
             });
-            div.appendChild(deleteBtn);
+            
+            const editBtn = document.createElement("button");
+            editBtn.classList.add("edit-game");
+            editBtn.innerText = "✎";
+            editBtn.addEventListener("click", () => {
+                currentGameId = doc.id;
+                gameNameInput.value = game.name;
+                gameLinkInput.value = game.link;
+                gameImageInput.value = game.image;
+                document.querySelector('.modal h2').textContent = "Spiel bearbeiten";
+                gameForm.classList.remove("hidden");
+                gameForm.style.display = 'block';
+            });
+            
+            buttonContainer.appendChild(deleteBtn);
+            buttonContainer.appendChild(editBtn);
+            div.appendChild(buttonContainer);
         }
         
         gameList.appendChild(div);

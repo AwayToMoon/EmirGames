@@ -21,7 +21,19 @@ adminLoginBtn.addEventListener("click", () => {
 });
 
 addGameBtn.addEventListener("click", () => {
-    gameForm.classList.toggle("hidden");
+    gameForm.style.display = 'block';
+});
+
+// Schließen-Button Funktionalität
+document.querySelector('.close-modal').addEventListener('click', () => {
+    gameForm.style.display = 'none';
+});
+
+// Klick außerhalb des Modals schließt es
+window.addEventListener('click', (event) => {
+    if (event.target === gameForm) {
+        gameForm.style.display = 'none';
+    }
 });
 
 clearGamesBtn.addEventListener("click", async () => {
@@ -42,7 +54,9 @@ saveGameBtn.addEventListener("click", async () => {
         gameNameInput.value = "";
         gameLinkInput.value = "";
         gameImageInput.value = "";
-        gameForm.classList.add("hidden");
+        gameForm.style.display = 'none';
+    } else {
+        alert('Bitte füllen Sie alle Felder aus');
     }
 });
 

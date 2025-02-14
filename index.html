@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-        <style>
+    <style>
         body {
             background-color: #121212;
             color: white;
@@ -37,7 +37,7 @@
         button:hover {
             background: #8617b3;
         }
-       #game-list {
+        #game-list {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 15px;
@@ -52,8 +52,8 @@
         }
         .game img {
             width: 100%;
-            height: 150px; /* Einheitliche Höhe für alle Bilder */
-            object-fit: cover; /* Bilder werden zugeschnitten, um gleich groß zu bleiben */
+            height: 150px;
+            object-fit: cover;
             border-radius: 5px;
             cursor: pointer;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -65,6 +65,9 @@
         .delete-game {
             background: red;
             margin-top: 5px;
+        }
+        .hidden {
+            display: none;
         }
     </style>
 </head>
@@ -82,6 +85,7 @@
         <input type="text" id="game-link" placeholder="Spiel-URL">
         <input type="text" id="game-image" placeholder="Bild-URL">
         <button id="save-game">Speichern</button>
+        <button id="close-form">Schließen</button>
     </div>
     
     <script>
@@ -96,8 +100,82 @@
         
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
+
+        document.getElementById('admin-login-btn').addEventListener('click', () => {
+            document.getElementById('admin-panel').classList.remove('hidden');
+        });
+
+        document.getElementById('add-game-btn').addEventListener('click', () => {
+            document.getElementById('game-form').classList.remove('hidden');
+        });
+
+        document.getElementById('close-form').addEventListener('click', () => {
+            document.getElementById('game-form').classList.add('hidden');
+        });
+
+        document.getElementById('save-game').addEventListener('click', async () => {
+            const gameName = document.getElementById('game-name').value;
+            const gameLink = document.getElementById('game-link').value;
+            const gameImage = document.getElementById('game-image').value;
+
+            if (gameName && gameLink && gameImage) {
+                const gameData = {
+                    name: gameName,
+                    link: gameLink,
+                    image: gameImage,
+                };
+
+                await db.collection('games').add(gameData);
+                document.getElementById('game-name').value = '';
+                document.getElementById('game-link').value = '';
+                document.getElementById('game-image').value = '';
+
+                loadGames();
+                document.getElementById('game-form').classList.add('hidden'); // Schließen nach dem Speichern
+            } else {
+                alert('Bitte füllen Sie alle Felder aus');
+            }
+        });
+
+        document.getElementById('clear-games-btn').addEventListener('click', async () => {
+            const gamesSnapshot = await db.collection('games').get();
+            gamesSnapshot.forEach(async (doc) => {
+                await db.collection('games').doc(doc.id).delete();
+            });
+            loadGames();
+        });
+
+        async function loadGames() {
+            const gameList = document.getElementById('game-list');
+            gameList.innerHTML = ''; // Clear the current list
+
+            const gamesSnapshot = await db.collection('games').get();
+            gamesSnapshot.forEach(doc => {
+                const game = doc.data();
+                const gameElement = document.createElement('div');
+                gameElement.classList.add('game');
+                gameElement.innerHTML = `
+                    <img src="${game.image}" alt="${game.name}">
+                    <h3>${game.name}</h3>
+                    <a href="${game.link}" target="_blank">Spiel spielen</a>
+                    <button class="delete-game" data-id="${doc.id}">Löschen</button>
+                `;
+                gameList.appendChild(gameElement);
+            });
+
+            const deleteButtons = document.querySelectorAll('.delete-game');
+            deleteButtons.forEach(button => {
+                button.addEventListener('click', async (event) => {
+                    const gameId = event.target.getAttribute('data-id');
+                    await db.collection('games').doc(gameId).delete();
+                    loadGames();
+                });
+            });
+        }
+
+        // Load games on initial load
+        loadGames();
     </script>
     
-    <script src="script.js"></script>
 </body>
 </html>

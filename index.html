@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-        <style>
+    <style>
         body {
             background-color: #121212;
             color: white;
@@ -37,7 +37,7 @@
         button:hover {
             background: #8617b3;
         }
-       #game-list {
+        #game-list {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 15px;
@@ -52,8 +52,8 @@
         }
         .game img {
             width: 100%;
-            height: 150px; /* Einheitliche Höhe für alle Bilder */
-            object-fit: cover; /* Bilder werden zugeschnitten, um gleich groß zu bleiben */
+            height: 150px;
+            object-fit: cover;
             border-radius: 5px;
             cursor: pointer;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -66,6 +66,50 @@
             background: red;
             margin-top: 5px;
         }
+        /* Neue Styles für das Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+        }
+        .modal-content {
+            position: relative;
+            background-color: #1e1e1e;
+            margin: 15% auto;
+            padding: 20px;
+            width: 80%;
+            max-width: 500px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(134, 23, 179, 0.3);
+        }
+        .modal input {
+            width: 90%;
+            padding: 10px;
+            margin: 10px 0;
+            background-color: #2d2d2d;
+            border: 1px solid #8617b3;
+            border-radius: 5px;
+            color: white;
+        }
+        .modal input::placeholder {
+            color: #888;
+        }
+        .close-modal {
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #888;
+        }
+        .close-modal:hover {
+            color: white;
+        }
     </style>
 </head>
 <body>
@@ -77,11 +121,15 @@
     </div>
     <div id="game-list"></div>
     
-    <div id="game-form" class="hidden">
-        <input type="text" id="game-name" placeholder="Spielname">
-        <input type="text" id="game-link" placeholder="Spiel-URL">
-        <input type="text" id="game-image" placeholder="Bild-URL">
-        <button id="save-game">Speichern</button>
+    <div id="game-form" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Neues Spiel hinzufügen</h2>
+            <input type="text" id="game-name" placeholder="Spielname">
+            <input type="text" id="game-link" placeholder="Spiel-URL">
+            <input type="text" id="game-image" placeholder="Bild-URL">
+            <button id="save-game">Speichern</button>
+        </div>
     </div>
     
     <script>
@@ -96,6 +144,21 @@
         
         firebase.initializeApp(firebaseConfig);
         const db = firebase.firestore();
+
+        // Modal Funktionalität
+        document.getElementById('add-game-btn').onclick = function() {
+            document.getElementById('game-form').style.display = 'block';
+        }
+
+        document.querySelector('.close-modal').onclick = function() {
+            document.getElementById('game-form').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            if (event.target == document.getElementById('game-form')) {
+                document.getElementById('game-form').style.display = 'none';
+            }
+        }
     </script>
     
     <script src="script.js"></script>

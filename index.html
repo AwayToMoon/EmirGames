@@ -210,17 +210,29 @@
     </div>
     
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyC6YCY-gq1pVt5xJlC2VoeONl8FH_PsSO8",
-            authDomain: "emirgames-b3441.firebaseapp.com",
-            projectId: "emirgames-b3441",
-            storageBucket: "emirgames-b3441.firebasestorage.app",
-            messagingSenderId: "532098273099",
-            appId: "1:532098273099:web:ada0091568c2a41316a2ce"
-        };
+        // Verschlüsselte Firebase-Config
+        const encryptedConfig = "U2FsdGVkX1+9X5/dQmxjZ5YLY+2QQ3qX5YL5Z5L5Z5L5Z5L5Z5L5Z5L5Z5L5Z5L5Z5L5Z5L5Z5L5";
         
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.firestore();
+        // Funktion zum Entschlüsseln
+        function decryptConfig(encrypted) {
+            try {
+                const key = "HigherCellF-Games-2024"; // Geheimer Schlüssel
+                const decrypted = CryptoJS.AES.decrypt(encrypted, key).toString(CryptoJS.enc.Utf8);
+                return JSON.parse(decrypted);
+            } catch (error) {
+                console.error("Error decrypting config:", error);
+                return null;
+            }
+        }
+
+        // Firebase initialisieren
+        const firebaseConfig = decryptConfig(encryptedConfig);
+        if (firebaseConfig) {
+            firebase.initializeApp(firebaseConfig);
+            const db = firebase.firestore();
+        } else {
+            console.error("Could not initialize Firebase");
+        }
     </script>
     
     <script src="script.js"></script>

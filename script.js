@@ -17,10 +17,24 @@ let isEditMode = false;
 
 const ADMIN_PASSWORD = "9966";
 
+// Initialisiere Social Media Links in Firebase, falls sie noch nicht existieren
+async function initializeSocialLinks() {
+    const socialDoc = await db.collection("settings").doc("social").get();
+    if (!socialDoc.exists) {
+        await db.collection("settings").doc("social").set({
+            tiktok: "#",
+            discord: "#",
+            instagram: "#",
+            kick: "#"
+        });
+    }
+}
+
 adminLoginBtn.addEventListener("click", () => {
     const password = prompt("Bitte Admin-Passwort eingeben:");
     if (password === ADMIN_PASSWORD) {
         adminPanel.classList.remove("hidden");
+        initializeSocialLinks(); // Initialisiere Social Links beim Admin-Login
     } else {
         alert("Falsches Passwort!");
     }
@@ -45,43 +59,58 @@ editGamesBtn.addEventListener("click", () => {
 
 // Social Media Links aus Firebase laden
 async function loadSocialLinks() {
-    const doc = await db.collection("settings").doc("social").get();
-    if (doc.exists) {
-        const data = doc.data();
-        document.getElementById("tiktok-btn").href = data.tiktok || "#";
-        document.getElementById("discord-btn").href = data.discord || "#";
-        document.getElementById("instagram-btn").href = data.instagram || "#";
-        document.getElementById("kick-btn").href = data.kick || "#";
+    try {
+        const doc = await db.collection("settings").doc("social").get();
+        if (doc.exists) {
+            const data = doc.data();
+            document.getElementById("tiktok-btn").href = data.tiktok || "#";
+            document.getElementById("discord-btn").href = data.discord || "#";
+            document.getElementById("instagram-btn").href = data.instagram || "#";
+            document.getElementById("kick-btn").href = data.kick || "#";
+        }
+    } catch (error) {
+        console.error("Error loading social links:", error);
     }
 }
 
 // Social Media Modal öffnen
 editSocialBtn.addEventListener("click", async () => {
-    const doc = await db.collection("settings").doc("social").get();
-    if (doc.exists) {
-        const data = doc.data();
-        document.getElementById("tiktok-link").value = data.tiktok || "";
-        document.getElementById("discord-link").value = data.discord || "";
-        document.getElementById("instagram-link").value = data.instagram || "";
-        document.getElementById("kick-link").value = data.kick || "";
+    try {
+        const doc = await db.collection("settings").doc("social").get();
+        if (doc.exists) {
+            const data = doc.data();
+            document.getElementById("tiktok-link").value = data.tiktok || "";
+            document.getElementById("discord-link").value = data.discord || "";
+            document.getElementById("instagram-link").value = data.instagram || "";
+            document.getElementById("kick-link").value = data.kick || "";
+        }
+        socialForm.classList.remove("hidden");
+        socialForm.style.display = 'block';
+    } catch (error) {
+        console.error("Error opening social modal:", error);
+        alert("Fehler beim Laden der Social Media Links");
     }
-    socialForm.classList.remove("hidden");
-    socialForm.style.display = 'block';
 });
 
 // Social Media Links speichern
 saveSocialBtn.addEventListener("click", async () => {
-    const socialData = {
-        tiktok: document.getElementById("tiktok-link").value,
-        discord: document.getElementById("discord-link").value,
-        instagram: document.getElementById("instagram-link").value,
-        kick: document.getElementById("kick-link").value
-    };
+    try {
+        const socialData = {
+            tiktok: document.getElementById("tiktok-link").value || "#",
+            discord: document.getElementById("discord-link").value || "#",
+            instagram: document.getElementById("instagram-link").value || "#",
+            kick: document.getElementById("kick-link").value || "#"
+        };
 
-    await db.collection("settings").doc("social").set(socialData);
-    loadSocialLinks();
-    socialForm.classList.add("hidden");
-    socialForm.style.display = 'none';
+        await db.collection("settings").doc("social").set(socialData);
+        await loadSocialLinks(); // Lade die Links neu
+        socialForm.classList.add("hidden");
+        socialForm.style.display = 'none';
+        alert("Social Media Links wurden gespeichert!");
+    } catch (error) {
+        console.error("Error saving social links:", error);
+        alert("Fehler beim Speichern der Social Media Links");
+    }
 });
 
 // Schließen-Buttons für alle Modals

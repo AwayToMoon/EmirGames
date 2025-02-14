@@ -82,7 +82,7 @@
             top: 20px;
             left: 20px;
             display: flex;
-            flex-direction: column;
+            flex-direction: row; /* Geändert zu row für waagerechte Anordnung */
             gap: 10px;
             z-index: 1000;
         }
@@ -115,9 +115,6 @@
             height: 100vh;
             background-color: rgba(0, 0, 0, 0.7);
             z-index: 1000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
         }
         .modal-content {
             background-color: #1e1e1e;
@@ -158,10 +155,10 @@
         .hidden {
             display: none !important;
         }
-        #admin-login-btn, #add-game-btn, #edit-games-btn, #save-game {
+        #admin-login-btn, #add-game-btn, #edit-games-btn, #save-game, #edit-social-btn, #save-social {
             background: #8617b3;
         }
-        #admin-login-btn:hover, #add-game-btn:hover, #edit-games-btn:hover, #save-game:hover {
+        #admin-login-btn:hover, #add-game-btn:hover, #edit-games-btn:hover, #save-game:hover, #edit-social-btn:hover, #save-social:hover {
             background: #9b1cd1;
         }
     </style>
@@ -169,16 +166,16 @@
 <body>
     <!-- Social Media Buttons -->
     <div class="social-media">
-        <a href="#" class="social-btn" id="tiktok-btn" title="TikTok">
+        <a href="#" class="social-btn" id="tiktok-btn" title="TikTok" target="_blank">
             <i class="fab fa-tiktok"></i>
         </a>
-        <a href="#" class="social-btn" id="discord-btn" title="Discord">
+        <a href="#" class="social-btn" id="discord-btn" title="Discord" target="_blank">
             <i class="fab fa-discord"></i>
         </a>
-        <a href="#" class="social-btn" id="instagram-btn" title="Instagram">
+        <a href="#" class="social-btn" id="instagram-btn" title="Instagram" target="_blank">
             <i class="fab fa-instagram"></i>
         </a>
-        <a href="#" class="social-btn" id="kick-btn" title="Kick">
+        <a href="#" class="social-btn" id="kick-btn" title="Kick" target="_blank">
             <i class="fas fa-k"></i>
         </a>
     </div>
@@ -203,7 +200,7 @@
         </div>
     </div>
 
-    <!-- Neues Modal für Social Media Links -->
+    <!-- Social Media Modal -->
     <div id="social-form" class="modal hidden">
         <div class="modal-content">
             <span class="close-modal">&times;</span>

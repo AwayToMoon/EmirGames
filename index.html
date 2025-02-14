@@ -5,17 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     <title>HigherCellF Games</title>
-    <link rel="stylesheet" href="style.css">
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body {
-            background-color: #121212;
-            color: white;
             font-family: Arial, sans-serif;
             text-align: center;
+            background-color: #2a0934;
+            color: white;
             margin: 0;
             padding: 0;
         }
@@ -25,9 +24,12 @@
             min-height: 100vh;
             padding-bottom: 60px;
             box-sizing: border-box;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
         h1 {
+            color: #9c09db;
             margin-top: 20px;
             padding-top: 80px;
         }
@@ -35,13 +37,13 @@
         #admin-panel {
             margin: 20px auto;
             padding: 15px;
-            background: #1e1e1e;
+            background: #3d0d4c;
             border-radius: 10px;
             width: 300px;
         }
 
         button {
-            background: #8617b3;
+            background: #9c09db;
             color: white;
             border: none;
             padding: 10px;
@@ -52,52 +54,92 @@
         }
 
         button:hover {
-            background: #9b1cd1;
+            background: #b01af7;
         }
 
         #game-list {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 15px;
+            grid-template-columns: repeat(3, 324px);
+            gap: 20px;
+            justify-content: center;
             padding: 20px;
             margin-bottom: 60px;
         }
 
+        @media (max-width: 1100px) {
+            #game-list {
+                grid-template-columns: repeat(2, 324px);
+            }
+        }
+
+        @media (max-width: 750px) {
+            #game-list {
+                grid-template-columns: repeat(1, 324px);
+            }
+        }
+
         .game {
-            background: #1e1e1e;
-            border-radius: 10px;
-            padding: 10px;
+            background: #3d0d4c;
+            border-radius: 8px;
+            padding: 12px;
             text-align: center;
+            position: relative;
+            width: 324px;
+            box-sizing: border-box;
             transition: transform 0.3s ease;
         }
 
+        .game:hover {
+            transform: translateY(-5px);
+        }
+
         .game img {
-            width: 100%;
-            height: 150px;
-            object-fit: cover;
-            border-radius: 5px;
+            width: 300px;
+            height: 151px;
+            border-radius: 8px;
+            margin-bottom: 10px;
             cursor: pointer;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
+            object-fit: cover;
         }
 
         .game img:hover {
-            transform: scale(1.1);
-            box-shadow: 0 0 15px rgba(124, 29, 179, 0.8);
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(156, 9, 219, 0.8);
         }
 
         .delete-game {
-            background: #8617b3;
-            margin-top: 5px;
-        }
-
-        .delete-game:hover {
-            background: #9b1cd1;
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: red;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .edit-game {
-            background: #8617b3;
-            margin-top: 5px;
-            margin-left: 5px;
+            position: absolute;
+            top: 5px;
+            right: 34px;
+            background: #9c09db;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .social-media {
@@ -114,7 +156,7 @@
             width: 40px;
             height: 40px;
             border-radius: 50%;
-            background: #8617b3;
+            background: #9c09db;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -125,7 +167,7 @@
 
         .social-btn:hover {
             transform: scale(1.1);
-            background: #9b1cd1;
+            background: #b01af7;
         }
 
         .social-btn i {
@@ -144,12 +186,12 @@
         }
 
         .modal-content {
-            background-color: #1e1e1e;
+            background-color: #3d0d4c;
             padding: 30px;
             width: 90%;
             max-width: 400px;
             border-radius: 10px;
-            box-shadow: 0 0 20px rgba(134, 23, 179, 0.3);
+            box-shadow: 0 0 20px rgba(156, 9, 219, 0.3);
             position: fixed;
             top: 50%;
             left: 50%;
@@ -160,8 +202,8 @@
             width: 100%;
             padding: 12px;
             margin: 10px 0;
-            background-color: #2d2d2d;
-            border: 1px solid #8617b3;
+            background-color: #2a0934;
+            border: 1px solid #9c09db;
             border-radius: 5px;
             color: white;
             box-sizing: border-box;
@@ -188,30 +230,22 @@
             display: none !important;
         }
 
-        #admin-login-btn, #add-game-btn, #edit-games-btn, #save-game, #edit-social-btn, #save-social {
-            background: #8617b3;
-        }
-
-        #admin-login-btn:hover, #add-game-btn:hover, #edit-games-btn:hover, #save-game:hover, #edit-social-btn:hover, #save-social:hover {
-            background: #9b1cd1;
-        }
-
         .copyright {
             position: absolute;
             bottom: 0;
             left: 0;
             right: 0;
             text-align: center;
-            color: #666;
+            color: #888;
             font-size: 12px;
             padding: 10px;
-            background-color: #121212;
+            background-color: #2a0934;
             z-index: 1000;
         }
     </style>
 </head>
 <body>
-    <!-- Schutz-Script -->
+    <!-- Der Rest des Codes bleibt unverändert -->
     <script>
         document.addEventListener('keydown', function(e) {
             if(e.keyCode == 123) {

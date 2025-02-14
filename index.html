@@ -45,6 +45,7 @@
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 15px;
             padding: 20px;
+            margin-bottom: 60px; /* Platz für Copyright */
         }
         .game {
             background: #1e1e1e;
@@ -159,6 +160,18 @@
         }
         #admin-login-btn:hover, #add-game-btn:hover, #edit-games-btn:hover, #save-game:hover, #edit-social-btn:hover, #save-social:hover {
             background: #9b1cd1;
+        }
+        .copyright {
+            position: fixed;
+            bottom: 10px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+            padding: 10px;
+            background-color: #121212;
+            z-index: 1000;
         }
     </style>
 </head>
@@ -281,5 +294,9 @@
     </script>
     
     <script src="script.js"></script>
+
+    <div class="copyright">
+        Copyright © 2025 Marvin Weiss. Alle Rechte vorbehalten.
+    </div>
 </body>
 </html>

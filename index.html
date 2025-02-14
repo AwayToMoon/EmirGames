@@ -211,12 +211,12 @@
     
     <script>
         // Verschlüsselte Firebase-Config
-        const encryptedConfig = "U2FsdGVkX1+9X5/dQmxjZ5YLY+2QQ3qX5YL5Z5L5Z5L5Z5L5Z5L5Z5L5Z5L5Z5L5Z5L5Z5L5Z5L5";
+        const encryptedConfig = "U2FsdGVkX18dqjxE03JrSgptnjpvi9Eq/Tu6WKLxqYWhmv+xQ4gYcg0+/Dvo6dLKKYCfai7uCMUhvBBRHXAfoX69DO+MhsivWFk7A8p0t9Dln1KaLnO34ab76UuJoLtDsYYDlzybVR+7aBINJo8eGOUsybBnYOzMX6DXLdJV3wo2ECzK6GmIWox0WwJDzh+b45LG46eqPIIPpyB9a68+UBQKOhf6mFQ9uthop7CcADY9S2PH6x8PtsPRw1Kxt94lo3S449jprEYo6oTyzeyOr7Q7e4QsUEZ95z7qIlX0qtnc7ANgAHEVb2YSHpQ8yGN4TXXFxbIYQv3aDvlyjkqXra8APsgGVUY1j/g+NgTUT+gvjDuQwSTMlIZT1ircCWt9";
         
         // Funktion zum Entschlüsseln
         function decryptConfig(encrypted) {
             try {
-                const key = "HigherCellF-Games-2024"; // Geheimer Schlüssel
+                const key = "HigherCellF-Games-2025"; // Geheimer Schlüssel
                 const decrypted = CryptoJS.AES.decrypt(encrypted, key).toString(CryptoJS.enc.Utf8);
                 return JSON.parse(decrypted);
             } catch (error) {

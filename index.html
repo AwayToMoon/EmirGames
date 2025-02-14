@@ -69,6 +69,11 @@
         .delete-game:hover {
             background: #9b1cd1;
         }
+        .edit-game {
+            background: #8617b3;
+            margin-top: 5px;
+            margin-left: 5px;
+        }
         /* Modal Styles */
         .modal {
             display: none;
@@ -122,10 +127,10 @@
         .hidden {
             display: none !important;
         }
-        #admin-login-btn, #add-game-btn, #clear-games-btn, #save-game {
+        #admin-login-btn, #add-game-btn, #edit-games-btn, #save-game {
             background: #8617b3;
         }
-        #admin-login-btn:hover, #add-game-btn:hover, #clear-games-btn:hover, #save-game:hover {
+        #admin-login-btn:hover, #add-game-btn:hover, #edit-games-btn:hover, #save-game:hover {
             background: #9b1cd1;
         }
     </style>
@@ -135,14 +140,14 @@
     <button id="admin-login-btn">Admin Login</button>
     <div id="admin-panel" class="hidden">
         <button id="add-game-btn">Spiel hinzufügen</button>
-        <button id="clear-games-btn">Alle Spiele entfernen</button>
+        <button id="edit-games-btn">Spiele bearbeiten</button>
     </div>
     <div id="game-list"></div>
     
     <div id="game-form" class="modal hidden">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
-            <h2>Neues Spiel hinzufügen</h2>
+            <h2>Spiel bearbeiten</h2>
             <input type="text" id="game-name" placeholder="Spielname">
             <input type="text" id="game-link" placeholder="Spiel-URL">
             <input type="text" id="game-image" placeholder="Bild-URL">

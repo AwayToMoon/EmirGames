@@ -32,7 +32,7 @@ addGameBtn.addEventListener("click", () => {
     gameNameInput.value = "";
     gameLinkInput.value = "";
     gameImageInput.value = "";
-    document.querySelector('.modal h2').textContent = "Neues Spiel hinzufügen";
+    document.querySelector('#game-form h2').textContent = "Neues Spiel hinzufügen";
     gameForm.classList.remove("hidden");
     gameForm.style.display = 'block';
 });
@@ -162,7 +162,7 @@ async function renderGames() {
                 gameNameInput.value = game.name;
                 gameLinkInput.value = game.link;
                 gameImageInput.value = game.image;
-                document.querySelector('.modal h2').textContent = "Spiel bearbeiten";
+                document.querySelector('#game-form h2').textContent = "Spiel bearbeiten";
                 gameForm.classList.remove("hidden");
                 gameForm.style.display = 'block';
             });

@@ -2,7 +2,8 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
     <title>HigherCellF Games</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
@@ -162,6 +163,58 @@
     </style>
 </head>
 <body>
+    <!-- Schutz-Script -->
+    <script>
+        // F12 und andere Entwicklertools deaktivieren
+        document.addEventListener('keydown', function(e) {
+            // F12 Key
+            if(e.keyCode == 123) {
+                e.preventDefault();
+                return false;
+            }
+            
+            // Strg+Shift+I (Chrome)
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) {
+                e.preventDefault();
+                return false;
+            }
+            
+            // Strg+Shift+J (Chrome)
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) {
+                e.preventDefault();
+                return false;
+            }
+            
+            // Strg+Shift+C (Chrome)
+            if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) {
+                e.preventDefault();
+                return false;
+            }
+            
+            // Strg+U (Quelltext anzeigen)
+            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        // Rechtsklick deaktivieren
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            return false;
+        });
+
+        // Warnung beim Verlassen der Seite
+        window.onbeforeunload = function() {
+            return "";
+        };
+
+        // Konsole-Warnungen deaktivieren
+        console.log = function() { return false; };
+        console.warn = function() { return false; };
+        console.error = function() { return false; };
+    </script>
+
     <div class="social-media">
         <a href="#" class="social-btn" id="tiktok-btn" title="TikTok" target="_blank">
             <i class="fab fa-tiktok"></i>

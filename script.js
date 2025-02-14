@@ -16,18 +16,19 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentGameId = null;
     let isEditMode = false;
 
-    const ADMIN_PASSWORD = "9966";
-
-    // Initialisiere Social Media Links in Firebase
-    async function initializeSocialLinks() {
-        const socialDoc = await db.collection("settings").doc("social").get();
-        if (!socialDoc.exists) {
-            await db.collection("settings").doc("social").set({
-                tiktok: "#",
-                discord: "#",
-                instagram: "#",
-                kick: "#"
-            });
+    // Passwort-Überprüfungsfunktion
+    async function checkAdminPassword(inputPassword) {
+        try {
+            const doc = await db.collection("settings").doc("admin").get();
+            if (doc.exists) {
+                const data = doc.data();
+                const hashedInput = CryptoJS.SHA256(inputPassword).toString();
+                return hashedInput === data.passwordHash;
+            }
+            return false;
+        } catch (error) {
+            console.error("Error checking password:", error);
+            return false;
         }
     }
 
@@ -47,9 +48,9 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    adminLoginBtn.addEventListener("click", () => {
+    adminLoginBtn.addEventListener("click", async () => {
         const password = prompt("Bitte Admin-Passwort eingeben:");
-        if (password === ADMIN_PASSWORD) {
+        if (await checkAdminPassword(password)) {
             adminPanel.classList.remove("hidden");
             initializeSocialLinks();
         } else {
@@ -74,9 +75,7 @@ document.addEventListener('DOMContentLoaded', function() {
         editGamesBtn.textContent = isEditMode ? "Bearbeiten beenden" : "Spiele bearbeiten";
     });
 
-    // Social Media Modal öffnen
     editSocialBtn.addEventListener("click", async () => {
-        console.log("Edit Social Button clicked"); // Debug-Ausgabe
         try {
             const doc = await db.collection("settings").doc("social").get();
             if (doc.exists) {
@@ -94,7 +93,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Social Media Links speichern
     saveSocialBtn.addEventListener("click", async () => {
         try {
             const socialData = {
@@ -115,7 +113,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Schließen-Buttons für alle Modals
     document.querySelectorAll('.close-modal').forEach(button => {
         button.addEventListener('click', () => {
             button.closest('.modal').classList.add("hidden");
@@ -123,7 +120,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Klick außerhalb der Modals schließt sie
     window.addEventListener('click', (event) => {
         if (event.target.classList.contains('modal')) {
             event.target.classList.add("hidden");

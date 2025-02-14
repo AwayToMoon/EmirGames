@@ -16,10 +16,22 @@
             color: white;
             font-family: Arial, sans-serif;
             text-align: center;
+            margin: 0;
+            padding: 0;
         }
+
+        .content-container {
+            position: relative;
+            min-height: 100vh;
+            padding-bottom: 60px;
+            box-sizing: border-box;
+        }
+
         h1 {
             margin-top: 20px;
+            padding-top: 80px;
         }
+
         #admin-panel {
             margin: 20px auto;
             padding: 15px;
@@ -27,6 +39,7 @@
             border-radius: 10px;
             width: 300px;
         }
+
         button {
             background: #8617b3;
             color: white;
@@ -37,16 +50,19 @@
             cursor: pointer;
             transition: background 0.3s ease;
         }
+
         button:hover {
             background: #9b1cd1;
         }
+
         #game-list {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
             gap: 15px;
             padding: 20px;
-            margin-bottom: 60px; /* Platz für Copyright */
+            margin-bottom: 60px;
         }
+
         .game {
             background: #1e1e1e;
             border-radius: 10px;
@@ -54,6 +70,7 @@
             text-align: center;
             transition: transform 0.3s ease;
         }
+
         .game img {
             width: 100%;
             height: 150px;
@@ -62,24 +79,29 @@
             cursor: pointer;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
+
         .game img:hover {
             transform: scale(1.1);
             box-shadow: 0 0 15px rgba(124, 29, 179, 0.8);
         }
+
         .delete-game {
             background: #8617b3;
             margin-top: 5px;
         }
+
         .delete-game:hover {
             background: #9b1cd1;
         }
+
         .edit-game {
             background: #8617b3;
             margin-top: 5px;
             margin-left: 5px;
         }
+
         .social-media {
-            position: fixed;
+            position: absolute;
             top: 20px;
             left: 20px;
             display: flex;
@@ -87,6 +109,7 @@
             gap: 10px;
             z-index: 1000;
         }
+
         .social-btn {
             width: 40px;
             height: 40px;
@@ -99,13 +122,16 @@
             text-decoration: none;
             transition: transform 0.3s ease, background 0.3s ease;
         }
+
         .social-btn:hover {
             transform: scale(1.1);
             background: #9b1cd1;
         }
+
         .social-btn i {
             font-size: 20px;
         }
+
         .modal {
             display: none;
             position: fixed;
@@ -116,6 +142,7 @@
             background-color: rgba(0, 0, 0, 0.7);
             z-index: 1000;
         }
+
         .modal-content {
             background-color: #1e1e1e;
             padding: 30px;
@@ -128,6 +155,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
         }
+
         .modal input {
             width: 100%;
             padding: 12px;
@@ -138,9 +166,11 @@
             color: white;
             box-sizing: border-box;
         }
+
         .modal input::placeholder {
             color: #888;
         }
+
         .close-modal {
             position: absolute;
             right: 10px;
@@ -149,21 +179,26 @@
             cursor: pointer;
             color: #888;
         }
+
         .close-modal:hover {
             color: white;
         }
+
         .hidden {
             display: none !important;
         }
+
         #admin-login-btn, #add-game-btn, #edit-games-btn, #save-game, #edit-social-btn, #save-social {
             background: #8617b3;
         }
+
         #admin-login-btn:hover, #add-game-btn:hover, #edit-games-btn:hover, #save-game:hover, #edit-social-btn:hover, #save-social:hover {
             background: #9b1cd1;
         }
+
         .copyright {
-            position: fixed;
-            bottom: 10px;
+            position: absolute;
+            bottom: 0;
             left: 0;
             right: 0;
             text-align: center;
@@ -178,100 +213,93 @@
 <body>
     <!-- Schutz-Script -->
     <script>
-        // F12 und andere Entwicklertools deaktivieren
         document.addEventListener('keydown', function(e) {
-            // F12 Key
             if(e.keyCode == 123) {
                 e.preventDefault();
                 return false;
             }
-            
-            // Strg+Shift+I (Chrome)
             if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) {
                 e.preventDefault();
                 return false;
             }
-            
-            // Strg+Shift+J (Chrome)
             if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) {
                 e.preventDefault();
                 return false;
             }
-            
-            // Strg+Shift+C (Chrome)
             if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) {
                 e.preventDefault();
                 return false;
             }
-            
-            // Strg+U (Quelltext anzeigen)
             if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) {
                 e.preventDefault();
                 return false;
             }
         });
 
-        // Rechtsklick deaktivieren
         document.addEventListener('contextmenu', function(e) {
             e.preventDefault();
             return false;
         });
 
-        // Warnung beim Verlassen der Seite
         window.onbeforeunload = function() {
             return "";
         };
 
-        // Konsole-Warnungen deaktivieren
         console.log = function() { return false; };
         console.warn = function() { return false; };
         console.error = function() { return false; };
     </script>
 
-    <div class="social-media">
-        <a href="#" class="social-btn" id="tiktok-btn" title="TikTok" target="_blank">
-            <i class="fab fa-tiktok"></i>
-        </a>
-        <a href="#" class="social-btn" id="discord-btn" title="Discord" target="_blank">
-            <i class="fab fa-discord"></i>
-        </a>
-        <a href="#" class="social-btn" id="instagram-btn" title="Instagram" target="_blank">
-            <i class="fab fa-instagram"></i>
-        </a>
-        <a href="#" class="social-btn" id="kick-btn" title="Kick" target="_blank">
-            <i class="fas fa-k"></i>
-        </a>
-    </div>
-
-    <h1>Willkommen zu HigherCellF Games</h1>
-    <button id="admin-login-btn">Admin Login</button>
-    <div id="admin-panel" class="hidden">
-        <button id="add-game-btn">Spiel hinzufügen</button>
-        <button id="edit-games-btn">Spiele bearbeiten</button>
-        <button id="edit-social-btn">Social Media Links bearbeiten</button>
-    </div>
-    <div id="game-list"></div>
-    
-    <div id="game-form" class="modal hidden">
-        <div class="modal-content">
-            <span class="close-modal">&times;</span>
-            <h2>Spiel bearbeiten</h2>
-            <input type="text" id="game-name" placeholder="Spielname">
-            <input type="text" id="game-link" placeholder="Spiel-URL">
-            <input type="text" id="game-image" placeholder="Bild-URL">
-            <button id="save-game">Speichern</button>
+    <div class="content-container">
+        <div class="social-media">
+            <a href="#" class="social-btn" id="tiktok-btn" title="TikTok" target="_blank">
+                <i class="fab fa-tiktok"></i>
+            </a>
+            <a href="#" class="social-btn" id="discord-btn" title="Discord" target="_blank">
+                <i class="fab fa-discord"></i>
+            </a>
+            <a href="#" class="social-btn" id="instagram-btn" title="Instagram" target="_blank">
+                <i class="fab fa-instagram"></i>
+            </a>
+            <a href="#" class="social-btn" id="kick-btn" title="Kick" target="_blank">
+                <i class="fas fa-k"></i>
+            </a>
         </div>
-    </div>
 
-    <div id="social-form" class="modal hidden">
-        <div class="modal-content">
-            <span class="close-modal">&times;</span>
-            <h2>Social Media Links bearbeiten</h2>
-            <input type="text" id="tiktok-link" placeholder="TikTok URL">
-            <input type="text" id="discord-link" placeholder="Discord URL">
-            <input type="text" id="instagram-link" placeholder="Instagram URL">
-            <input type="text" id="kick-link" placeholder="Kick URL">
-            <button id="save-social">Speichern</button>
+        <h1>Willkommen zu HigherCellF Games</h1>
+        <button id="admin-login-btn">Admin Login</button>
+        <div id="admin-panel" class="hidden">
+            <button id="add-game-btn">Spiel hinzufügen</button>
+            <button id="edit-games-btn">Spiele bearbeiten</button>
+            <button id="edit-social-btn">Social Media Links bearbeiten</button>
+        </div>
+        <div id="game-list"></div>
+        
+        <div id="game-form" class="modal hidden">
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h2>Spiel bearbeiten</h2>
+                <input type="text" id="game-name" placeholder="Spielname">
+                <input type="text" id="game-link" placeholder="Spiel-URL">
+                <input type="text" id="game-image" placeholder="Bild-URL">
+                <button id="save-game">Speichern</button>
+            </div>
+        </div>
+
+        <div id="social-form" class="modal hidden">
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h2>Social Media Links bearbeiten</h2>
+                <input type="text" id="tiktok-link" placeholder="TikTok URL">
+                <input type="text" id="discord-link" placeholder="Discord URL">
+                <input type="text" id="instagram-link" placeholder="Instagram URL">
+                <input type="text" id="kick-link" placeholder="Kick URL">
+                <button id="save-social">Speichern</button>
+            </div>
+        </div>
+
+        <div class="copyright">
+            Copyright © 2025 Marvin Weiss. Alle Rechte vorbehalten.
         </div>
     </div>
     
@@ -289,14 +317,9 @@
             window.db = firebase.firestore();
         }
 
-        // Firebase starten
         initFirebase();
     </script>
     
     <script src="script.js"></script>
-    
-    <div style="position: fixed; bottom: 10px; left: 0; right: 0; text-align: center; color: #666; font-size: 12px; padding: 10px;">
-        Copyright © 2025 Marvin Weiss. Alle Rechte vorbehalten.
-    </div>
 </body>
 </html>

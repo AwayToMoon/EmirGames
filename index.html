@@ -210,17 +210,21 @@
     </div>
     
     <script>
-        // Verschlüsselte Firebase-Config (ersetze dies mit deiner generierten verschlüsselten Config)
+        // Verschlüsselte Firebase-Config
         const encryptedConfig = "U2FsdGVkX1/Mq+9QhKPvB3y7p+k8D+9X5YL5Z5L5Z5L5Z5L5Z5L5Z5L5Z5L5Z5L5Z5L5Z5L5Z5L5";
         
-        // Firebase Config entschlüsseln und initialisieren
-        const key = "HigherCellF-Games-2024";
-        const decrypted = CryptoJS.AES.decrypt(encryptedConfig, key).toString(CryptoJS.enc.Utf8);
-        const firebaseConfig = JSON.parse(decrypted);
-
         // Firebase initialisieren
-        firebase.initializeApp(firebaseConfig);
-        window.db = firebase.firestore();
+        function initFirebase() {
+            const secretKey = "HigherCellF-Games-2024";
+            const decrypted = CryptoJS.AES.decrypt(encryptedConfig, secretKey).toString(CryptoJS.enc.Utf8);
+            const firebaseConfig = JSON.parse(decrypted);
+            
+            firebase.initializeApp(firebaseConfig);
+            window.db = firebase.firestore();
+        }
+
+        // Firebase starten
+        initFirebase();
     </script>
     
     <script src="script.js"></script>

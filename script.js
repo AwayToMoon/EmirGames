@@ -17,6 +17,35 @@ document.addEventListener('DOMContentLoaded', function() {
     let isEditMode = false;
     let selectedGenres = [];
 
+    async function checkAdminPassword(inputPassword) {
+    try {
+        const doc = await db.collection("settings").doc("admin").get();
+        if (doc.exists) {
+            const data = doc.data();
+            const hashedInput = CryptoJS.SHA256(inputPassword).toString();
+            return hashedInput === data.passwordHash;
+        }
+        return false;
+    } catch (error) {
+        console.error("Error checking password:", error);
+        return false;
+    }
+}
+
+async function loadSocialLinks() {
+    try {
+        const doc = await db.collection("settings").doc("social").get();
+        if (doc.exists) {
+            const data = doc.data();
+            document.getElementById("tiktok-btn").href = data.tiktok || "#";
+            document.getElementById("discord-btn").href = data.discord || "#";
+            document.getElementById("instagram-btn").href = data.instagram || "#";
+            document.getElementById("kick-btn").href = data.kick || "#";
+        }
+    } catch (error) {
+        console.error("Error loading social links:", error);
+    }
+}
     // Genre-Auswahl Event Listener
     document.querySelectorAll('.genre-option').forEach(option => {
         option.addEventListener('click', () => {

@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="style.css">
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
-    <!-- Font Awesome für die Icons -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         body {
@@ -76,7 +76,6 @@
             margin-top: 5px;
             margin-left: 5px;
         }
-        /* Social Media Styles */
         .social-media {
             position: fixed;
             top: 20px;
@@ -105,7 +104,6 @@
         .social-btn i {
             font-size: 20px;
         }
-        /* Modal Styles */
         .modal {
             display: none;
             position: fixed;
@@ -164,7 +162,6 @@
     </style>
 </head>
 <body>
-    <!-- Social Media Buttons -->
     <div class="social-media">
         <a href="#" class="social-btn" id="tiktok-btn" title="TikTok" target="_blank">
             <i class="fab fa-tiktok"></i>
@@ -189,7 +186,6 @@
     </div>
     <div id="game-list"></div>
     
-    <!-- Game Form Modal -->
     <div id="game-form" class="modal hidden">
         <div class="modal-content">
             <span class="close-modal">&times;</span>
@@ -201,7 +197,6 @@
         </div>
     </div>
 
-    <!-- Social Media Modal -->
     <div id="social-form" class="modal hidden">
         <div class="modal-content">
             <span class="close-modal">&times;</span>

@@ -29,10 +29,10 @@
         }
 
         h1 {
-            color: #9c09db;
-            margin-top: 20px;
-            padding-top: 80px;
-        }
+        color: #9c09db;
+        margin-top: 20px;
+        padding-top: 100px; /* Erhöht für mehr Platz unter den Social Buttons */
+    }
 
         #admin-panel {
             margin: 20px auto;
@@ -143,14 +143,15 @@
         }
 
         .social-media {
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            display: flex;
-            flex-direction: row;
-            gap: 10px;
-            z-index: 1000;
-        }
+        position: absolute;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        flex-direction: row;
+        gap: 15px;
+        z-index: 1000;
+    }
 
         .social-btn {
             width: 40px;

@@ -548,21 +548,40 @@
     // Links speichern
     document.getElementById('save-social').addEventListener('click', function() {
         const data = {
-            tiktok: document.getElementById("tiktok-link").value,
-            discord: document.getElementById("discord-link").value,
-            instagram: document.getElementById("instagram-link").value,
-            kick: document.getElementById("kick-link").value,
-            footerInstagram: document.getElementById("footer-instagram-link").value,
-            footerTiktok: document.getElementById("footer-tiktok-link").value,
-            footerTwitter: document.getElementById("footer-twitter-link").value,
-            logo: document.getElementById("logo-link").value
+            tiktok: document.getElementById("tiktok-link").value || "#",
+            discord: document.getElementById("discord-link").value || "#",
+            instagram: document.getElementById("instagram-link").value || "#",
+            kick: document.getElementById("kick-link").value || "#",
+            footerInstagram: document.getElementById("footer-instagram-link").value || "#",
+            footerTiktok: document.getElementById("footer-tiktok-link").value || "#",
+            footerTwitter: document.getElementById("footer-twitter-link").value || "#",
+            logo: document.getElementById("logo-link").value || "#"
         };
+
+        // Überprüfe, ob die URLs gültig sind
+        for (let key in data) {
+            if (data[key] !== "#" && !data[key].startsWith("http")) {
+                data[key] = "https://" + data[key];
+            }
+        }
         
         db.collection("settings").doc("social").set(data)
             .then(() => {
-                alert("Links gespeichert!");
+                // Aktualisiere die Links direkt
+                document.getElementById("tiktok-btn").href = data.tiktok;
+                document.getElementById("discord-btn").href = data.discord;
+                document.getElementById("instagram-btn").href = data.instagram;
+                document.getElementById("kick-btn").href = data.kick;
+                document.getElementById("footer-instagram").href = data.footerInstagram;
+                document.getElementById("footer-tiktok").href = data.footerTiktok;
+                document.getElementById("footer-twitter").href = data.footerTwitter;
+                
+                if (data.logo !== "#") {
+                    document.getElementById("favicon").href = data.logo;
+                }
+
                 document.getElementById('social-form').style.display = 'none';
-                window.location.reload();
+                alert("Links wurden erfolgreich gespeichert!");
             })
             .catch(error => {
                 console.error("Fehler beim Speichern:", error);
@@ -598,7 +617,7 @@
                     document.getElementById("footer-twitter-link").value = data.footerTwitter || "";
                     document.getElementById("logo-link").value = data.logo || "";
                     
-                    if (data.logo) {
+                    if (data.logo && data.logo !== "#") {
                         document.getElementById("favicon").href = data.logo;
                     }
                 }

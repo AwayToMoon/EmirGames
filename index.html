@@ -174,7 +174,7 @@
             padding: 0 12px;
         }
 
-         .delete-game {
+                 .delete-game {
             position: absolute;
             top: 5px;
             right: 5px;
@@ -296,18 +296,48 @@
             z-index: 1000;
         }
 
-        .made-by {
+        .footer-social {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            margin-left: 20px;
+        }
+
+        .footer-social-btn {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             color: #888;
-            font-size: 12px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .footer-social-btn:hover {
+            color: #fff;
+            transform: translateY(-2px);
+        }
+
+        .made-by-container {
+            display: flex;
+            align-items: center;
             position: absolute;
             bottom: 40px;
             left: calc((100vw - 1200px) / 2 + 20px);
         }
 
         @media (max-width: 1200px) {
-            .made-by {
+            .made-by-container {
                 left: 20px;
             }
+        }
+
+        .made-by {
+            color: #888;
+            font-size: 12px;
+            margin-right: 15px;
         }
 
         .made-by .heart {
@@ -391,36 +421,6 @@
     </style>
 </head>
 <body>
-    <script>
-        document.addEventListener('keydown', function(e) {
-            if(e.keyCode == 123) {
-                e.preventDefault();
-                return false;
-            }
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'I'.charCodeAt(0)) {
-                e.preventDefault();
-                return false;
-            }
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'J'.charCodeAt(0)) {
-                e.preventDefault();
-                return false;
-            }
-            if(e.ctrlKey && e.shiftKey && e.keyCode == 'C'.charCodeAt(0)) {
-                e.preventDefault();
-                return false;
-            }
-            if(e.ctrlKey && e.keyCode == 'U'.charCodeAt(0)) {
-                e.preventDefault();
-                return false;
-            }
-        });
-
-        document.addEventListener('contextmenu', function(e) {
-            e.preventDefault();
-            return false;
-        });
-    </script>
-
     <div class="content-container">
         <div class="header">
             <h1 class="site-title">HigherCellF Games</h1>
@@ -485,6 +485,10 @@
                 <input type="text" id="discord-link" placeholder="Discord URL">
                 <input type="text" id="instagram-link" placeholder="Instagram URL">
                 <input type="text" id="kick-link" placeholder="Kick URL">
+                <h3>Footer Social Media Links</h3>
+                <input type="text" id="footer-instagram-link" placeholder="Footer Instagram URL">
+                <input type="text" id="footer-tiktok-link" placeholder="Footer TikTok URL">
+                <input type="text" id="footer-twitter-link" placeholder="Footer Twitter URL">
                 <h3>Logo URL (Tab Icon)</h3>
                 <input type="text" id="logo-link" placeholder="Logo URL (32x32px empfohlen)">
                 <button id="save-social">Speichern</button>
@@ -492,29 +496,27 @@
         </div>
 
         <div class="footer-container">
-            <div class="made-by">
-                Made With <span class="heart">❤</span> from Away
+            <div class="made-by-container">
+                <div class="made-by">
+                    Made With <span class="heart">❤</span> from Away
+                </div>
+                <div class="footer-social">
+                    <a href="#" class="footer-social-btn" id="footer-instagram" title="Instagram" target="_blank">
+                        <i class="fab fa-instagram"></i>
+                    </a>
+                    <a href="#" class="footer-social-btn" id="footer-tiktok" title="TikTok" target="_blank">
+                        <i class="fab fa-tiktok"></i>
+                    </a>
+                    <a href="#" class="footer-social-btn" id="footer-twitter" title="Twitter" target="_blank">
+                        <i class="fab fa-x-twitter"></i>
+                    </a>
+                </div>
             </div>
             <div class="copyright">
                 Copyright © 2025 Marvin Weiss. Alle Rechte vorbehalten.
             </div>
         </div>
     </div>
-    
-    <script>
-        const encryptedConfig = "U2FsdGVkX1/2h2jz/okQRoolhPVQPafedlkbIfYoDr/bEIj6Qe4Gz4D+GJsaaQ5i7XVMwWJ+cqe94PGWRSvfQKwZHwpHdIr9YhzTEVGwzq0yCkU/7ZsA1fNW0THeJjRP5W+tborqv2W5F8pHhVoVtYy104eDojx6YeaaKd4zyAr36a1eAY82nlgIUMhzbl8s7LEWqoqk/w+4brkq8Gt7zZ2zkCij2mwXb8LEyZJBFSa0j62QdI8cKkSwBRw3MxO56KTu4tLFcbv7hhehDtKwM0PNJMkuDp+xldtmmvIOS56fR64kvsLXlkN/DSV+3MHLWFCHv/ry06NtgMy6aEz3mfFQUqP0uaTR+ohi3niWSNYJ+wMNgQsV6xiXj+VmKleN";
-        
-        function initFirebase() {
-            const secretKey = "HigherCellF-Games-2024";
-            const decrypted = CryptoJS.AES.decrypt(encryptedConfig, secretKey).toString(CryptoJS.enc.Utf8);
-            const firebaseConfig = JSON.parse(decrypted);
-            
-            firebase.initializeApp(firebaseConfig);
-            window.db = firebase.firestore();
-        }
-
-        initFirebase();
-    </script>
     
     <script src="script.js"></script>
 </body>

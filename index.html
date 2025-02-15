@@ -29,10 +29,47 @@
             margin: 0 auto;
         }
 
-        h1 {
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            width: 100%;
+            box-sizing: border-box;
+            position: relative;
+        }
+
+        .site-title {
             color: #9c09db;
-            margin-top: 20px;
-            padding-top: 100px;
+            margin: 0;
+            padding: 0;
+            text-align: left;
+            font-size: 24px;
+        }
+
+        .social-media {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: row;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .admin-section {
+            margin-left: auto;
+        }
+
+        .header-divider {
+            height: 1px;
+            background: linear-gradient(to right, 
+                rgba(156, 9, 219, 0.2), 
+                rgba(156, 9, 219, 0.8), 
+                rgba(156, 9, 219, 0.2)
+            );
+            margin: 0 20px;
+            margin-bottom: 20px;
         }
 
         #admin-panel {
@@ -65,6 +102,7 @@
             justify-content: center;
             padding: 20px;
             margin-bottom: 60px;
+            margin-top: 20px;
         }
 
         @media (max-width: 1100px) {
@@ -170,17 +208,6 @@
             align-items: center;
             justify-content: center;
             z-index: 10;
-        }
-
-        .social-media {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            flex-direction: row;
-            gap: 15px;
-            z-index: 1000;
         }
 
         .social-btn {
@@ -362,39 +389,40 @@
             e.preventDefault();
             return false;
         });
-
-        window.onbeforeunload = function() {
-            return "";
-        };
-
-        console.log = function() { return false; };
-        console.warn = function() { return false; };
-        console.error = function() { return false; };
     </script>
 
     <div class="content-container">
-        <div class="social-media">
-            <a href="#" class="social-btn" id="tiktok-btn" title="TikTok" target="_blank">
-                <i class="fab fa-tiktok"></i>
-            </a>
-            <a href="#" class="social-btn" id="discord-btn" title="Discord" target="_blank">
-                <i class="fab fa-discord"></i>
-            </a>
-            <a href="#" class="social-btn" id="instagram-btn" title="Instagram" target="_blank">
-                <i class="fab fa-instagram"></i>
-            </a>
-            <a href="#" class="social-btn" id="kick-btn" title="Kick" target="_blank">
-                <i class="fas fa-k"></i>
-            </a>
-        </div>
+        <div class="header">
+            <h1 class="site-title">HigherCellF Games</h1>
+            
+            <div class="social-media">
+                <a href="#" class="social-btn" id="tiktok-btn" title="TikTok" target="_blank">
+                    <i class="fab fa-tiktok"></i>
+                </a>
+                <a href="#" class="social-btn" id="discord-btn" title="Discord" target="_blank">
+                    <i class="fab fa-discord"></i>
+                </a>
+                <a href="#" class="social-btn" id="instagram-btn" title="Instagram" target="_blank">
+                    <i class="fab fa-instagram"></i>
+                </a>
+                <a href="#" class="social-btn" id="kick-btn" title="Kick" target="_blank">
+                    <i class="fas fa-k"></i>
+                </a>
+            </div>
 
-        <h1>Willkommen zu HigherCellF Games</h1>
-        <button id="admin-login-btn">Login Away</button>
+            <div class="admin-section">
+                <button id="admin-login-btn">Login Away</button>
+            </div>
+        </div>
+        
+        <div class="header-divider"></div>
+
         <div id="admin-panel" class="hidden">
             <button id="add-game-btn">Spiel hinzufügen</button>
             <button id="edit-games-btn">Spiele bearbeiten</button>
             <button id="edit-social-btn">Social Media Links bearbeiten</button>
         </div>
+
         <div id="game-list"></div>
         
         <div id="game-form" class="modal hidden">

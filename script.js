@@ -240,9 +240,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 ).join('') : '';
 
                 div.innerHTML = `
-                    <div class="game-genres">${genreTags}</div>
                     <img src="${game.image}" alt="${game.name}" onclick="window.open('${game.link}', '_blank')">
-                    <h2>${game.name}</h2>
+                    <div class="game-content">
+                        <h2>${game.name}</h2>
+                        <div class="game-divider"></div>
+                        <div class="game-genres">${genreTags}</div>
+                    </div>
                 `;
 
                 if (!adminPanel.classList.contains("hidden") && isEditMode) {

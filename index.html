@@ -557,15 +557,24 @@
                 console.log("Loaded data:", data);
 
                 // Header Social Links
-                document.getElementById("tiktok-btn").href = data.tiktok || "#";
-                document.getElementById("discord-btn").href = data.discord || "#";
-                document.getElementById("instagram-btn").href = data.instagram || "#";
-                document.getElementById("kick-btn").href = data.kick || "#";
+                if (data.tiktok) document.getElementById("tiktok-btn").href = data.tiktok;
+                if (data.discord) document.getElementById("discord-btn").href = data.discord;
+                if (data.instagram) document.getElementById("instagram-btn").href = data.instagram;
+                if (data.kick) document.getElementById("kick-btn").href = data.kick;
                 
                 // Footer Social Links
-                document.getElementById("footer-instagram").href = data.footerInstagram || "#";
-                document.getElementById("footer-tiktok").href = data.footerTiktok || "#";
-                document.getElementById("footer-twitter").href = data.footerTwitter || "#";
+                if (data.footerInstagram) {
+                    console.log("Setting footer Instagram:", data.footerInstagram);
+                    document.getElementById("footer-instagram").href = data.footerInstagram;
+                }
+                if (data.footerTiktok) {
+                    console.log("Setting footer TikTok:", data.footerTiktok);
+                    document.getElementById("footer-tiktok").href = data.footerTiktok;
+                }
+                if (data.footerTwitter) {
+                    console.log("Setting footer Twitter:", data.footerTwitter);
+                    document.getElementById("footer-twitter").href = data.footerTwitter;
+                }
                 
                 // Form Felder
                 document.getElementById("tiktok-link").value = data.tiktok || "";
@@ -580,6 +589,11 @@
                 if (data.logo) {
                     document.getElementById("favicon").href = data.logo;
                 }
+
+                // Debug: Überprüfe die gesetzten href Attribute
+                console.log("Footer Instagram href:", document.getElementById("footer-instagram").href);
+                console.log("Footer TikTok href:", document.getElementById("footer-tiktok").href);
+                console.log("Footer Twitter href:", document.getElementById("footer-twitter").href);
             }
         } catch (error) {
             console.error("Error loading social links:", error);
@@ -592,18 +606,18 @@
         try {
             const data = {
                 // Header Social Links
-                tiktok: document.getElementById("tiktok-link").value,
-                discord: document.getElementById("discord-link").value,
-                instagram: document.getElementById("instagram-link").value,
-                kick: document.getElementById("kick-link").value,
+                tiktok: document.getElementById("tiktok-link").value.trim(),
+                discord: document.getElementById("discord-link").value.trim(),
+                instagram: document.getElementById("instagram-link").value.trim(),
+                kick: document.getElementById("kick-link").value.trim(),
                 
                 // Footer Social Links
-                footerInstagram: document.getElementById("footer-instagram-link").value,
-                footerTiktok: document.getElementById("footer-tiktok-link").value,
-                footerTwitter: document.getElementById("footer-twitter-link").value,
+                footerInstagram: document.getElementById("footer-instagram-link").value.trim(),
+                footerTiktok: document.getElementById("footer-tiktok-link").value.trim(),
+                footerTwitter: document.getElementById("footer-twitter-link").value.trim(),
                 
                 // Logo
-                logo: document.getElementById("logo-link").value
+                logo: document.getElementById("logo-link").value.trim()
             };
             
             console.log("Saving data:", data);
@@ -628,8 +642,9 @@
 
     // Lade die Links beim Start
     document.addEventListener("DOMContentLoaded", loadSocialLinks);
-</script>
 
-<script src="script.js"></script>
+    // Debug: Überprüfe die Event Listener
+    console.log("Save button has event listener:", document.getElementById('save-social').onclick !== null);
+</script>
 </body>
 </html>

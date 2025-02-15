@@ -535,7 +535,7 @@
     // Social Media Form öffnen
     document.getElementById('edit-social-btn').addEventListener('click', function() {
         document.getElementById('social-form').style.display = 'block';
-        loadSocialLinks(); // Links beim Öffnen des Forms laden
+        loadSocialLinks();
     });
 
     // Modal schließen
@@ -546,85 +546,90 @@
     });
 
     // Links speichern
-    document.getElementById('save-social').addEventListener('click', function() {
-        const data = {
-            tiktok: document.getElementById("tiktok-link").value || "#",
-            discord: document.getElementById("discord-link").value || "#",
-            instagram: document.getElementById("instagram-link").value || "#",
-            kick: document.getElementById("kick-link").value || "#",
-            footerInstagram: document.getElementById("footer-instagram-link").value || "#",
-            footerTiktok: document.getElementById("footer-tiktok-link").value || "#",
-            footerTwitter: document.getElementById("footer-twitter-link").value || "#",
-            logo: document.getElementById("logo-link").value || "#"
-        };
+    document.getElementById('save-social').addEventListener('click', async function() {
+        try {
+            // Hole das existierende Dokument
+            const doc = await db.collection("settings").doc("social").get();
+            const existingData = doc.exists ? doc.data() : {};
 
-        // Überprüfe, ob die URLs gültig sind
-        for (let key in data) {
-            if (data[key] !== "#" && !data[key].startsWith("http")) {
-                data[key] = "https://" + data[key];
+            // Kombiniere existierende Daten mit neuen Daten
+            const data = {
+                ...existingData,
+                tiktok: document.getElementById("tiktok-link").value || existingData.tiktok || "#",
+                discord: document.getElementById("discord-link").value || existingData.discord || "#",
+                instagram: document.getElementById("instagram-link").value || existingData.instagram || "#",
+                kick: document.getElementById("kick-link").value || existingData.kick || "#",
+                footerInstagram: document.getElementById("footer-instagram-link").value || "#",
+                footerTiktok: document.getElementById("footer-tiktok-link").value || "#",
+                footerTwitter: document.getElementById("footer-twitter-link").value || "#",
+                logo: document.getElementById("logo-link").value || existingData.logo || "#"
+            };
+
+            console.log("Saving data:", data); // Debug-Ausgabe
+
+            await db.collection("settings").doc("social").set(data);
+            
+            // Aktualisiere die Links direkt
+            document.getElementById("tiktok-btn").href = data.tiktok;
+            document.getElementById("discord-btn").href = data.discord;
+            document.getElementById("instagram-btn").href = data.instagram;
+            document.getElementById("kick-btn").href = data.kick;
+            document.getElementById("footer-instagram").href = data.footerInstagram;
+            document.getElementById("footer-tiktok").href = data.footerTiktok;
+            document.getElementById("footer-twitter").href = data.footerTwitter;
+            
+            if (data.logo !== "#") {
+                document.getElementById("favicon").href = data.logo;
             }
-        }
-        
-        db.collection("settings").doc("social").set(data)
-            .then(() => {
-                // Aktualisiere die Links direkt
-                document.getElementById("tiktok-btn").href = data.tiktok;
-                document.getElementById("discord-btn").href = data.discord;
-                document.getElementById("instagram-btn").href = data.instagram;
-                document.getElementById("kick-btn").href = data.kick;
-                document.getElementById("footer-instagram").href = data.footerInstagram;
-                document.getElementById("footer-tiktok").href = data.footerTiktok;
-                document.getElementById("footer-twitter").href = data.footerTwitter;
-                
-                if (data.logo !== "#") {
-                    document.getElementById("favicon").href = data.logo;
-                }
 
-                document.getElementById('social-form').style.display = 'none';
-                alert("Links wurden erfolgreich gespeichert!");
-            })
-            .catch(error => {
-                console.error("Fehler beim Speichern:", error);
-                alert("Fehler beim Speichern!");
-            });
+            document.getElementById('social-form').style.display = 'none';
+            alert("Links wurden erfolgreich gespeichert!");
+            
+            // Debug: Zeige gespeicherte Daten
+            console.log("Saved data:", await db.collection("settings").doc("social").get().then(doc => doc.data()));
+            
+        } catch (error) {
+            console.error("Fehler beim Speichern:", error);
+            alert("Fehler beim Speichern!");
+        }
     });
 
     // Links laden
-    function loadSocialLinks() {
-        db.collection("settings").doc("social").get()
-            .then(doc => {
-                if (doc.exists) {
-                    const data = doc.data();
-                    
-                    // Header Links
-                    document.getElementById("tiktok-btn").href = data.tiktok || "#";
-                    document.getElementById("discord-btn").href = data.discord || "#";
-                    document.getElementById("instagram-btn").href = data.instagram || "#";
-                    document.getElementById("kick-btn").href = data.kick || "#";
-                    
-                    // Footer Links
-                    document.getElementById("footer-instagram").href = data.footerInstagram || "#";
-                    document.getElementById("footer-tiktok").href = data.footerTiktok || "#";
-                    document.getElementById("footer-twitter").href = data.footerTwitter || "#";
-                    
-                    // Form Felder
-                    document.getElementById("tiktok-link").value = data.tiktok || "";
-                    document.getElementById("discord-link").value = data.discord || "";
-                    document.getElementById("instagram-link").value = data.instagram || "";
-                    document.getElementById("kick-link").value = data.kick || "";
-                    document.getElementById("footer-instagram-link").value = data.footerInstagram || "";
-                    document.getElementById("footer-tiktok-link").value = data.footerTiktok || "";
-                    document.getElementById("footer-twitter-link").value = data.footerTwitter || "";
-                    document.getElementById("logo-link").value = data.logo || "";
-                    
-                    if (data.logo && data.logo !== "#") {
-                        document.getElementById("favicon").href = data.logo;
-                    }
+    async function loadSocialLinks() {
+        try {
+            const doc = await db.collection("settings").doc("social").get();
+            if (doc.exists) {
+                const data = doc.data();
+                console.log("Loaded data:", data); // Debug-Ausgabe
+                
+                // Header Links
+                document.getElementById("tiktok-btn").href = data.tiktok || "#";
+                document.getElementById("discord-btn").href = data.discord || "#";
+                document.getElementById("instagram-btn").href = data.instagram || "#";
+                document.getElementById("kick-btn").href = data.kick || "#";
+                
+                // Footer Links
+                document.getElementById("footer-instagram").href = data.footerInstagram || "#";
+                document.getElementById("footer-tiktok").href = data.footerTiktok || "#";
+                document.getElementById("footer-twitter").href = data.footerTwitter || "#";
+                
+                // Form Felder
+                document.getElementById("tiktok-link").value = data.tiktok || "";
+                document.getElementById("discord-link").value = data.discord || "";
+                document.getElementById("instagram-link").value = data.instagram || "";
+                document.getElementById("kick-link").value = data.kick || "";
+                document.getElementById("footer-instagram-link").value = data.footerInstagram || "";
+                document.getElementById("footer-tiktok-link").value = data.footerTiktok || "";
+                document.getElementById("footer-twitter-link").value = data.footerTwitter || "";
+                document.getElementById("logo-link").value = data.logo || "";
+                
+                if (data.logo && data.logo !== "#") {
+                    document.getElementById("favicon").href = data.logo;
                 }
-            })
-            .catch(error => {
-                console.error("Fehler beim Laden:", error);
-            });
+            }
+        } catch (error) {
+            console.error("Fehler beim Laden:", error);
+        }
     }
 
     // Admin Panel Toggle
@@ -635,7 +640,7 @@
     // Links beim Laden der Seite laden
     window.addEventListener('load', loadSocialLinks);
 </script>
-
+    
 <script src="script.js"></script>
 </body>
 </html>

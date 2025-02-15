@@ -445,7 +445,7 @@
             </div>
         </div>
         
-        <div class="header-divider"></div>
+               <div class="header-divider"></div>
 
         <div id="admin-panel" class="hidden">
             <button id="add-game-btn">Spiel hinzufügen</button>
@@ -515,7 +515,7 @@
             <div class="copyright">
                 Copyright © 2025 Marvin Weiss. Alle Rechte vorbehalten.
             </div>
-                </div>
+        </div>
     </div>
     
     <script>
@@ -531,6 +531,77 @@
         }
 
         initFirebase();
+
+        // Funktion zum Laden der Social Media Links
+        async function loadSocialLinks() {
+            try {
+                const doc = await db.collection("settings").doc("social").get();
+                if (doc.exists) {
+                    const data = doc.data();
+                    // Header Social Links
+                    document.getElementById("tiktok-btn").href = data.tiktok || "#";
+                    document.getElementById("discord-btn").href = data.discord || "#";
+                    document.getElementById("instagram-btn").href = data.instagram || "#";
+                    document.getElementById("kick-btn").href = data.kick || "#";
+                    
+                    // Footer Social Links
+                    document.getElementById("footer-instagram").href = data.footerInstagram || "#";
+                    document.getElementById("footer-tiktok").href = data.footerTiktok || "#";
+                    document.getElementById("footer-twitter").href = data.footerTwitter || "#";
+                    
+                    // Form Felder
+                    document.getElementById("tiktok-link").value = data.tiktok || "";
+                    document.getElementById("discord-link").value = data.discord || "";
+                    document.getElementById("instagram-link").value = data.instagram || "";
+                    document.getElementById("kick-link").value = data.kick || "";
+                    document.getElementById("footer-instagram-link").value = data.footerInstagram || "";
+                    document.getElementById("footer-tiktok-link").value = data.footerTiktok || "";
+                    document.getElementById("footer-twitter-link").value = data.footerTwitter || "";
+                    document.getElementById("logo-link").value = data.logo || "";
+                    
+                    if (data.logo) {
+                        document.getElementById("favicon").href = data.logo;
+                    }
+                }
+            } catch (error) {
+                console.error("Error loading social links:", error);
+            }
+        }
+
+        // Funktion zum Speichern der Social Media Links
+        async function saveSocialLinks() {
+            try {
+                const data = {
+                    // Header Social Links
+                    tiktok: document.getElementById("tiktok-link").value,
+                    discord: document.getElementById("discord-link").value,
+                    instagram: document.getElementById("instagram-link").value,
+                    kick: document.getElementById("kick-link").value,
+                    
+                    // Footer Social Links
+                    footerInstagram: document.getElementById("footer-instagram-link").value,
+                    footerTiktok: document.getElementById("footer-tiktok-link").value,
+                    footerTwitter: document.getElementById("footer-twitter-link").value,
+                    
+                    // Logo
+                    logo: document.getElementById("logo-link").value
+                };
+                
+                await db.collection("settings").doc("social").set(data);
+                loadSocialLinks(); // Lade die Links neu
+                document.getElementById("social-form").style.display = "none";
+                alert("Social Media Links wurden erfolgreich gespeichert!");
+            } catch (error) {
+                console.error("Error saving social links:", error);
+                alert("Fehler beim Speichern der Social Media Links");
+            }
+        }
+
+        // Event Listener für den Save Button
+        document.getElementById("save-social").addEventListener("click", saveSocialLinks);
+
+        // Lade die Links beim Start
+        document.addEventListener("DOMContentLoaded", loadSocialLinks);
     </script>
     
     <script src="script.js"></script>

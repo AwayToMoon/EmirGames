@@ -18,34 +18,42 @@ document.addEventListener('DOMContentLoaded', function() {
     let selectedGenres = [];
 
     async function checkAdminPassword(inputPassword) {
-    try {
-        const doc = await db.collection("settings").doc("admin").get();
-        if (doc.exists) {
-            const data = doc.data();
-            const hashedInput = CryptoJS.SHA256(inputPassword).toString();
-            return hashedInput === data.passwordHash;
+        try {
+            const doc = await db.collection("settings").doc("admin").get();
+            if (doc.exists) {
+                const data = doc.data();
+                const hashedInput = CryptoJS.SHA256(inputPassword).toString();
+                return hashedInput === data.passwordHash;
+            }
+            return false;
+        } catch (error) {
+            console.error("Error checking password:", error);
+            return false;
         }
-        return false;
-    } catch (error) {
-        console.error("Error checking password:", error);
-        return false;
     }
-}
 
-async function loadSocialLinks() {
-    try {
-        const doc = await db.collection("settings").doc("social").get();
-        if (doc.exists) {
-            const data = doc.data();
-            document.getElementById("tiktok-btn").href = data.tiktok || "#";
-            document.getElementById("discord-btn").href = data.discord || "#";
-            document.getElementById("instagram-btn").href = data.instagram || "#";
-            document.getElementById("kick-btn").href = data.kick || "#";
+    async function loadSocialLinks() {
+        try {
+            const doc = await db.collection("settings").doc("social").get();
+            if (doc.exists) {
+                const data = doc.data();
+                document.getElementById("tiktok-btn").href = data.tiktok || "#";
+                document.getElementById("discord-btn").href = data.discord || "#";
+                document.getElementById("instagram-btn").href = data.instagram || "#";
+                document.getElementById("kick-btn").href = data.kick || "#";
+                if (document.getElementById("logo-link")) {
+                    document.getElementById("logo-link").value = data.logo || "";
+                }
+                // Update favicon
+                if (data.logo) {
+                    document.getElementById("favicon").href = data.logo;
+                }
+            }
+        } catch (error) {
+            console.error("Error loading social links:", error);
         }
-    } catch (error) {
-        console.error("Error loading social links:", error);
     }
-}
+
     // Genre-Auswahl Event Listener
     document.querySelectorAll('.genre-option').forEach(option => {
         option.addEventListener('click', () => {
@@ -61,11 +69,21 @@ async function loadSocialLinks() {
         });
     });
 
+    function updateGenreSelection(genres) {
+        document.querySelectorAll('.genre-option').forEach(option => {
+            option.classList.remove('selected');
+            if (genres.includes(option.dataset.genre)) {
+                option.classList.add('selected');
+            }
+        });
+        selectedGenres = genres;
+    }
+
     adminLoginBtn.addEventListener("click", async () => {
         const password = prompt("Bitte Admin-Passwort eingeben:");
         if (await checkAdminPassword(password)) {
             adminPanel.classList.remove("hidden");
-            initializeSocialLinks();
+            loadSocialLinks();
         } else {
             alert("Falsches Passwort!");
         }
@@ -84,16 +102,6 @@ async function loadSocialLinks() {
         gameForm.style.display = 'block';
     });
 
-    function updateGenreSelection(genres) {
-        document.querySelectorAll('.genre-option').forEach(option => {
-            option.classList.remove('selected');
-            if (genres.includes(option.dataset.genre)) {
-                option.classList.add('selected');
-            }
-        });
-        selectedGenres = genres;
-    }
-
     editGamesBtn.addEventListener("click", () => {
         isEditMode = !isEditMode;
         renderGames();
@@ -109,6 +117,9 @@ async function loadSocialLinks() {
                 document.getElementById("discord-link").value = data.discord || "";
                 document.getElementById("instagram-link").value = data.instagram || "";
                 document.getElementById("kick-link").value = data.kick || "";
+                if (document.getElementById("logo-link")) {
+                    document.getElementById("logo-link").value = data.logo || "";
+                }
             }
             socialForm.classList.remove("hidden");
             socialForm.style.display = 'block';
@@ -124,7 +135,8 @@ async function loadSocialLinks() {
                 tiktok: document.getElementById("tiktok-link").value || "#",
                 discord: document.getElementById("discord-link").value || "#",
                 instagram: document.getElementById("instagram-link").value || "#",
-                kick: document.getElementById("kick-link").value || "#"
+                kick: document.getElementById("kick-link").value || "#",
+                logo: document.getElementById("logo-link").value || ""
             };
 
             await db.collection("settings").doc("social").set(socialData);
@@ -158,30 +170,35 @@ async function loadSocialLinks() {
         const image = gameImageInput.value;
 
         if (name && link && image) {
-            if (currentGameId) {
-                await db.collection("games").doc(currentGameId).update({
-                    name, 
-                    link, 
-                    image,
-                    genres: selectedGenres
-                });
-            } else {
-                await db.collection("games").add({
-                    name, 
-                    link, 
-                    image,
-                    genres: selectedGenres
-                });
+            try {
+                if (currentGameId) {
+                    await db.collection("games").doc(currentGameId).update({
+                        name,
+                        link,
+                        image,
+                        genres: selectedGenres
+                    });
+                } else {
+                    await db.collection("games").add({
+                        name,
+                        link,
+                        image,
+                        genres: selectedGenres
+                    });
+                }
+
+                gameNameInput.value = "";
+                gameLinkInput.value = "";
+                gameImageInput.value = "";
+                selectedGenres = [];
+                updateGenreSelection([]);
+                gameForm.classList.add("hidden");
+                gameForm.style.display = 'none';
+                renderGames();
+            } catch (error) {
+                console.error("Error saving game:", error);
+                alert("Fehler beim Speichern des Spiels");
             }
-            
-            gameNameInput.value = "";
-            gameLinkInput.value = "";
-            gameImageInput.value = "";
-            selectedGenres = [];
-            updateGenreSelection([]);
-            gameForm.classList.add("hidden");
-            gameForm.style.display = 'none';
-            renderGames();
         } else {
             alert('Bitte füllen Sie alle Felder aus');
         }
@@ -189,57 +206,67 @@ async function loadSocialLinks() {
 
     async function renderGames() {
         gameList.innerHTML = "";
-        const snapshot = await db.collection("games").get();
-        snapshot.forEach(doc => {
-            const game = doc.data();
-            const div = document.createElement("div");
-            div.classList.add("game");
+        try {
+            const snapshot = await db.collection("games").get();
+            snapshot.forEach(doc => {
+                const game = doc.data();
+                const div = document.createElement("div");
+                div.classList.add("game");
 
-            // Genre-Tags erstellen
-            const genreTags = game.genres ? game.genres.map(genre => 
-                `<span class="genre-tag">${genre}</span>`
-            ).join('') : '';
+                // Genre-Tags erstellen
+                const genreTags = game.genres ? game.genres.map(genre => 
+                    `<span class="genre-tag">${genre}</span>`
+                ).join('') : '';
 
-            div.innerHTML = `
-                <div class="game-genres">${genreTags}</div>
-                <img src="${game.image}" alt="${game.name}" onclick="window.open('${game.link}', '_blank')">
-                <h2>${game.name}</h2>
-            `;
-            
-            if (!adminPanel.classList.contains("hidden") && isEditMode) {
-                const buttonContainer = document.createElement("div");
-                
-                const deleteBtn = document.createElement("button");
-                deleteBtn.classList.add("delete-game");
-                deleteBtn.innerText = "X";
-                deleteBtn.addEventListener("click", async () => {
-                    if (confirm('Möchten Sie dieses Spiel wirklich löschen?')) {
-                        await db.collection("games").doc(doc.id).delete();
-                        renderGames();
-                    }
-                });
-                
-                const editBtn = document.createElement("button");
-                editBtn.classList.add("edit-game");
-                editBtn.innerText = "✎";
-                editBtn.addEventListener("click", () => {
-                    currentGameId = doc.id;
-                    gameNameInput.value = game.name;
-                    gameLinkInput.value = game.link;
-                    gameImageInput.value = game.image;
-                    updateGenreSelection(game.genres || []);
-                    document.querySelector('#game-form h2').textContent = "Spiel bearbeiten";
-                    gameForm.classList.remove("hidden");
-                    gameForm.style.display = 'block';
-                });
-                
-                buttonContainer.appendChild(deleteBtn);
-                buttonContainer.appendChild(editBtn);
-                div.appendChild(buttonContainer);
-            }
-            
-            gameList.appendChild(div);
-        });
+                div.innerHTML = `
+                    <div class="game-genres">${genreTags}</div>
+                    <img src="${game.image}" alt="${game.name}" onclick="window.open('${game.link}', '_blank')">
+                    <h2>${game.name}</h2>
+                `;
+
+                if (!adminPanel.classList.contains("hidden") && isEditMode) {
+                    const buttonContainer = document.createElement("div");
+
+                    const deleteBtn = document.createElement("button");
+                    deleteBtn.classList.add("delete-game");
+                    deleteBtn.innerText = "X";
+                    deleteBtn.addEventListener("click", async () => {
+                        if (confirm('Möchten Sie dieses Spiel wirklich löschen?')) {
+                            try {
+                                await db.collection("games").doc(doc.id).delete();
+                                renderGames();
+                            } catch (error) {
+                                console.error("Error deleting game:", error);
+                                alert("Fehler beim Löschen des Spiels");
+                            }
+                        }
+                    });
+
+                    const editBtn = document.createElement("button");
+                    editBtn.classList.add("edit-game");
+                    editBtn.innerText = "✎";
+                    editBtn.addEventListener("click", () => {
+                        currentGameId = doc.id;
+                        gameNameInput.value = game.name;
+                        gameLinkInput.value = game.link;
+                        gameImageInput.value = game.image;
+                        updateGenreSelection(game.genres || []);
+                        document.querySelector('#game-form h2').textContent = "Spiel bearbeiten";
+                        gameForm.classList.remove("hidden");
+                        gameForm.style.display = 'block';
+                    });
+
+                    buttonContainer.appendChild(deleteBtn);
+                    buttonContainer.appendChild(editBtn);
+                    div.appendChild(buttonContainer);
+                }
+
+                gameList.appendChild(div);
+            });
+        } catch (error) {
+            console.error("Error rendering games:", error);
+            alert("Fehler beim Laden der Spiele");
+        }
     }
 
     // Initialisierung beim Laden der Seite

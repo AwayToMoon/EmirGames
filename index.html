@@ -80,7 +80,7 @@
         }
 
         .game {
-            background: #3d0d4c;
+            background: linear-gradient(to bottom, #3d0d4c, #2a0934);
             border-radius: 8px;
             padding: 12px;
             text-align: center;
@@ -89,25 +89,36 @@
             box-sizing: border-box;
             transition: transform 0.3s ease;
             padding-top: 35px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            border: 1px solid #9c09db;
         }
 
         .game:hover {
             transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(156, 9, 219, 0.3);
         }
 
         .game img {
             width: 300px;
             height: 151px;
-            border-radius: 8px;
+            border-radius: 4px;
             margin-bottom: 10px;
             cursor: pointer;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: all 0.3s ease;
             object-fit: cover;
+            border: 1px solid rgba(156, 9, 219, 0.2);
         }
 
         .game img:hover {
-            transform: scale(1.05);
-            box-shadow: 0 0 20px rgba(156, 9, 219, 0.8);
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(156, 9, 219, 0.4);
+        }
+
+        .game h2 {
+            color: #fff;
+            font-size: 18px;
+            margin: 10px 0;
+            text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
         }
 
         .delete-game {
@@ -195,21 +206,24 @@
             max-width: 400px;
             border-radius: 10px;
             box-shadow: 0 0 20px rgba(156, 9, 219, 0.3);
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
+            position: relative;
+            margin: 50px auto;
         }
 
         .modal input {
             width: 100%;
-            padding: 12px;
+            padding: 10px;
             margin: 10px 0;
-            background-color: #2a0934;
             border: 1px solid #9c09db;
             border-radius: 5px;
+            background: #2a0934;
             color: white;
             box-sizing: border-box;
+        }
+
+        .modal input:focus {
+            outline: none;
+            border-color: #b01af7;
         }
 
         .modal input::placeholder {
@@ -246,7 +260,6 @@
             z-index: 1000;
         }
 
-        /* Neue Styles für Genres */
         .genre-container {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -278,32 +291,32 @@
         }
 
         .genre-tag {
-            background: #9c09db;
+            background: rgba(156, 9, 219, 0.3);
             color: white;
             padding: 3px 8px;
             border-radius: 4px;
             font-size: 12px;
+            border: 1px solid rgba(156, 9, 219, 0.5);
+            margin: 2px;
+            display: inline-block;
+            position: relative;
+            padding-right: 20px;
         }
 
-        .genre-tag {
-    position: relative;
-    padding-right: 20px;
-}
+        .remove-genre {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #fff;
+            font-weight: bold;
+            font-size: 14px;
+        }
 
-.remove-genre {
-    position: absolute;
-    right: 5px;
-    top: 50%;
-    transform: translateY(-50%);
-    cursor: pointer;
-    color: #fff;
-    font-weight: bold;
-    font-size: 14px;
-}
-
-.remove-genre:hover {
-    color: #ff0000;
-}
+        .remove-genre:hover {
+            color: #ff0000;
+        }
     </style>
 </head>
 <body>
@@ -377,7 +390,7 @@
                 <input type="text" id="game-name" placeholder="Spielname">
                 <div class="genre-container">
                     <div class="genre-option" data-genre="Action">Action</div>
-                    <div class="genre-option" data-genre="Story">Story</div>
+                    <div class="genre-option" data-genre="Adventure">Adventure</div>
                     <div class="genre-option" data-genre="RPG">RPG</div>
                     <div class="genre-option" data-genre="Shooter">Shooter</div>
                     <div class="genre-option" data-genre="Sport">Sport</div>

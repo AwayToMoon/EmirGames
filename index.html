@@ -515,8 +515,23 @@
             <div class="copyright">
                 Copyright © 2025 Marvin Weiss. Alle Rechte vorbehalten.
             </div>
-        </div>
+                </div>
     </div>
+    
+    <script>
+        const encryptedConfig = "U2FsdGVkX1/2h2jz/okQRoolhPVQPafedlkbIfYoDr/bEIj6Qe4Gz4D+GJsaaQ5i7XVMwWJ+cqe94PGWRSvfQKwZHwpHdIr9YhzTEVGwzq0yCkU/7ZsA1fNW0THeJjRP5W+tborqv2W5F8pHhVoVtYy104eDojx6YeaaKd4zyAr36a1eAY82nlgIUMhzbl8s7LEWqoqk/w+4brkq8Gt7zZ2zkCij2mwXb8LEyZJBFSa0j62QdI8cKkSwBRw3MxO56KTu4tLFcbv7hhehDtKwM0PNJMkuDp+xldtmmvIOS56fR64kvsLXlkN/DSV+3MHLWFCHv/ry06NtgMy6aEz3mfFQUqP0uaTR+ohi3niWSNYJ+wMNgQsV6xiXj+VmKleN";
+        
+        function initFirebase() {
+            const secretKey = "HigherCellF-Games-2024";
+            const decrypted = CryptoJS.AES.decrypt(encryptedConfig, secretKey).toString(CryptoJS.enc.Utf8);
+            const firebaseConfig = JSON.parse(decrypted);
+            
+            firebase.initializeApp(firebaseConfig);
+            window.db = firebase.firestore();
+        }
+
+        initFirebase();
+    </script>
     
     <script src="script.js"></script>
 </body>

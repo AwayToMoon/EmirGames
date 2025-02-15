@@ -287,17 +287,42 @@
             display: none !important;
         }
 
-        .copyright {
+        .footer-container {
             position: absolute;
             bottom: 0;
             left: 0;
             right: 0;
-            text-align: center;
-            color: #888;
-            font-size: 12px;
-            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
             background-color: #2a0934;
             z-index: 1000;
+        }
+
+        .made-by {
+            color: #888;
+            font-size: 12px;
+            text-align: left;
+        }
+
+        .made-by .heart {
+            color: #ff0000;
+            display: inline-block;
+            animation: heartbeat 1.5s ease infinite;
+        }
+
+        @keyframes heartbeat {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        .copyright {
+            color: #888;
+            font-size: 12px;
+            text-align: right;
+            margin: 0;
         }
 
         .genre-container {
@@ -461,8 +486,13 @@
             </div>
         </div>
 
-        <div class="copyright">
-            Copyright © 2025 Marvin Weiss. Alle Rechte vorbehalten.
+        <div class="footer-container">
+            <div class="made-by">
+                Made With <span class="heart">❤</span> from Away
+            </div>
+            <div class="copyright">
+                Copyright © 2025 Marvin Weiss. Alle Rechte vorbehalten.
+            </div>
         </div>
     </div>
     

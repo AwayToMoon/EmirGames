@@ -418,6 +418,32 @@
         .remove-genre:hover {
             color: #ff0000;
         }
+
+                .corner-image {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 1000;
+            transition: all 0.3s ease;
+        }
+
+        .corner-image img {
+            width: 200px;
+            height: auto;
+            opacity: 0.8;
+            transition: all 0.3s ease;
+        }
+
+        .corner-image:hover img {
+            opacity: 1;
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 768px) {
+            .corner-image img {
+                width: 150px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -511,6 +537,11 @@
                         <i class="fa-solid fa-x"></i>
                     </a>
                 </div>
+
+                    <div class="corner-image">
+        <img src="https://i.imgur.com/UKItcTq.png" alt="Corner Image">
+    </div>
+</div>
             </div>
             <div class="copyright">
                 Copyright © 2025 Marvin Weiss. Alle Rechte vorbehalten.

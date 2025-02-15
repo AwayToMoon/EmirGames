@@ -44,7 +44,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (document.getElementById("logo-link")) {
                     document.getElementById("logo-link").value = data.logo || "";
                 }
-                // Update favicon
                 if (data.logo) {
                     document.getElementById("favicon").href = data.logo;
                 }
@@ -72,11 +71,28 @@ document.addEventListener('DOMContentLoaded', function() {
     function updateGenreSelection(genres) {
         document.querySelectorAll('.genre-option').forEach(option => {
             option.classList.remove('selected');
-            if (genres.includes(option.dataset.genre)) {
+            if (genres && genres.includes(option.dataset.genre)) {
                 option.classList.add('selected');
             }
         });
-        selectedGenres = genres;
+        selectedGenres = genres || [];
+    }
+
+    // Funktion zum Entfernen eines Genres
+    async function removeGenre(gameId, genre) {
+        try {
+            const gameRef = db.collection("games").doc(gameId);
+            const doc = await gameRef.get();
+            if (doc.exists) {
+                const game = doc.data();
+                const updatedGenres = (game.genres || []).filter(g => g !== genre);
+                await gameRef.update({ genres: updatedGenres });
+                renderGames();
+            }
+        } catch (error) {
+            console.error("Error removing genre:", error);
+            alert("Fehler beim Entfernen des Genres");
+        }
     }
 
     adminLoginBtn.addEventListener("click", async () => {
@@ -213,9 +229,14 @@ document.addEventListener('DOMContentLoaded', function() {
                 const div = document.createElement("div");
                 div.classList.add("game");
 
-                // Genre-Tags erstellen
+                // Genre-Tags mit Lösch-Option erstellen
                 const genreTags = game.genres ? game.genres.map(genre => 
-                    `<span class="genre-tag">${genre}</span>`
+                    `<span class="genre-tag">
+                        ${genre}
+                        ${!adminPanel.classList.contains("hidden") && isEditMode ? 
+                            `<span class="remove-genre" onclick="event.stopPropagation(); removeGenre('${doc.id}', '${genre}')">×</span>` 
+                            : ''}
+                    </span>`
                 ).join('') : '';
 
                 div.innerHTML = `
@@ -268,6 +289,9 @@ document.addEventListener('DOMContentLoaded', function() {
             alert("Fehler beim Laden der Spiele");
         }
     }
+
+    // Globale Funktion für Genre-Entfernung
+    window.removeGenre = removeGenre;
 
     // Initialisierung beim Laden der Seite
     renderGames();

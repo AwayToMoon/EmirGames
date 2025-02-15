@@ -519,106 +519,117 @@
     </div>
     
     <script>
-        const encryptedConfig = "U2FsdGVkX1/2h2jz/okQRoolhPVQPafedlkbIfYoDr/bEIj6Qe4Gz4D+GJsaaQ5i7XVMwWJ+cqe94PGWRSvfQKwZHwpHdIr9YhzTEVGwzq0yCkU/7ZsA1fNW0THeJjRP5W+tborqv2W5F8pHhVoVtYy104eDojx6YeaaKd4zyAr36a1eAY82nlgIUMhzbl8s7LEWqoqk/w+4brkq8Gt7zZ2zkCij2mwXb8LEyZJBFSa0j62QdI8cKkSwBRw3MxO56KTu4tLFcbv7hhehDtKwM0PNJMkuDp+xldtmmvIOS56fR64kvsLXlkN/DSV+3MHLWFCHv/ry06NtgMy6aEz3mfFQUqP0uaTR+ohi3niWSNYJ+wMNgQsV6xiXj+VmKleN";
-        
-        function initFirebase() {
-            const secretKey = "HigherCellF-Games-2024";
-            const decrypted = CryptoJS.AES.decrypt(encryptedConfig, secretKey).toString(CryptoJS.enc.Utf8);
-            const firebaseConfig = JSON.parse(decrypted);
-            
-            firebase.initializeApp(firebaseConfig);
-            window.db = firebase.firestore();
-        }
-
-        initFirebase();
-
-        // Event Listener für das Social Media Form
-        document.getElementById('edit-social-btn').addEventListener('click', function() {
-            document.getElementById('social-form').style.display = 'block';
-        });
-
-        // Event Listener für den Close Button
-        document.querySelectorAll('.close-modal').forEach(button => {
-            button.addEventListener('click', function() {
-                this.closest('.modal').style.display = 'none';
-            });
-        });
-
-        // Funktion zum Laden der Social Media Links
-        async function loadSocialLinks() {
-            try {
-                const doc = await db.collection("settings").doc("social").get();
-                if (doc.exists) {
-                    const data = doc.data();
-                    // Header Social Links
-                    document.getElementById("tiktok-btn").href = data.tiktok || "#";
-                    document.getElementById("discord-btn").href = data.discord || "#";
-                    document.getElementById("instagram-btn").href = data.instagram || "#";
-                    document.getElementById("kick-btn").href = data.kick || "#";
-                    
-                    // Footer Social Links
-                    document.getElementById("footer-instagram").href = data.footerInstagram || "#";
-                    document.getElementById("footer-tiktok").href = data.footerTiktok || "#";
-                    document.getElementById("footer-twitter").href = data.footerTwitter || "#";
-                    
-                    // Form Felder
-                    document.getElementById("tiktok-link").value = data.tiktok || "";
-                    document.getElementById("discord-link").value = data.discord || "";
-                    document.getElementById("instagram-link").value = data.instagram || "";
-                    document.getElementById("kick-link").value = data.kick || "";
-                    document.getElementById("footer-instagram-link").value = data.footerInstagram || "";
-                    document.getElementById("footer-tiktok-link").value = data.footerTiktok || "";
-                    document.getElementById("footer-twitter-link").value = data.footerTwitter || "";
-                    document.getElementById("logo-link").value = data.logo || "";
-                    
-                    if (data.logo) {
-                        document.getElementById("favicon").href = data.logo;
-                    }
-                }
-            } catch (error) {
-                console.error("Error loading social links:", error);
-            }
-        }
-
-        // Funktion zum Speichern der Social Media Links
-        document.getElementById('save-social').addEventListener('click', async function() {
-            try {
-                const data = {
-                    // Header Social Links
-                    tiktok: document.getElementById("tiktok-link").value,
-                    discord: document.getElementById("discord-link").value,
-                    instagram: document.getElementById("instagram-link").value,
-                    kick: document.getElementById("kick-link").value,
-                    
-                    // Footer Social Links
-                    footerInstagram: document.getElementById("footer-instagram-link").value,
-                    footerTiktok: document.getElementById("footer-tiktok-link").value,
-                    footerTwitter: document.getElementById("footer-twitter-link").value,
-                    
-                    // Logo
-                    logo: document.getElementById("logo-link").value
-                };
-                
-                await db.collection("settings").doc("social").set(data);
-                await loadSocialLinks(); // Lade die Links neu
-                document.getElementById("social-form").style.display = "none";
-                alert("Social Media Links wurden erfolgreich gespeichert!");
-            } catch (error) {
-                console.error("Error saving social links:", error);
-                alert("Fehler beim Speichern der Social Media Links: " + error.message);
-            }
-        });
-
-        // Lade die Links beim Start
-        document.addEventListener("DOMContentLoaded", loadSocialLinks);
-
-        // Admin Login Handler
-        document.getElementById('admin-login-btn').addEventListener('click', function() {
-            const adminPanel = document.getElementById('admin-panel');
-            adminPanel.classList.toggle('hidden');
-        });
-    </script>
+    const encryptedConfig = "U2FsdGVkX1/2h2jz/okQRoolhPVQPafedlkbIfYoDr/bEIj6Qe4Gz4D+GJsaaQ5i7XVMwWJ+cqe94PGWRSvfQKwZHwpHdIr9YhzTEVGwzq0yCkU/7ZsA1fNW0THeJjRP5W+tborqv2W5F8pHhVoVtYy104eDojx6YeaaKd4zyAr36a1eAY82nlgIUMhzbl8s7LEWqoqk/w+4brkq8Gt7zZ2zkCij2mwXb8LEyZJBFSa0j62QdI8cKkSwBRw3MxO56KTu4tLFcbv7hhehDtKwM0PNJMkuDp+xldtmmvIOS56fR64kvsLXlkN/DSV+3MHLWFCHv/ry06NtgMy6aEz3mfFQUqP0uaTR+ohi3niWSNYJ+wMNgQsV6xiXj+VmKleN";
     
-    <script src="script.js"></script>
+    let db;
+
+    function initFirebase() {
+        const secretKey = "HigherCellF-Games-2024";
+        const decrypted = CryptoJS.AES.decrypt(encryptedConfig, secretKey).toString(CryptoJS.enc.Utf8);
+        const firebaseConfig = JSON.parse(decrypted);
+        
+        firebase.initializeApp(firebaseConfig);
+        db = firebase.firestore();
+    }
+
+    // Firebase initialisieren
+    initFirebase();
+
+    // Event Listener für das Social Media Form
+    document.getElementById('edit-social-btn').addEventListener('click', function() {
+        document.getElementById('social-form').style.display = 'block';
+    });
+
+    // Event Listener für den Close Button
+    document.querySelectorAll('.close-modal').forEach(button => {
+        button.addEventListener('click', function() {
+            this.closest('.modal').style.display = 'none';
+        });
+    });
+
+    // Funktion zum Laden der Social Media Links
+    async function loadSocialLinks() {
+        console.log("Loading social links...");
+        try {
+            const doc = await db.collection("settings").doc("social").get();
+            if (doc.exists) {
+                const data = doc.data();
+                console.log("Loaded data:", data);
+
+                // Header Social Links
+                document.getElementById("tiktok-btn").href = data.tiktok || "#";
+                document.getElementById("discord-btn").href = data.discord || "#";
+                document.getElementById("instagram-btn").href = data.instagram || "#";
+                document.getElementById("kick-btn").href = data.kick || "#";
+                
+                // Footer Social Links
+                document.getElementById("footer-instagram").href = data.footerInstagram || "#";
+                document.getElementById("footer-tiktok").href = data.footerTiktok || "#";
+                document.getElementById("footer-twitter").href = data.footerTwitter || "#";
+                
+                // Form Felder
+                document.getElementById("tiktok-link").value = data.tiktok || "";
+                document.getElementById("discord-link").value = data.discord || "";
+                document.getElementById("instagram-link").value = data.instagram || "";
+                document.getElementById("kick-link").value = data.kick || "";
+                document.getElementById("footer-instagram-link").value = data.footerInstagram || "";
+                document.getElementById("footer-tiktok-link").value = data.footerTiktok || "";
+                document.getElementById("footer-twitter-link").value = data.footerTwitter || "";
+                document.getElementById("logo-link").value = data.logo || "";
+                
+                if (data.logo) {
+                    document.getElementById("favicon").href = data.logo;
+                }
+            }
+        } catch (error) {
+            console.error("Error loading social links:", error);
+        }
+    }
+
+    // Funktion zum Speichern der Social Media Links
+    async function saveSocialLinks() {
+        console.log("Saving social links...");
+        try {
+            const data = {
+                // Header Social Links
+                tiktok: document.getElementById("tiktok-link").value,
+                discord: document.getElementById("discord-link").value,
+                instagram: document.getElementById("instagram-link").value,
+                kick: document.getElementById("kick-link").value,
+                
+                // Footer Social Links
+                footerInstagram: document.getElementById("footer-instagram-link").value,
+                footerTiktok: document.getElementById("footer-tiktok-link").value,
+                footerTwitter: document.getElementById("footer-twitter-link").value,
+                
+                // Logo
+                logo: document.getElementById("logo-link").value
+            };
+            
+            console.log("Saving data:", data);
+            await db.collection("settings").doc("social").set(data);
+            await loadSocialLinks(); // Lade die Links neu
+            document.getElementById("social-form").style.display = "none";
+            alert("Social Media Links wurden erfolgreich gespeichert!");
+        } catch (error) {
+            console.error("Error saving social links:", error);
+            alert("Fehler beim Speichern der Social Media Links: " + error.message);
+        }
+    }
+
+    // Event Listener für den Save Button
+    document.getElementById('save-social').addEventListener('click', saveSocialLinks);
+
+    // Admin Login Handler
+    document.getElementById('admin-login-btn').addEventListener('click', function() {
+        const adminPanel = document.getElementById('admin-panel');
+        adminPanel.classList.toggle('hidden');
+    });
+
+    // Lade die Links beim Start
+    document.addEventListener("DOMContentLoaded", loadSocialLinks);
+</script>
+
+<script src="script.js"></script>
 </body>
 </html>

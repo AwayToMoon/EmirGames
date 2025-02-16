@@ -444,32 +444,6 @@
                 width: 150px;
             }
         }
-        .search-container {
-    max-width: 1200px;
-    margin: 20px auto;
-    padding: 0 20px;
-}
-
-.search-input {
-    width: 100%;
-    padding: 12px 20px;
-    font-size: 16px;
-    background: rgba(255, 255, 255, 0.1);
-    border: 2px solid rgba(255, 255, 255, 0.2);
-    border-radius: 10px;
-    color: white;
-    transition: all 0.3s ease;
-}
-
-.search-input:focus {
-    outline: none;
-    border-color: #7289da;
-    background: rgba(255, 255, 255, 0.15);
-}
-
-.search-input::placeholder {
-    color: rgba(255, 255, 255, 0.5);
-}
     </style>
 </head>
 <body>
@@ -491,14 +465,6 @@
                     <i class="fas fa-k"></i>
                 </a>
             </div>
-
-            <div class="search-container">
-    <input type="text" 
-           class="search-input" 
-           id="searchInput" 
-           placeholder="Suche nach Spielen..."
-           autocomplete="off">
-</div>
 
             <div class="admin-section">
                 <button id="admin-login-btn">Login Away</button>
@@ -696,51 +662,6 @@
             console.error("Fehler beim Laden:", error);
         }
     }
-    // Globale Variable für alle Spiele
-let allGames = [];
-
-// Suchfunktion
-function searchGames(query) {
-    const gameList = document.getElementById('game-list');
-    gameList.innerHTML = ''; // Liste leeren
-
-    const filteredGames = allGames.filter(game => 
-        game.name.toLowerCase().includes(query.toLowerCase()) ||
-        (game.author && game.author.toLowerCase().includes(query.toLowerCase()))
-    );
-
-    if (filteredGames.length === 0) {
-        gameList.innerHTML = `
-            <div class="no-results">
-                Keine Spiele gefunden für "${query}" 🎮
-            </div>
-        `;
-        return;
-    }
-
-    filteredGames.forEach(game => addGameToWebsite(game));
-}
-
-// Event Listener für Suche
-document.getElementById('searchInput').addEventListener('input', function(e) {
-    searchGames(e.target.value);
-});
-
-// Modifiziere deine existierende loadGames Funktion
-function loadGames() {
-    db.collection('games')
-        .orderBy('timestamp', 'desc')
-        .onSnapshot((snapshot) => {
-            allGames = []; // Liste zurücksetzen
-            snapshot.docs.forEach(doc => {
-                allGames.push(doc.data());
-            });
-            
-            // Initial alle Spiele anzeigen
-            document.getElementById('game-list').innerHTML = '';
-            allGames.forEach(game => addGameToWebsite(game));
-        });
-}
 
     // Admin Panel Toggle
     document.getElementById('admin-login-btn').addEventListener('click', function() {

@@ -393,18 +393,89 @@
         }
 
         .genre-option {
-            background: #2a0934;
             padding: 8px;
             border-radius: 5px;
             cursor: pointer;
-            border: 1px solid #9c09db;
             color: white;
             transition: all 0.3s ease;
+            text-align: center;
         }
 
-        .genre-option.selected {
-            background: #9c09db;
-            color: white;
+        .genre-option[data-genre="Action"] {
+            background-color: #FF5722;
+            border: 1px solid #FF5722;
+        }
+        .genre-option[data-genre="Action"].selected {
+            background-color: #D84315;
+        }
+
+        .genre-option[data-genre="Adventure"] {
+            background-color: #4CAF50;
+            border: 1px solid #4CAF50;
+        }
+        .genre-option[data-genre="Adventure"].selected {
+            background-color: #388E3C;
+        }
+
+        .genre-option[data-genre="RPG"] {
+            background-color: #9C27B0;
+            border: 1px solid #9C27B0;
+        }
+        .genre-option[data-genre="RPG"].selected {
+            background-color: #7B1FA2;
+        }
+
+        .genre-option[data-genre="Shooter"] {
+            background-color: #F44336;
+            border: 1px solid #F44336;
+        }
+        .genre-option[data-genre="Shooter"].selected {
+            background-color: #D32F2F;
+        }
+
+        .genre-option[data-genre="Sport"] {
+            background-color: #2196F3;
+            border: 1px solid #2196F3;
+        }
+        .genre-option[data-genre="Sport"].selected {
+            background-color: #1976D2;
+        }
+
+        .genre-option[data-genre="Strategie"] {
+            background-color: #FFC107;
+            border: 1px solid #FFC107;
+        }
+        .genre-option[data-genre="Strategie"].selected {
+            background-color: #FFA000;
+        }
+
+        .genre-option[data-genre="Rätsel"] {
+            background-color: #00BCD4;
+            border: 1px solid #00BCD4;
+        }
+        .genre-option[data-genre="Rätsel"].selected {
+            background-color: #0097A7;
+        }
+
+        .genre-option[data-genre="Racing"] {
+            background-color: #FF9800;
+            border: 1px solid #FF9800;
+        }
+        .genre-option[data-genre="Racing"].selected {
+            background-color: #F57C00;
+        }
+
+        .genre-option[data-genre="Horror"] {
+            background-color: #607D8B;
+            border: 1px solid #607D8B;
+        }
+        .genre-option[data-genre="Horror"].selected {
+            background-color: #455A64;
+        }
+
+        .genre-option:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
         }
 
         .game-genres {

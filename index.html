@@ -418,64 +418,15 @@
 
         .genre-tag {
             background: rgba(156, 9, 219, 0.3);
-            color: white !important;
-            padding: 3px 8px !important;
-            border-radius: 4px !important;
-            font-size: 12px !important;
-            border: 1px solid rgba(156, 9, 219, 0.5) !important;
-            margin: 2px !important;
-            display: inline-block !important;
-            position: relative !important;
-            padding-right: 20px !important;
-        }
-
-        .game-genres .genre-tag[data-genre="Action"] {
-            background-color: rgba(255, 87, 34, 0.3) !important;
-            border-color: rgba(255, 87, 34, 0.5) !important;
-        }
-
-        .game-genres .genre-tag[data-genre="Adventure"] {
-            background-color: rgba(76, 175, 80, 0.3) !important;
-            border-color: rgba(76, 175, 80, 0.5) !important;
-        }
-
-        .game-genres .genre-tag[data-genre="RPG"] {
-            background-color: rgba(156, 39, 176, 0.3) !important;
-            border-color: rgba(156, 39, 176, 0.5) !important;
-        }
-
-        .game-genres .genre-tag[data-genre="Shooter"] {
-            background-color: rgba(244, 67, 54, 0.3) !important;
-            border-color: rgba(244, 67, 54, 0.5) !important;
-        }
-
-        .game-genres .genre-tag[data-genre="Sport"] {
-            background-color: rgba(33, 150, 243, 0.3) !important;
-            border-color: rgba(33, 150, 243, 0.5) !important;
-        }
-
-        .game-genres .genre-tag[data-genre="Strategie"] {
-            background-color: rgba(255, 193, 7, 0.3) !important;
-            border-color: rgba(255, 193, 7, 0.5) !important;
-        }
-
-        .game-genres .genre-tag[data-genre="Rätsel"] {
-            background-color: rgba(0, 188, 212, 0.3) !important;
-            border-color: rgba(0, 188, 212, 0.5) !important;
-        }
-
-        .game-genres .genre-tag[data-genre="Racing"] {
-            background-color: rgba(255, 152, 0, 0.3) !important;
-            border-color: rgba(255, 152, 0, 0.5) !important;
-        }
-
-        .game-genres .genre-tag[data-genre="Horror"] {
-            background-color: rgba(96, 125, 139, 0.3) !important;
-            border-color: rgba(96, 125, 139, 0.5) !important;
-        }
-
-        .game-genres .genre-tag:hover {
-            filter: brightness(1.2) !important;
+            color: white;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            border: 1px solid rgba(156, 9, 219, 0.5);
+            margin: 2px;
+            display: inline-block;
+            position: relative;
+            padding-right: 20px;
         }
 
         .remove-genre {
@@ -749,23 +700,6 @@
 
     // Links beim Laden der Seite laden
     window.addEventListener('load', loadSocialLinks);
-
-    // Aktualisiere die createGameCard Funktion um sicherzustellen, dass data-genre gesetzt wird
-    function createGameCard(game, id) {
-        // ... existing code ...
-
-        if (game.genres && Array.isArray(game.genres)) {
-            game.genres.forEach(genre => {
-                const genreTag = document.createElement('span');
-                genreTag.className = 'genre-tag';
-                genreTag.setAttribute('data-genre', genre); // Wichtig für die Farben
-                genreTag.textContent = genre;
-                genreContainer.appendChild(genreTag);
-            });
-        }
-
-        // ... rest of the existing code ...
-    }
 </script>
     
 <script src="script.js"></script>

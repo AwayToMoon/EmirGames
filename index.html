@@ -402,10 +402,6 @@
             transition: all 0.3s ease;
         }
 
-        .genre-option:hover {
-            background: #3d0d4c;
-        }
-
         .genre-option.selected {
             background: #9c09db;
             color: white;
@@ -431,6 +427,21 @@
             display: inline-block;
             position: relative;
             padding-right: 20px;
+        }
+
+        .remove-genre {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #fff;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .remove-genre:hover {
+            color: #ff0000;
         }
 
         .corner-image {
@@ -689,185 +700,6 @@
 
     // Links beim Laden der Seite laden
     window.addEventListener('load', loadSocialLinks);
-
-    // Aktualisiere die Funktion zum Erstellen der Spielkarte
-    function createGameCard(game, id) {
-        const card = document.createElement('div');
-        card.className = 'game';
-        
-        // Füge das Bild hinzu
-        const img = document.createElement('img');
-        img.src = game.image;
-        img.alt = game.name;
-        card.appendChild(img);
-        
-        // Füge den Titel hinzu
-        const title = document.createElement('h2');
-        title.textContent = game.name;
-        card.appendChild(title);
-        
-        // Füge die Genres hinzu
-        const genreContainer = document.createElement('div');
-        genreContainer.className = 'game-genres';
-        
-        if (game.genres && Array.isArray(game.genres)) {
-            game.genres.forEach(genre => {
-                const genreTag = document.createElement('span');
-                genreTag.className = 'genre-tag';
-                genreTag.setAttribute('data-genre', genre);
-                genreTag.textContent = genre;
-                genreContainer.appendChild(genreTag);
-            });
-        }
-        
-        card.appendChild(genreContainer);
-        
-        // Füge die Bearbeiten/Löschen Buttons hinzu wenn im Edit-Modus
-        if (isEditMode) {
-            const editBtn = document.createElement('button');
-            editBtn.className = 'edit-game';
-            editBtn.innerHTML = '✎';
-            editBtn.onclick = () => editGame(id);
-            card.appendChild(editBtn);
-
-            const deleteBtn = document.createElement('button');
-            deleteBtn.className = 'delete-game';
-            deleteBtn.innerHTML = '×';
-            deleteBtn.onclick = () => deleteGame(id);
-            card.appendChild(deleteBtn);
-        }
-        
-        // Füge den Click-Event hinzu
-        card.onclick = () => {
-            if (!isEditMode) {
-                window.open(game.link, '_blank');
-            }
-        };
-        
-        return card;
-    }
-
-    let currentGameId = null;
-    let isEditMode = false;
-
-    // Spiel hinzufügen/bearbeiten
-    document.getElementById('add-game-btn').addEventListener('click', function() {
-        clearGameForm();
-        document.getElementById('game-form').style.display = 'block';
-    });
-
-    // Genre-Auswahl
-    document.querySelectorAll('.genre-option').forEach(option => {
-        option.addEventListener('click', function(e) {
-            e.stopPropagation();
-            this.classList.toggle('selected');
-        });
-    });
-
-    // Speichern eines Spiels
-    async function saveGame(gameData) {
-        try {
-            const selectedGenres = Array.from(document.querySelectorAll('.genre-option.selected'))
-                .map(option => option.getAttribute('data-genre'));
-            
-            const finalGameData = {
-                name: gameData.name,
-                link: gameData.link,
-                image: gameData.image,
-                genres: selectedGenres
-            };
-            
-            if (currentGameId) {
-                await db.collection("games").doc(currentGameId).update(finalGameData);
-            } else {
-                await db.collection("games").add(finalGameData);
-            }
-            
-            document.getElementById('game-form').style.display = 'none';
-            clearGameForm();
-            await loadGames(); // Warte auf das Laden der Spiele
-        } catch (error) {
-            console.error("Error saving game:", error);
-            alert("Fehler beim Speichern des Spiels!");
-        }
-    }
-
-    // Spiele laden
-    async function loadGames() {
-        const gameList = document.getElementById('game-list');
-        gameList.innerHTML = ''; // Liste leeren
-
-        try {
-            const snapshot = await db.collection("games").get();
-            snapshot.forEach((doc) => {
-                const game = doc.data();
-                const card = createGameCard(game, doc.id);
-                gameList.appendChild(card);
-            });
-        } catch (error) {
-            console.error("Error loading games:", error);
-        }
-    }
-
-    // Spiel bearbeiten
-    async function editGame(id) {
-        try {
-            const doc = await db.collection("games").doc(id).get();
-            if (doc.exists) {
-                const game = doc.data();
-                currentGameId = id;
-                
-                document.getElementById('game-name').value = game.name || '';
-                document.getElementById('game-link').value = game.link || '';
-                document.getElementById('game-image').value = game.image || '';
-                
-                // Genres zurücksetzen und auswählen
-                document.querySelectorAll('.genre-option').forEach(option => {
-                    const genre = option.getAttribute('data-genre');
-                    if (game.genres && game.genres.includes(genre)) {
-                        option.classList.add('selected');
-                    } else {
-                        option.classList.remove('selected');
-                    }
-                });
-                
-                document.getElementById('game-form').style.display = 'block';
-            }
-        } catch (error) {
-            console.error("Error editing game:", error);
-            alert("Fehler beim Laden des Spiels!");
-        }
-    }
-
-    // Formular zurücksetzen
-    function clearGameForm() {
-        document.getElementById('game-name').value = '';
-        document.getElementById('game-link').value = '';
-        document.getElementById('game-image').value = '';
-        currentGameId = null;
-        document.querySelectorAll('.genre-option').forEach(option => {
-            option.classList.remove('selected');
-        });
-    }
-
-    // Event Listener für den Speichern-Button
-    document.getElementById('save-game').addEventListener('click', function() {
-        const gameData = {
-            name: document.getElementById('game-name').value,
-            link: document.getElementById('game-link').value,
-            image: document.getElementById('game-image').value
-        };
-        saveGame(gameData);
-    });
-
-    // Schließen des Modals
-    document.querySelector('.close-modal').addEventListener('click', function() {
-        document.getElementById('game-form').style.display = 'none';
-        clearGameForm();
-    });
-
-    // Initial Games laden
-    loadGames();
 </script>
     
 <script src="script.js"></script>

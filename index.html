@@ -391,68 +391,37 @@
             flex-wrap: wrap;
             gap: 5px;
             justify-content: center;
-            padding: 0 12px;
             margin: 8px 0;
         }
 
         /* Basis Genre Styles */
-        .genre-tag, .genre-option {
+        .genre-tag {
             padding: 3px 8px;
             border-radius: 4px;
             font-size: 12px;
             color: white;
-            transition: all 0.3s ease;
+            display: inline-block;
         }
 
-        /* Spezifische Genre-Farben für die Spielkarten */
-        .game-content .game-genres .genre-tag[data-genre="Horror"] {
-            background: #607D8B !important;
+        /* Spezifische Genre-Farben */
+        span[data-genre="Horror"] {
+            background-color: #607D8B !important;
             border: 1px solid #607D8B !important;
         }
 
-        .game-content .game-genres .genre-tag[data-genre="Rätsel"] {
-            background: #00BCD4 !important;
+        span[data-genre="Rätsel"] {
+            background-color: #00BCD4 !important;
             border: 1px solid #00BCD4 !important;
         }
 
-        .game-content .game-genres .genre-tag[data-genre="Racing"] {
-            background: #FF9800 !important;
+        span[data-genre="Racing"] {
+            background-color: #FF9800 !important;
             border: 1px solid #FF9800 !important;
         }
 
-        .game-content .game-genres .genre-tag[data-genre="Story"] {
-            background: #9C27B0 !important;
+        span[data-genre="Story"] {
+            background-color: #9C27B0 !important;
             border: 1px solid #9C27B0 !important;
-        }
-
-        .game-content .game-genres .genre-tag[data-genre="Action"] {
-            background: #FF5722 !important;
-            border: 1px solid #FF5722 !important;
-        }
-
-        .game-content .game-genres .genre-tag[data-genre="Adventure"] {
-            background: #4CAF50 !important;
-            border: 1px solid #4CAF50 !important;
-        }
-
-        .game-content .game-genres .genre-tag[data-genre="RPG"] {
-            background: #673AB7 !important;
-            border: 1px solid #673AB7 !important;
-        }
-
-        .game-content .game-genres .genre-tag[data-genre="Shooter"] {
-            background: #F44336 !important;
-            border: 1px solid #F44336 !important;
-        }
-
-        .game-content .game-genres .genre-tag[data-genre="Sport"] {
-            background: #2196F3 !important;
-            border: 1px solid #2196F3 !important;
-        }
-
-        .game-content .game-genres .genre-tag[data-genre="Strategie"] {
-            background: #FFC107 !important;
-            border: 1px solid #FFC107 !important;
         }
 
         /* Genre-Options im Modal */
@@ -464,35 +433,33 @@
         }
 
         .genre-option {
-            cursor: pointer;
             padding: 8px;
-            text-align: center;
+            border-radius: 5px;
+            cursor: pointer;
+            color: white;
+            transition: all 0.3s ease;
         }
 
-        /* Genre-Options Farben */
-        .genre-option[data-genre="Horror"] { background: #607D8B !important; }
-        .genre-option[data-genre="Rätsel"] { background: #00BCD4 !important; }
-        .genre-option[data-genre="Racing"] { background: #FF9800 !important; }
-        .genre-option[data-genre="Story"] { background: #9C27B0 !important; }
-        .genre-option[data-genre="Action"] { background: #FF5722 !important; }
-        .genre-option[data-genre="Adventure"] { background: #4CAF50 !important; }
-        .genre-option[data-genre="RPG"] { background: #673AB7 !important; }
-        .genre-option[data-genre="Shooter"] { background: #F44336 !important; }
-        .genre-option[data-genre="Sport"] { background: #2196F3 !important; }
-        .genre-option[data-genre="Strategie"] { background: #FFC107 !important; }
+        /* Genre-Option Farben */
+        .genre-option[data-genre="Horror"] {
+            background-color: #607D8B;
+        }
 
-        /* Selected und Hover States */
+        .genre-option[data-genre="Rätsel"] {
+            background-color: #00BCD4;
+        }
+
+        .genre-option[data-genre="Racing"] {
+            background-color: #FF9800;
+        }
+
+        .genre-option[data-genre="Story"] {
+            background-color: #9C27B0;
+        }
+
+        /* Selected State */
         .genre-option.selected {
-            filter: brightness(0.8) !important;
-        }
-
-        .genre-option:hover {
-            opacity: 0.9;
-            transform: translateY(-2px);
-        }
-
-        .genre-tag:hover {
-            opacity: 0.9;
+            filter: brightness(0.8);
         }
 
         .corner-image {
@@ -757,17 +724,14 @@
         const card = document.createElement('div');
         card.className = 'game';
         
-        // Bild
         const img = document.createElement('img');
         img.src = game.image || '#';
         img.alt = game.name;
         card.appendChild(img);
         
-        // Content Container
         const content = document.createElement('div');
         content.className = 'game-content';
         
-        // Titel
         const title = document.createElement('h2');
         title.textContent = game.name;
         content.appendChild(title);
@@ -781,8 +745,8 @@
             game.genres.forEach(genre => {
                 const genreTag = document.createElement('span');
                 genreTag.className = 'genre-tag';
-                genreTag.setAttribute('data-genre', genre);
                 genreTag.textContent = genre;
+                genreTag.setAttribute('data-genre', genre);
                 genreContainer.appendChild(genreTag);
             });
         }

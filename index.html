@@ -504,7 +504,6 @@
         </div>
 
         <div id="game-list"></div>
-        
         <button id="xpButton" class="xp-button">+XP</button>
 
         <div id="game-form" class="modal hidden">
@@ -697,8 +696,8 @@
     window.addEventListener('load', loadSocialLinks);
 
     // XP Button Funktionalität
-    const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1344278831879426098/kuxrG_-vZhjUeWvD_A0O5mozAwUzWJDZKB76Co35aTd6Q0fIeruGpj2CEGhG_rFHcsn5'; // Ersetze dies mit deiner Discord Webhook URL
-    const CHANNEL_ID = '1294081933072011325'; // Ersetze dies mit deiner Channel ID
+    const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1344278831879426098/kuxrG_-vZhjUeWvD_A0O5mozAwUzWJDZKB76Co35aTd6Q0fIeruGpj2CEGhG_rFHcsn5';
+    const CHANNEL_ID = '1294081933072011325';
 
     function positionXPButton() {
         const button = document.getElementById('xpButton');
@@ -743,25 +742,11 @@
     // Event Listener für den XP Button
     document.getElementById('xpButton').addEventListener('click', sendXPCommand);
 
-    // Initialisiere den Button und setze den täglichen Timer
-    function initXPButton() {
-        const lastPosition = localStorage.getItem('lastXPButtonPosition');
-        const now = new Date().getTime();
-
-        if (!lastPosition || (now - parseInt(lastPosition)) >= 86400000) {
-            positionXPButton();
-            localStorage.setItem('lastXPButtonPosition', now.toString());
-        }
-    }
-
-    // Führe die Initialisierung aus
-    initXPButton();
+    // Initialisiere den Button sofort
+    positionXPButton();
 
     // Setze einen Timer für die tägliche Neupositionierung
-    setInterval(() => {
-        positionXPButton();
-        localStorage.setItem('lastXPButtonPosition', new Date().getTime().toString());
-    }, 86400000);
+    setInterval(positionXPButton, 86400000); // 86400000 ms = 24 Stunden
 </script>
     
 <script src="script.js"></script>

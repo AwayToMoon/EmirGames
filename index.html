@@ -418,66 +418,66 @@
 
         .genre-tag {
             background: rgba(156, 9, 219, 0.3);
-            color: white;
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            border: 1px solid rgba(156, 9, 219, 0.5);
-            margin: 2px;
-            display: inline-block;
-            position: relative;
-            padding-right: 20px;
+            color: white !important;
+            padding: 3px 8px !important;
+            border-radius: 4px !important;
+            font-size: 12px !important;
+            border: 1px solid rgba(156, 9, 219, 0.5) !important;
+            margin: 2px !important;
+            display: inline-block !important;
+            position: relative !important;
+            padding-right: 20px !important;
         }
 
-        /* Neue Genre-spezifische Farben */
-        .genre-tag[data-genre="Action"] {
-            background: rgba(255, 87, 34, 0.3);
-            border-color: rgba(255, 87, 34, 0.5);
+        /* Spezifische Genre-Farben mit erhöhter Spezifität */
+        .game-genres .genre-tag[data-genre="Action"] {
+            background-color: rgba(255, 87, 34, 0.3) !important;
+            border-color: rgba(255, 87, 34, 0.5) !important;
         }
 
-        .genre-tag[data-genre="Adventure"] {
-            background: rgba(76, 175, 80, 0.3);
-            border-color: rgba(76, 175, 80, 0.5);
+        .game-genres .genre-tag[data-genre="Adventure"] {
+            background-color: rgba(76, 175, 80, 0.3) !important;
+            border-color: rgba(76, 175, 80, 0.5) !important;
         }
 
-        .genre-tag[data-genre="RPG"] {
-            background: rgba(156, 39, 176, 0.3);
-            border-color: rgba(156, 39, 176, 0.5);
+        .game-genres .genre-tag[data-genre="RPG"] {
+            background-color: rgba(156, 39, 176, 0.3) !important;
+            border-color: rgba(156, 39, 176, 0.5) !important;
         }
 
-        .genre-tag[data-genre="Shooter"] {
-            background: rgba(244, 67, 54, 0.3);
-            border-color: rgba(244, 67, 54, 0.5);
+        .game-genres .genre-tag[data-genre="Shooter"] {
+            background-color: rgba(244, 67, 54, 0.3) !important;
+            border-color: rgba(244, 67, 54, 0.5) !important;
         }
 
-        .genre-tag[data-genre="Sport"] {
-            background: rgba(33, 150, 243, 0.3);
-            border-color: rgba(33, 150, 243, 0.5);
+        .game-genres .genre-tag[data-genre="Sport"] {
+            background-color: rgba(33, 150, 243, 0.3) !important;
+            border-color: rgba(33, 150, 243, 0.5) !important;
         }
 
-        .genre-tag[data-genre="Strategie"] {
-            background: rgba(255, 193, 7, 0.3);
-            border-color: rgba(255, 193, 7, 0.5);
+        .game-genres .genre-tag[data-genre="Strategie"] {
+            background-color: rgba(255, 193, 7, 0.3) !important;
+            border-color: rgba(255, 193, 7, 0.5) !important;
         }
 
-        .genre-tag[data-genre="Rätsel"] {
-            background: rgba(0, 188, 212, 0.3);
-            border-color: rgba(0, 188, 212, 0.5);
+        .game-genres .genre-tag[data-genre="Rätsel"] {
+            background-color: rgba(0, 188, 212, 0.3) !important;
+            border-color: rgba(0, 188, 212, 0.5) !important;
         }
 
-        .genre-tag[data-genre="Racing"] {
-            background: rgba(255, 152, 0, 0.3);
-            border-color: rgba(255, 152, 0, 0.5);
+        .game-genres .genre-tag[data-genre="Racing"] {
+            background-color: rgba(255, 152, 0, 0.3) !important;
+            border-color: rgba(255, 152, 0, 0.5) !important;
         }
 
-        .genre-tag[data-genre="Horror"] {
-            background: rgba(96, 125, 139, 0.3);
-            border-color: rgba(96, 125, 139, 0.5);
+        .game-genres .genre-tag[data-genre="Horror"] {
+            background-color: rgba(96, 125, 139, 0.3) !important;
+            border-color: rgba(96, 125, 139, 0.5) !important;
         }
 
-        /* Hover-Effekt für Genre-Tags */
-        .genre-tag:hover {
-            filter: brightness(1.2);
+        /* Hover-Effekt */
+        .game-genres .genre-tag:hover {
+            filter: brightness(1.2) !important;
         }
 
         .remove-genre {
@@ -757,9 +757,18 @@
         const card = document.createElement('div');
         card.className = 'game';
         
-        // ... existing image and title code ...
-
-        // Genre-Container
+        // Füge das Bild hinzu
+        const img = document.createElement('img');
+        img.src = game.image;
+        img.alt = game.name;
+        card.appendChild(img);
+        
+        // Füge den Titel hinzu
+        const title = document.createElement('h2');
+        title.textContent = game.name;
+        card.appendChild(title);
+        
+        // Füge die Genres hinzu
         const genreContainer = document.createElement('div');
         genreContainer.className = 'game-genres';
         
@@ -769,26 +778,33 @@
                 genreTag.className = 'genre-tag';
                 genreTag.setAttribute('data-genre', genre);
                 genreTag.textContent = genre;
-                
-                if (isEditMode) {
-                    const removeButton = document.createElement('span');
-                    removeButton.className = 'remove-genre';
-                    removeButton.innerHTML = '×';
-                    removeButton.onclick = (e) => {
-                        e.stopPropagation();
-                        removeGenreFromGame(id, genre);
-                        genreTag.remove();
-                    };
-                    genreTag.appendChild(removeButton);
-                }
-                
                 genreContainer.appendChild(genreTag);
             });
         }
         
         card.appendChild(genreContainer);
         
-        // ... rest of the existing card creation code ...
+        // Füge die Bearbeiten/Löschen Buttons hinzu wenn im Edit-Modus
+        if (isEditMode) {
+            const editBtn = document.createElement('button');
+            editBtn.className = 'edit-game';
+            editBtn.innerHTML = '✎';
+            editBtn.onclick = () => editGame(id);
+            card.appendChild(editBtn);
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'delete-game';
+            deleteBtn.innerHTML = '×';
+            deleteBtn.onclick = () => deleteGame(id);
+            card.appendChild(deleteBtn);
+        }
+        
+        // Füge den Click-Event hinzu
+        card.onclick = () => {
+            if (!isEditMode) {
+                window.open(game.link, '_blank');
+            }
+        };
         
         return card;
     }

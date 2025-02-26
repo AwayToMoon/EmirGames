@@ -804,7 +804,24 @@
     // Links beim Laden der Seite laden
     window.addEventListener('load', loadSocialLinks);
 
-    // Aktualisierte createGameCard Funktion
+    // Aktualisierte loadGames Funktion
+    async function loadGames() {
+        const gameList = document.getElementById('game-list');
+        gameList.innerHTML = ''; // Liste leeren
+
+        try {
+            const snapshot = await db.collection("games").get();
+            snapshot.forEach((doc) => {
+                const game = doc.data();
+                const card = createGameCard(game, doc.id);
+                gameList.appendChild(card);
+            });
+        } catch (error) {
+            console.error("Error loading games:", error);
+        }
+    }
+
+    // Überarbeitete createGameCard Funktion
     function createGameCard(game, id) {
         const card = document.createElement('div');
         card.className = 'game';
@@ -831,11 +848,11 @@
         // Genre Tags
         if (game.genres && Array.isArray(game.genres)) {
             game.genres.forEach(genre => {
-                const tag = document.createElement('span');
-                tag.className = 'genre-tag';
-                tag.textContent = genre;
-                tag.setAttribute('data-genre', genre);
-                genreContainer.appendChild(tag);
+                const genreTag = document.createElement('span');
+                genreTag.className = 'genre-tag';
+                genreTag.textContent = genre;
+                genreTag.setAttribute('data-genre', genre);
+                genreContainer.appendChild(genreTag);
             });
         }
         
@@ -873,60 +890,69 @@
         return card;
     }
 
-    // Aktualisierte saveGame Funktion
-    async function saveGame(gameData) {
-        try {
-            const selectedGenres = Array.from(document.querySelectorAll('.genre-option.selected'))
-                .map(option => option.getAttribute('data-genre'));
-            
-            const finalGameData = {
-                name: gameData.name,
-                link: gameData.link,
-                image: gameData.image,
-                genres: selectedGenres
-            };
-            
-            if (currentGameId) {
-                await db.collection("games").doc(currentGameId).update(finalGameData);
-            } else {
-                await db.collection("games").add(finalGameData);
-            }
-            
-            document.getElementById('game-form').style.display = 'none';
-            clearGameForm();
-            await loadGames();
-        } catch (error) {
-            console.error("Error saving game:", error);
-            alert("Fehler beim Speichern des Spiels!");
-        }
-    }
+    // Stelle sicher, dass die Spiele beim Laden der Seite angezeigt werden
+    document.addEventListener('DOMContentLoaded', () => {
+        loadGames();
+    });
 
-    // Aktualisierte editGame Funktion
-    async function editGame(id) {
-        try {
-            const doc = await db.collection("games").doc(id).get();
-            if (doc.exists) {
-                const game = doc.data();
-                currentGameId = id;
-                
-                document.getElementById('game-name').value = game.name || '';
-                document.getElementById('game-link').value = game.link || '';
-                document.getElementById('game-image').value = game.image || '';
-                
-                // Reset und setze Genre-Auswahl
-                document.querySelectorAll('.genre-option').forEach(option => {
-                    const genre = option.getAttribute('data-genre');
-                    option.classList.toggle('selected', 
-                        game.genres && game.genres.includes(genre));
-                });
-                
-                document.getElementById('game-form').style.display = 'block';
-            }
-        } catch (error) {
-            console.error("Error editing game:", error);
-            alert("Fehler beim Laden des Spiels!");
+    // Aktualisiere die Genre-Styles
+    const styles = document.createElement('style');
+    styles.textContent = `
+        .genre-tag {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin: 2px;
+            display: inline-block;
+            color: white;
         }
-    }
+
+        .genre-tag[data-genre="Action"] {
+            background-color: #FF5722;
+            border: 1px solid #FF5722;
+        }
+
+        .genre-tag[data-genre="Adventure"] {
+            background-color: #4CAF50;
+            border: 1px solid #4CAF50;
+        }
+
+        .genre-tag[data-genre="RPG"] {
+            background-color: #9C27B0;
+            border: 1px solid #9C27B0;
+        }
+
+        .genre-tag[data-genre="Shooter"] {
+            background-color: #F44336;
+            border: 1px solid #F44336;
+        }
+
+        .genre-tag[data-genre="Sport"] {
+            background-color: #2196F3;
+            border: 1px solid #2196F3;
+        }
+
+        .genre-tag[data-genre="Strategie"] {
+            background-color: #FFC107;
+            border: 1px solid #FFC107;
+        }
+
+        .genre-tag[data-genre="Rätsel"] {
+            background-color: #00BCD4;
+            border: 1px solid #00BCD4;
+        }
+
+        .genre-tag[data-genre="Racing"] {
+            background-color: #FF9800;
+            border: 1px solid #FF9800;
+        }
+
+        .genre-tag[data-genre="Horror"] {
+            background-color: #607D8B;
+            border: 1px solid #607D8B;
+        }
+    `;
+    document.head.appendChild(styles);
 </script>
     
 <script src="script.js"></script>

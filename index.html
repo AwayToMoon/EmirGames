@@ -749,6 +749,75 @@
 
     // Links beim Laden der Seite laden
     window.addEventListener('load', loadSocialLinks);
+
+    // Aktualisierte createGameCard Funktion
+    function createGameCard(game, id) {
+        const card = document.createElement('div');
+        card.className = 'game';
+        
+        // Bild
+        const img = document.createElement('img');
+        img.src = game.image || '#';
+        img.alt = game.name;
+        card.appendChild(img);
+        
+        // Content Container
+        const content = document.createElement('div');
+        content.className = 'game-content';
+        
+        // Titel
+        const title = document.createElement('h2');
+        title.textContent = game.name;
+        content.appendChild(title);
+        
+        // Genre Container
+        const genreContainer = document.createElement('div');
+        genreContainer.className = 'game-genres';
+        
+        // Genre Tags
+        if (game.genres && Array.isArray(game.genres)) {
+            game.genres.forEach(genre => {
+                const genreTag = document.createElement('span');
+                genreTag.className = 'genre-tag';
+                genreTag.setAttribute('data-genre', genre);
+                genreTag.textContent = genre;
+                genreContainer.appendChild(genreTag);
+            });
+        }
+        
+        content.appendChild(genreContainer);
+        card.appendChild(content);
+        
+        // Edit/Delete Buttons
+        if (isEditMode) {
+            const editBtn = document.createElement('button');
+            editBtn.className = 'edit-game';
+            editBtn.innerHTML = '✎';
+            editBtn.onclick = (e) => {
+                e.stopPropagation();
+                editGame(id);
+            };
+            card.appendChild(editBtn);
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'delete-game';
+            deleteBtn.innerHTML = '×';
+            deleteBtn.onclick = (e) => {
+                e.stopPropagation();
+                deleteGame(id);
+            };
+            card.appendChild(deleteBtn);
+        }
+        
+        // Click Event
+        card.onclick = () => {
+            if (!isEditMode && game.link) {
+                window.open(game.link, '_blank');
+            }
+        };
+        
+        return card;
+    }
 </script>
     
 <script src="script.js"></script>

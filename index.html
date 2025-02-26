@@ -494,57 +494,60 @@
             margin: 2px;
             display: inline-block;
             color: white;
-            transition: all 0.3s ease;
         }
 
-        .genre-tag[data-genre="Action"] {
-            background-color: #FF5722;
-            border: 1px solid #FF5722;
+        /* Action */
+        span[data-genre="Action"] {
+            background-color: #FF5722 !important;
+            border: 1px solid #FF5722 !important;
         }
 
-        .genre-tag[data-genre="Adventure"] {
-            background-color: #4CAF50;
-            border: 1px solid #4CAF50;
+        /* Adventure */
+        span[data-genre="Adventure"] {
+            background-color: #4CAF50 !important;
+            border: 1px solid #4CAF50 !important;
         }
 
-        .genre-tag[data-genre="RPG"] {
-            background-color: #9C27B0;
-            border: 1px solid #9C27B0;
+        /* RPG */
+        span[data-genre="RPG"] {
+            background-color: #9C27B0 !important;
+            border: 1px solid #9C27B0 !important;
         }
 
-        .genre-tag[data-genre="Shooter"] {
-            background-color: #F44336;
-            border: 1px solid #F44336;
+        /* Shooter */
+        span[data-genre="Shooter"] {
+            background-color: #F44336 !important;
+            border: 1px solid #F44336 !important;
         }
 
-        .genre-tag[data-genre="Sport"] {
-            background-color: #2196F3;
-            border: 1px solid #2196F3;
+        /* Sport */
+        span[data-genre="Sport"] {
+            background-color: #2196F3 !important;
+            border: 1px solid #2196F3 !important;
         }
 
-        .genre-tag[data-genre="Strategie"] {
-            background-color: #FFC107;
-            border: 1px solid #FFC107;
+        /* Strategie */
+        span[data-genre="Strategie"] {
+            background-color: #FFC107 !important;
+            border: 1px solid #FFC107 !important;
         }
 
-        .genre-tag[data-genre="Rätsel"] {
-            background-color: #00BCD4;
-            border: 1px solid #00BCD4;
+        /* Rätsel */
+        span[data-genre="Rätsel"] {
+            background-color: #00BCD4 !important;
+            border: 1px solid #00BCD4 !important;
         }
 
-        .genre-tag[data-genre="Racing"] {
-            background-color: #FF9800;
-            border: 1px solid #FF9800;
+        /* Racing */
+        span[data-genre="Racing"] {
+            background-color: #FF9800 !important;
+            border: 1px solid #FF9800 !important;
         }
 
-        .genre-tag[data-genre="Horror"] {
-            background-color: #607D8B;
-            border: 1px solid #607D8B;
-        }
-
-        .genre-tag:hover {
-            opacity: 0.8;
-            transform: translateY(-1px);
+        /* Horror */
+        span[data-genre="Horror"] {
+            background-color: #607D8B !important;
+            border: 1px solid #607D8B !important;
         }
 
         .corner-image {
@@ -894,65 +897,6 @@
     document.addEventListener('DOMContentLoaded', () => {
         loadGames();
     });
-
-    // Aktualisiere die Genre-Styles
-    const styles = document.createElement('style');
-    styles.textContent = `
-        .genre-tag {
-            padding: 3px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            margin: 2px;
-            display: inline-block;
-            color: white;
-        }
-
-        .genre-tag[data-genre="Action"] {
-            background-color: #FF5722;
-            border: 1px solid #FF5722;
-        }
-
-        .genre-tag[data-genre="Adventure"] {
-            background-color: #4CAF50;
-            border: 1px solid #4CAF50;
-        }
-
-        .genre-tag[data-genre="RPG"] {
-            background-color: #9C27B0;
-            border: 1px solid #9C27B0;
-        }
-
-        .genre-tag[data-genre="Shooter"] {
-            background-color: #F44336;
-            border: 1px solid #F44336;
-        }
-
-        .genre-tag[data-genre="Sport"] {
-            background-color: #2196F3;
-            border: 1px solid #2196F3;
-        }
-
-        .genre-tag[data-genre="Strategie"] {
-            background-color: #FFC107;
-            border: 1px solid #FFC107;
-        }
-
-        .genre-tag[data-genre="Rätsel"] {
-            background-color: #00BCD4;
-            border: 1px solid #00BCD4;
-        }
-
-        .genre-tag[data-genre="Racing"] {
-            background-color: #FF9800;
-            border: 1px solid #FF9800;
-        }
-
-        .genre-tag[data-genre="Horror"] {
-            background-color: #607D8B;
-            border: 1px solid #607D8B;
-        }
-    `;
-    document.head.appendChild(styles);
 </script>
     
 <script src="script.js"></script>

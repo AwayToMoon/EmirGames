@@ -713,23 +713,54 @@
         button.style.display = 'block';
     }
 
+    // Funktion zum Speichern des Benutzernamens
+    function saveUsername(username) {
+        localStorage.setItem('discord_username', username);
+    }
+
+    // Funktion zum Abrufen des Benutzernamens
+    function getUsername() {
+        return localStorage.getItem('discord_username');
+    }
+
+    // Funktion zum Abfragen des Benutzernamens
+    function askForUsername() {
+        const username = prompt('Bitte gib deinen Discord-Benutzernamen ein:');
+        if (username) {
+            saveUsername(username);
+            return username;
+        }
+        return null;
+    }
+
     async function sendXPCommand() {
         const button = document.getElementById('xpButton');
         try {
+            let username = getUsername();
+            
+            // Wenn kein Benutzername gespeichert ist, frage danach
+            if (!username) {
+                username = askForUsername();
+                if (!username) {
+                    alert('Bitte gib einen Benutzernamen ein, um XP zu sammeln!');
+                    return;
+                }
+            }
+
             const response = await fetch(DISCORD_WEBHOOK_URL, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
-                    content: '!xp',
+                    content: `/manage xp add ${username} 1000`, // Command mit Benutzername
                     channel_id: CHANNEL_ID
                 })
             });
 
             if (response.ok) {
                 button.style.display = 'none';
-                alert('XP erfolgreich gesammelt!');
+                alert(`XP erfolgreich für ${username} gesammelt!`);
             } else {
                 alert('Fehler beim Sammeln der XP. Versuche es später erneut.');
             }
@@ -738,6 +769,41 @@
             alert('Ein Fehler ist aufgetreten. Bitte versuche es später erneut.');
         }
     }
+
+    // Button zum Ändern des Benutzernamens
+    function addUsernameButton() {
+        const container = document.querySelector('.content-container');
+        const button = document.createElement('button');
+        button.innerHTML = 'Discord Namen ändern';
+        button.style.position = 'fixed';
+        button.style.top = '10px';
+        button.style.right = '10px';
+        button.style.zIndex = '1000';
+        button.style.background = '#9c09db';
+        button.style.color = 'white';
+        button.style.border = 'none';
+        button.style.padding = '10px';
+        button.style.borderRadius = '5px';
+        button.style.cursor = 'pointer';
+        
+        button.onclick = () => {
+            const newUsername = askForUsername();
+            if (newUsername) {
+                alert(`Benutzername wurde zu ${newUsername} geändert!`);
+            }
+        };
+        
+        container.appendChild(button);
+    }
+
+    // Initialisierung
+    document.addEventListener('DOMContentLoaded', () => {
+        // Wenn kein Benutzername gespeichert ist, frage beim ersten Laden danach
+        if (!getUsername()) {
+            askForUsername();
+        }
+        addUsernameButton();
+    });
 
     // Event Listener für den XP Button
     document.getElementById('xpButton').addEventListener('click', sendXPCommand);

@@ -748,48 +748,68 @@
     }
 
     let currentGameId = null;
+    let isEditMode = false;
 
-    // Genre-Auswahl Event Listener
-    document.addEventListener('DOMContentLoaded', function() {
-        document.querySelectorAll('.genre-option').forEach(option => {
-            option.addEventListener('click', function() {
-                this.classList.toggle('selected');
-            });
+    // Spiel hinzufügen/bearbeiten
+    document.getElementById('add-game-btn').addEventListener('click', function() {
+        clearGameForm();
+        document.getElementById('game-form').style.display = 'block';
+    });
+
+    // Genre-Auswahl
+    document.querySelectorAll('.genre-option').forEach(option => {
+        option.addEventListener('click', function(e) {
+            e.stopPropagation();
+            this.classList.toggle('selected');
         });
     });
 
-    // Save Game Event Listener
-    document.getElementById('save-game').addEventListener('click', function() {
-        const gameData = {
-            name: document.getElementById('game-name').value,
-            link: document.getElementById('game-link').value,
-            image: document.getElementById('game-image').value,
-            genres: Array.from(document.querySelectorAll('.genre-option.selected'))
-                .map(option => option.getAttribute('data-genre'))
-        };
-
-        saveGame(gameData);
-    });
-
-    // Speichern Funktion
+    // Speichern eines Spiels
     async function saveGame(gameData) {
         try {
+            const selectedGenres = Array.from(document.querySelectorAll('.genre-option.selected'))
+                .map(option => option.getAttribute('data-genre'));
+            
+            const finalGameData = {
+                name: gameData.name,
+                link: gameData.link,
+                image: gameData.image,
+                genres: selectedGenres
+            };
+            
             if (currentGameId) {
-                await db.collection("games").doc(currentGameId).update(gameData);
+                await db.collection("games").doc(currentGameId).update(finalGameData);
             } else {
-                await db.collection("games").add(gameData);
+                await db.collection("games").add(finalGameData);
             }
             
             document.getElementById('game-form').style.display = 'none';
-            loadGames();
             clearGameForm();
+            await loadGames(); // Warte auf das Laden der Spiele
         } catch (error) {
             console.error("Error saving game:", error);
             alert("Fehler beim Speichern des Spiels!");
         }
     }
 
-    // Edit Game Funktion
+    // Spiele laden
+    async function loadGames() {
+        const gameList = document.getElementById('game-list');
+        gameList.innerHTML = ''; // Liste leeren
+
+        try {
+            const snapshot = await db.collection("games").get();
+            snapshot.forEach((doc) => {
+                const game = doc.data();
+                const card = createGameCard(game, doc.id);
+                gameList.appendChild(card);
+            });
+        } catch (error) {
+            console.error("Error loading games:", error);
+        }
+    }
+
+    // Spiel bearbeiten
     async function editGame(id) {
         try {
             const doc = await db.collection("games").doc(id).get();
@@ -797,7 +817,6 @@
                 const game = doc.data();
                 currentGameId = id;
                 
-                // Formularfelder füllen
                 document.getElementById('game-name').value = game.name || '';
                 document.getElementById('game-link').value = game.link || '';
                 document.getElementById('game-image').value = game.image || '';
@@ -805,8 +824,11 @@
                 // Genres zurücksetzen und auswählen
                 document.querySelectorAll('.genre-option').forEach(option => {
                     const genre = option.getAttribute('data-genre');
-                    option.classList.toggle('selected', 
-                        game.genres && game.genres.includes(genre));
+                    if (game.genres && game.genres.includes(genre)) {
+                        option.classList.add('selected');
+                    } else {
+                        option.classList.remove('selected');
+                    }
                 });
                 
                 document.getElementById('game-form').style.display = 'block';
@@ -817,28 +839,35 @@
         }
     }
 
-    // Clear Form Funktion
+    // Formular zurücksetzen
     function clearGameForm() {
         document.getElementById('game-name').value = '';
         document.getElementById('game-link').value = '';
         document.getElementById('game-image').value = '';
+        currentGameId = null;
         document.querySelectorAll('.genre-option').forEach(option => {
             option.classList.remove('selected');
         });
-        currentGameId = null;
     }
 
-    // Add Game Button Handler
-    document.getElementById('add-game-btn').addEventListener('click', function() {
-        clearGameForm();
-        document.getElementById('game-form').style.display = 'block';
+    // Event Listener für den Speichern-Button
+    document.getElementById('save-game').addEventListener('click', function() {
+        const gameData = {
+            name: document.getElementById('game-name').value,
+            link: document.getElementById('game-link').value,
+            image: document.getElementById('game-image').value
+        };
+        saveGame(gameData);
     });
 
-    // Close Modal Handler
+    // Schließen des Modals
     document.querySelector('.close-modal').addEventListener('click', function() {
         document.getElementById('game-form').style.display = 'none';
         clearGameForm();
     });
+
+    // Initial Games laden
+    loadGames();
 </script>
     
 <script src="script.js"></script>

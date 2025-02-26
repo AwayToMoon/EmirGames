@@ -809,28 +809,6 @@
         return card;
     }
 
-    // Aktualisiere die Funktion zum Speichern eines Spiels
-    async function saveGame(gameData) {
-        try {
-            const selectedGenres = Array.from(document.querySelectorAll('.genre-option.selected'))
-                .map(option => option.getAttribute('data-genre'));
-            
-            gameData.genres = selectedGenres;
-            
-            if (gameData.id) {
-                await db.collection("games").doc(gameData.id).update(gameData);
-            } else {
-                await db.collection("games").add(gameData);
-            }
-            
-            document.getElementById('game-form').style.display = 'none';
-            loadGames();
-        } catch (error) {
-            console.error("Error saving game:", error);
-            alert("Fehler beim Speichern des Spiels!");
-        }
-    }
-
     // Genre-Auswahl im Modal
     document.querySelectorAll('.genre-option').forEach(option => {
         option.addEventListener('click', function() {
@@ -838,30 +816,89 @@
         });
     });
 
-    // Beim Bearbeiten eines Spiels
-    async function editGame(id) {
-        const doc = await db.collection("games").doc(id).get();
-        if (doc.exists) {
-            const game = doc.data();
-            currentGameId = id;
+    // Aktualisiere die saveGame Funktion
+    async function saveGame(gameData) {
+        try {
+            const selectedGenres = Array.from(document.querySelectorAll('.genre-option.selected'))
+                .map(option => option.getAttribute('data-genre'));
             
-            document.getElementById('game-name').value = game.name || '';
-            document.getElementById('game-link').value = game.link || '';
-            document.getElementById('game-image').value = game.image || '';
+            const finalGameData = {
+                name: gameData.name,
+                link: gameData.link,
+                image: gameData.image,
+                genres: selectedGenres
+            };
             
-            // Reset und setze ausgewählte Genres
+            if (currentGameId) {
+                await db.collection("games").doc(currentGameId).update(finalGameData);
+            } else {
+                await db.collection("games").add(finalGameData);
+            }
+            
+            document.getElementById('game-form').style.display = 'none';
+            loadGames();
+            
+            // Reset das Formular und die Genre-Auswahl
+            document.getElementById('game-name').value = '';
+            document.getElementById('game-link').value = '';
+            document.getElementById('game-image').value = '';
             document.querySelectorAll('.genre-option').forEach(option => {
-                const genre = option.getAttribute('data-genre');
-                if (game.genres && game.genres.includes(genre)) {
-                    option.classList.add('selected');
-                } else {
-                    option.classList.remove('selected');
-                }
+                option.classList.remove('selected');
             });
+            currentGameId = null;
             
-            document.getElementById('game-form').style.display = 'block';
+        } catch (error) {
+            console.error("Error saving game:", error);
+            alert("Fehler beim Speichern des Spiels!");
         }
     }
+
+    // Aktualisiere die editGame Funktion
+    async function editGame(id) {
+        try {
+            const doc = await db.collection("games").doc(id).get();
+            if (doc.exists) {
+                const game = doc.data();
+                currentGameId = id;
+                
+                document.getElementById('game-name').value = game.name || '';
+                document.getElementById('game-link').value = game.link || '';
+                document.getElementById('game-image').value = game.image || '';
+                
+                // Reset und setze ausgewählte Genres
+                document.querySelectorAll('.genre-option').forEach(option => {
+                    const genre = option.getAttribute('data-genre');
+                    if (game.genres && game.genres.includes(genre)) {
+                        option.classList.add('selected');
+                    } else {
+                        option.classList.remove('selected');
+                    }
+                });
+                
+                document.getElementById('game-form').style.display = 'block';
+            }
+        } catch (error) {
+            console.error("Error editing game:", error);
+            alert("Fehler beim Laden des Spiels!");
+        }
+    }
+
+    // Füge diese Hilfsfunktion hinzu
+    function clearGameForm() {
+        document.getElementById('game-name').value = '';
+        document.getElementById('game-link').value = '';
+        document.getElementById('game-image').value = '';
+        document.querySelectorAll('.genre-option').forEach(option => {
+            option.classList.remove('selected');
+        });
+        currentGameId = null;
+    }
+
+    // Aktualisiere den Add Game Button Click Handler
+    document.getElementById('add-game-btn').addEventListener('click', function() {
+        clearGameForm();
+        document.getElementById('game-form').style.display = 'block';
+    });
 </script>
     
 <script src="script.js"></script>

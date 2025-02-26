@@ -385,6 +385,7 @@
             margin-top: auto;
         }
 
+        /* Genre Container Styles */
         .genre-container {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -401,6 +402,7 @@
             margin: 8px 0;
         }
 
+        /* Gemeinsame Basis-Styles */
         .genre-tag, .genre-option {
             padding: 3px 8px;
             border-radius: 4px;
@@ -415,86 +417,73 @@
             text-align: center;
         }
 
-        [data-genre="Horror"] {
+        /* Spezifische Genre-Farben für beide Anwendungsfälle */
+        .genre-tag[data-genre="Horror"], 
+        .genre-option[data-genre="Horror"] {
             background: #607D8B !important;
             border: 1px solid #607D8B !important;
         }
-        .genre-option[data-genre="Horror"].selected {
-            background: #455A64 !important;
-        }
 
-        [data-genre="Rätsel"] {
+        .genre-tag[data-genre="Rätsel"], 
+        .genre-option[data-genre="Rätsel"] {
             background: #00BCD4 !important;
             border: 1px solid #00BCD4 !important;
         }
-        .genre-option[data-genre="Rätsel"].selected {
-            background: #0097A7 !important;
-        }
 
-        [data-genre="Racing"] {
+        .genre-tag[data-genre="Racing"], 
+        .genre-option[data-genre="Racing"] {
             background: #FF9800 !important;
             border: 1px solid #FF9800 !important;
         }
-        .genre-option[data-genre="Racing"].selected {
-            background: #F57C00 !important;
-        }
 
-        [data-genre="Story"] {
+        .genre-tag[data-genre="Story"], 
+        .genre-option[data-genre="Story"] {
             background: #9C27B0 !important;
             border: 1px solid #9C27B0 !important;
         }
-        .genre-option[data-genre="Story"].selected {
-            background: #7B1FA2 !important;
-        }
 
-        [data-genre="Action"] {
+        .genre-tag[data-genre="Action"], 
+        .genre-option[data-genre="Action"] {
             background: #FF5722 !important;
             border: 1px solid #FF5722 !important;
         }
-        .genre-option[data-genre="Action"].selected {
-            background: #E64A19 !important;
-        }
 
-        [data-genre="Adventure"] {
+        .genre-tag[data-genre="Adventure"], 
+        .genre-option[data-genre="Adventure"] {
             background: #4CAF50 !important;
             border: 1px solid #4CAF50 !important;
         }
-        .genre-option[data-genre="Adventure"].selected {
-            background: #388E3C !important;
-        }
 
-        [data-genre="RPG"] {
+        .genre-tag[data-genre="RPG"], 
+        .genre-option[data-genre="RPG"] {
             background: #673AB7 !important;
             border: 1px solid #673AB7 !important;
         }
-        .genre-option[data-genre="RPG"].selected {
-            background: #512DA8 !important;
-        }
 
-        [data-genre="Shooter"] {
+        .genre-tag[data-genre="Shooter"], 
+        .genre-option[data-genre="Shooter"] {
             background: #F44336 !important;
             border: 1px solid #F44336 !important;
         }
-        .genre-option[data-genre="Shooter"].selected {
-            background: #D32F2F !important;
-        }
 
-        [data-genre="Sport"] {
+        .genre-tag[data-genre="Sport"], 
+        .genre-option[data-genre="Sport"] {
             background: #2196F3 !important;
             border: 1px solid #2196F3 !important;
         }
-        .genre-option[data-genre="Sport"].selected {
-            background: #1976D2 !important;
-        }
 
-        [data-genre="Strategie"] {
+        .genre-tag[data-genre="Strategie"], 
+        .genre-option[data-genre="Strategie"] {
             background: #FFC107 !important;
             border: 1px solid #FFC107 !important;
         }
-        .genre-option[data-genre="Strategie"].selected {
-            background: #FFA000 !important;
+
+        /* Selected States für Genre-Options */
+        .genre-option.selected {
+            filter: brightness(0.8) !important;
         }
 
+        /* Hover Effekte */
         .genre-option:hover {
             opacity: 0.9;
             transform: translateY(-2px);

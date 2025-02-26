@@ -71,6 +71,15 @@
 
         .admin-section {
             margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .admin-logo {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
         }
 
         .header-divider {
@@ -486,6 +495,7 @@
             </div>
 
             <div class="admin-section">
+                <img id="admin-logo" src="#" alt="Admin Logo" class="admin-logo">
                 <button id="admin-login-btn">Login Away</button>
             </div>
         </div>
@@ -537,6 +547,7 @@
                 <h3>Logo URLs</h3>
                 <input type="text" id="header-logo-link" placeholder="Header Logo URL (empfohlen: 40x40px)">
                 <input type="text" id="logo-link" placeholder="Tab Icon URL (32x32px empfohlen)">
+                <input type="text" id="admin-logo-link" placeholder="Admin Logo URL (empfohlen: 40x40px)">
                 <button id="save-social">Speichern</button>
             </div>
         </div>
@@ -611,7 +622,8 @@
                 footerTiktok: document.getElementById("footer-tiktok-link").value || "#",
                 footerTwitter: document.getElementById("footer-twitter-link").value || "#",
                 logo: document.getElementById("logo-link").value || existingData.logo || "#",
-                headerLogo: document.getElementById("header-logo-link").value || existingData.headerLogo || "#"
+                headerLogo: document.getElementById("header-logo-link").value || existingData.headerLogo || "#",
+                adminLogo: document.getElementById("admin-logo-link").value || existingData.adminLogo || "#"
             };
 
             await db.collection("settings").doc("social").set(data);
@@ -622,6 +634,9 @@
             }
             if (data.logo !== "#") {
                 document.getElementById("favicon").href = data.logo;
+            }
+            if (data.adminLogo !== "#") {
+                document.getElementById("admin-logo").src = data.adminLogo;
             }
 
             document.getElementById('social-form').style.display = 'none';
@@ -661,12 +676,16 @@
                 document.getElementById("footer-twitter-link").value = data.footerTwitter || "";
                 document.getElementById("header-logo-link").value = data.headerLogo || "";
                 document.getElementById("logo-link").value = data.logo || "";
+                document.getElementById("admin-logo-link").value = data.adminLogo || "";
                 
                 if (data.headerLogo && data.headerLogo !== "#") {
                     document.getElementById("header-logo").src = data.headerLogo;
                 }
                 if (data.logo && data.logo !== "#") {
                     document.getElementById("favicon").href = data.logo;
+                }
+                if (data.adminLogo && data.adminLogo !== "#") {
+                    document.getElementById("admin-logo").src = data.adminLogo;
                 }
             }
         } catch (error) {

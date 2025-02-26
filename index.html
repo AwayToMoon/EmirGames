@@ -39,6 +39,18 @@
             position: relative;
         }
 
+        .logo-title-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .header-logo {
+            width: 40px;
+            height: 40px;
+            object-fit: contain;
+        }
+
         .site-title {
             color: #9c09db;
             margin: 0;
@@ -453,7 +465,10 @@
 <body>
     <div class="content-container">
         <div class="header">
-            <h1 class="site-title">HigherCellF Games</h1>
+            <div class="logo-title-container">
+                <img id="header-logo" src="#" alt="Logo" class="header-logo">
+                <h1 class="site-title">HigherCellF Games</h1>
+            </div>
             
             <div class="social-media">
                 <a href="#" class="social-btn" id="tiktok-btn" title="TikTok" target="_blank">
@@ -519,8 +534,9 @@
                 <input type="text" id="footer-instagram-link" placeholder="Footer Instagram URL">
                 <input type="text" id="footer-tiktok-link" placeholder="Footer TikTok URL">
                 <input type="text" id="footer-twitter-link" placeholder="Footer Twitter URL">
-                <h3>Logo URL (Tab Icon)</h3>
-                <input type="text" id="logo-link" placeholder="Logo URL (32x32px empfohlen)">
+                <h3>Logo URLs</h3>
+                <input type="text" id="header-logo-link" placeholder="Header Logo URL (empfohlen: 40x40px)">
+                <input type="text" id="logo-link" placeholder="Tab Icon URL (32x32px empfohlen)">
                 <button id="save-social">Speichern</button>
             </div>
         </div>
@@ -582,11 +598,9 @@
     // Links speichern
     document.getElementById('save-social').addEventListener('click', async function() {
         try {
-            // Hole das existierende Dokument
             const doc = await db.collection("settings").doc("social").get();
             const existingData = doc.exists ? doc.data() : {};
 
-            // Kombiniere existierende Daten mit neuen Daten
             const data = {
                 ...existingData,
                 tiktok: document.getElementById("tiktok-link").value || existingData.tiktok || "#",
@@ -596,31 +610,22 @@
                 footerInstagram: document.getElementById("footer-instagram-link").value || "#",
                 footerTiktok: document.getElementById("footer-tiktok-link").value || "#",
                 footerTwitter: document.getElementById("footer-twitter-link").value || "#",
-                logo: document.getElementById("logo-link").value || existingData.logo || "#"
+                logo: document.getElementById("logo-link").value || existingData.logo || "#",
+                headerLogo: document.getElementById("header-logo-link").value || existingData.headerLogo || "#"
             };
-
-            console.log("Saving data:", data); // Debug-Ausgabe
 
             await db.collection("settings").doc("social").set(data);
             
-            // Aktualisiere die Links direkt
-            document.getElementById("tiktok-btn").href = data.tiktok;
-            document.getElementById("discord-btn").href = data.discord;
-            document.getElementById("instagram-btn").href = data.instagram;
-            document.getElementById("kick-btn").href = data.kick;
-            document.getElementById("footer-instagram").href = data.footerInstagram;
-            document.getElementById("footer-tiktok").href = data.footerTiktok;
-            document.getElementById("footer-twitter").href = data.footerTwitter;
-            
+            // Aktualisiere die Links und Logos
+            if (data.headerLogo !== "#") {
+                document.getElementById("header-logo").src = data.headerLogo;
+            }
             if (data.logo !== "#") {
                 document.getElementById("favicon").href = data.logo;
             }
 
             document.getElementById('social-form').style.display = 'none';
             alert("Links wurden erfolgreich gespeichert!");
-            
-            // Debug: Zeige gespeicherte Daten
-            console.log("Saved data:", await db.collection("settings").doc("social").get().then(doc => doc.data()));
             
         } catch (error) {
             console.error("Fehler beim Speichern:", error);
@@ -634,7 +639,6 @@
             const doc = await db.collection("settings").doc("social").get();
             if (doc.exists) {
                 const data = doc.data();
-                console.log("Loaded data:", data); // Debug-Ausgabe
                 
                 // Header Links
                 document.getElementById("tiktok-btn").href = data.tiktok || "#";
@@ -655,8 +659,12 @@
                 document.getElementById("footer-instagram-link").value = data.footerInstagram || "";
                 document.getElementById("footer-tiktok-link").value = data.footerTiktok || "";
                 document.getElementById("footer-twitter-link").value = data.footerTwitter || "";
+                document.getElementById("header-logo-link").value = data.headerLogo || "";
                 document.getElementById("logo-link").value = data.logo || "";
                 
+                if (data.headerLogo && data.headerLogo !== "#") {
+                    document.getElementById("header-logo").src = data.headerLogo;
+                }
                 if (data.logo && data.logo !== "#") {
                     document.getElementById("favicon").href = data.logo;
                 }

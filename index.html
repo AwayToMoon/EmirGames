@@ -97,7 +97,7 @@
 
         #game-list {
             display: grid;
-            grid-template-columns: repeat(3, 324px);
+            grid-template-columns: repeat(1, 324px);
             gap: 20px;
             justify-content: center;
             padding: 20px;
@@ -174,7 +174,7 @@
             padding: 0 12px;
         }
 
-                .delete-game {
+        .delete-game {
             position: absolute;
             top: 5px;
             right: 5px;
@@ -419,7 +419,7 @@
             color: #ff0000;
         }
 
-                .corner-image {
+        .corner-image {
             position: fixed;
             bottom: 20px;
             right: 20px;
@@ -443,6 +443,26 @@
             .corner-image img {
                 width: 150px;
             }
+        }
+
+        .xp-button {
+            position: absolute;
+            padding: 10px 20px;
+            background: linear-gradient(to right, #9c09db, #b01af7);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            box-shadow: 0 0 10px rgba(156, 9, 219, 0.3);
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: none;
+        }
+
+        .xp-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px rgba(156, 9, 219, 0.5);
         }
     </style>
 </head>
@@ -481,6 +501,8 @@
 
         <div id="game-list"></div>
         
+        <button id="xpButton" class="xp-button">+XP</button>
+
         <div id="game-form" class="modal hidden">
             <div class="modal-content">
                 <span class="close-modal">&times;</span>
@@ -538,10 +560,9 @@
                     </a>
                 </div>
 
-                    <div class="corner-image">
-        <img src="https://i.imgur.com/PQrHi8j.png" alt="Corner Image">
-    </div>
-</div>
+                <div class="corner-image">
+                    <img src="https://i.imgur.com/PQrHi8j.png" alt="Corner Image">
+                </div>
             </div>
             <div class="copyright">
                 Copyright © 2025 Marvin Weiss. Alle Rechte vorbehalten.
@@ -670,6 +691,73 @@
 
     // Links beim Laden der Seite laden
     window.addEventListener('load', loadSocialLinks);
+
+    // XP Button Funktionalität
+    const DISCORD_WEBHOOK_URL = 'DEIN_DISCORD_WEBHOOK_URL_HIER'; // Ersetze dies mit deiner Discord Webhook URL
+    const CHANNEL_ID = 'DEIN_CHANNEL_ID_HIER'; // Ersetze dies mit deiner Channel ID
+
+    function positionXPButton() {
+        const button = document.getElementById('xpButton');
+        const container = document.querySelector('.content-container');
+        const containerRect = container.getBoundingClientRect();
+        
+        // Zufällige Position innerhalb des Containers
+        const x = Math.random() * (containerRect.width - 100);
+        const y = Math.random() * (containerRect.height - 50);
+        
+        button.style.left = `${x}px`;
+        button.style.top = `${y}px`;
+        button.style.display = 'block';
+    }
+
+    async function sendXPCommand() {
+        const button = document.getElementById('xpButton');
+        try {
+            const response = await fetch(DISCORD_WEBHOOK_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    content: '!xp',
+                    channel_id: CHANNEL_ID
+                })
+            });
+
+            if (response.ok) {
+                button.style.display = 'none';
+                alert('XP erfolgreich gesammelt!');
+            } else {
+                alert('Fehler beim Sammeln der XP. Versuche es später erneut.');
+            }
+        } catch (error) {
+            console.error('Fehler:', error);
+            alert('Ein Fehler ist aufgetreten. Bitte versuche es später erneut.');
+        }
+    }
+
+    // Event Listener für den XP Button
+    document.getElementById('xpButton').addEventListener('click', sendXPCommand);
+
+    // Initialisiere den Button und setze den täglichen Timer
+    function initXPButton() {
+        const lastPosition = localStorage.getItem('lastXPButtonPosition');
+        const now = new Date().getTime();
+
+        if (!lastPosition || (now - parseInt(lastPosition)) >= 86400000) {
+            positionXPButton();
+            localStorage.setItem('lastXPButtonPosition', now.toString());
+        }
+    }
+
+    // Führe die Initialisierung aus
+    initXPButton();
+
+    // Setze einen Timer für die tägliche Neupositionierung
+    setInterval(() => {
+        positionXPButton();
+        localStorage.setItem('lastXPButtonPosition', new Date().getTime().toString());
+    }, 86400000);
 </script>
     
 <script src="script.js"></script>

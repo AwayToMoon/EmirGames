@@ -210,7 +210,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 updateGenreSelection([]);
                 gameForm.classList.add("hidden");
                 gameForm.style.display = 'none';
-                renderGames();
+                currentGameId = null;
+                await renderGames();
             } catch (error) {
                 console.error("Error saving game:", error);
                 alert("Fehler beim Speichern des Spiels");
@@ -277,22 +278,24 @@ document.addEventListener('DOMContentLoaded', function() {
             const deleteBtn = document.createElement("button");
             deleteBtn.classList.add("delete-game");
             deleteBtn.innerText = "X";
-            deleteBtn.addEventListener("click", async () => {
+            deleteBtn.onclick = async (e) => {
+                e.stopPropagation();
                 if (confirm('Möchten Sie dieses Spiel wirklich löschen?')) {
                     try {
                         await db.collection("games").doc(game.id).delete();
-                        renderGames();
+                        await renderGames();
                     } catch (error) {
                         console.error("Error deleting game:", error);
                         alert("Fehler beim Löschen des Spiels");
                     }
                 }
-            });
+            };
 
             const editBtn = document.createElement("button");
             editBtn.classList.add("edit-game");
             editBtn.innerText = "✎";
-            editBtn.addEventListener("click", () => {
+            editBtn.onclick = (e) => {
+                e.stopPropagation();
                 currentGameId = game.id;
                 gameNameInput.value = game.name;
                 gameLinkInput.value = game.link;
@@ -301,7 +304,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.querySelector('#game-form h2').textContent = "Spiel bearbeiten";
                 gameForm.classList.remove("hidden");
                 gameForm.style.display = 'block';
-            });
+            };
 
             buttonContainer.appendChild(deleteBtn);
             buttonContainer.appendChild(editBtn);
@@ -312,11 +315,15 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     async function renderGames() {
-        gameList.innerHTML = "";
         try {
+            gameList.innerHTML = "";
             const snapshot = await db.collection("games").get();
+            const games = [];
             snapshot.forEach(doc => {
-                const game = doc.data();
+                games.push({ id: doc.id, ...doc.data() });
+            });
+            
+            games.forEach(game => {
                 const gameElement = displayGame(game, !adminPanel.classList.contains("hidden") && isEditMode);
                 gameList.appendChild(gameElement);
             });

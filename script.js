@@ -220,72 +220,105 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    function createGenreTag(genre, container, isEditable = false) {
+        const tag = document.createElement('div');
+        tag.className = 'genre-tag';
+        tag.setAttribute('data-genre', genre);
+        tag.textContent = genre;
+        
+        if (isEditable) {
+            const removeButton = document.createElement('span');
+            removeButton.className = 'remove-genre';
+            removeButton.innerHTML = '×';
+            removeButton.onclick = () => tag.remove();
+            tag.appendChild(removeButton);
+        }
+        
+        container.appendChild(tag);
+        return tag;
+    }
+
+    function displayGame(game, isEditable = false) {
+        const gameElement = document.createElement('div');
+        gameElement.className = 'game';
+        
+        const img = document.createElement('img');
+        img.src = game.image;
+        img.alt = game.name;
+        img.onclick = () => window.open(game.link, '_blank');
+        gameElement.appendChild(img);
+        
+        const content = document.createElement('div');
+        content.className = 'game-content';
+        
+        const h2 = document.createElement('h2');
+        h2.textContent = game.name;
+        content.appendChild(h2);
+        
+        const divider = document.createElement('div');
+        divider.className = 'game-divider';
+        content.appendChild(divider);
+        
+        const genresContainer = document.createElement('div');
+        genresContainer.className = 'game-genres';
+        
+        if (game.genres && Array.isArray(game.genres)) {
+            game.genres.forEach(genre => {
+                createGenreTag(genre, genresContainer, isEditable);
+            });
+        }
+        
+        content.appendChild(genresContainer);
+        gameElement.appendChild(content);
+        
+        if (!adminPanel.classList.contains("hidden") && isEditMode) {
+            const buttonContainer = document.createElement("div");
+
+            const deleteBtn = document.createElement("button");
+            deleteBtn.classList.add("delete-game");
+            deleteBtn.innerText = "X";
+            deleteBtn.addEventListener("click", async () => {
+                if (confirm('Möchten Sie dieses Spiel wirklich löschen?')) {
+                    try {
+                        await db.collection("games").doc(game.id).delete();
+                        renderGames();
+                    } catch (error) {
+                        console.error("Error deleting game:", error);
+                        alert("Fehler beim Löschen des Spiels");
+                    }
+                }
+            });
+
+            const editBtn = document.createElement("button");
+            editBtn.classList.add("edit-game");
+            editBtn.innerText = "✎";
+            editBtn.addEventListener("click", () => {
+                currentGameId = game.id;
+                gameNameInput.value = game.name;
+                gameLinkInput.value = game.link;
+                gameImageInput.value = game.image;
+                updateGenreSelection(game.genres || []);
+                document.querySelector('#game-form h2').textContent = "Spiel bearbeiten";
+                gameForm.classList.remove("hidden");
+                gameForm.style.display = 'block';
+            });
+
+            buttonContainer.appendChild(deleteBtn);
+            buttonContainer.appendChild(editBtn);
+            gameElement.appendChild(buttonContainer);
+        }
+        
+        return gameElement;
+    }
+
     async function renderGames() {
         gameList.innerHTML = "";
         try {
             const snapshot = await db.collection("games").get();
             snapshot.forEach(doc => {
                 const game = doc.data();
-                const div = document.createElement("div");
-                div.classList.add("game");
-
-                // Genre-Tags mit Lösch-Option erstellen
-                const genreTags = game.genres ? game.genres.map(genre => 
-                    `<span class="genre-tag">
-                        ${genre}
-                        ${!adminPanel.classList.contains("hidden") && isEditMode ? 
-                            `<span class="remove-genre" onclick="event.stopPropagation(); removeGenre('${doc.id}', '${genre}')">×</span>` 
-                            : ''}
-                    </span>`
-                ).join('') : '';
-
-                div.innerHTML = `
-                    <img src="${game.image}" alt="${game.name}" onclick="window.open('${game.link}', '_blank')">
-                    <div class="game-content">
-                        <h2>${game.name}</h2>
-                        <div class="game-divider"></div>
-                        <div class="game-genres">${genreTags}</div>
-                    </div>
-                `;
-
-                if (!adminPanel.classList.contains("hidden") && isEditMode) {
-                    const buttonContainer = document.createElement("div");
-
-                    const deleteBtn = document.createElement("button");
-                    deleteBtn.classList.add("delete-game");
-                    deleteBtn.innerText = "X";
-                    deleteBtn.addEventListener("click", async () => {
-                        if (confirm('Möchten Sie dieses Spiel wirklich löschen?')) {
-                            try {
-                                await db.collection("games").doc(doc.id).delete();
-                                renderGames();
-                            } catch (error) {
-                                console.error("Error deleting game:", error);
-                                alert("Fehler beim Löschen des Spiels");
-                            }
-                        }
-                    });
-
-                    const editBtn = document.createElement("button");
-                    editBtn.classList.add("edit-game");
-                    editBtn.innerText = "✎";
-                    editBtn.addEventListener("click", () => {
-                        currentGameId = doc.id;
-                        gameNameInput.value = game.name;
-                        gameLinkInput.value = game.link;
-                        gameImageInput.value = game.image;
-                        updateGenreSelection(game.genres || []);
-                        document.querySelector('#game-form h2').textContent = "Spiel bearbeiten";
-                        gameForm.classList.remove("hidden");
-                        gameForm.style.display = 'block';
-                    });
-
-                    buttonContainer.appendChild(deleteBtn);
-                    buttonContainer.appendChild(editBtn);
-                    div.appendChild(buttonContainer);
-                }
-
-                gameList.appendChild(div);
+                const gameElement = displayGame(game, !adminPanel.classList.contains("hidden") && isEditMode);
+                gameList.appendChild(gameElement);
             });
         } catch (error) {
             console.error("Error rendering games:", error);

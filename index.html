@@ -1015,19 +1015,14 @@
     }
 
     let isLoggedIn = false;
-    const adminLoginBtn = document.getElementById('admin-login-btn');
-    const adminPanel = document.getElementById('admin-panel');
 
-    // Entfernen Sie den alten admin-login-btn Event Listener
-    adminLoginBtn.removeEventListener('click', () => {});
-
-    // Neuer Event Listener für den Login/Logout Button
-    adminLoginBtn.addEventListener("click", () => {
+    // Login/Logout Button Handler
+    document.getElementById('admin-login-btn').addEventListener("click", () => {
         if (isLoggedIn) {
             // Logout
             isLoggedIn = false;
-            adminLoginBtn.textContent = "Login Away亗";
-            adminPanel.classList.add("hidden");
+            document.getElementById('admin-login-btn').textContent = "Login Away亗";
+            document.getElementById('admin-panel').classList.add("hidden");
             renderGames();
         } else {
             // Login Modal öffnen
@@ -1042,21 +1037,14 @@
     // Login Submit Button
     document.getElementById('login-submit').addEventListener('click', async () => {
         const password = document.getElementById('admin-password').value;
-        
-        if (password.trim() === "") {
-            alert("Bitte geben Sie ein Passwort ein");
-            return;
-        }
-        
-        if (await checkAdminPassword(password)) {
-            isLoggedIn = true;
-            adminLoginBtn.textContent = "Log Out Away亗";
-            adminPanel.classList.remove("hidden");
-            document.getElementById('login-modal').style.display = 'none';
-            document.getElementById('admin-password').value = '';
-            loadSocialLinks();
-        } else {
-            alert("Falsches Passwort!");
+        handleLogin(password);
+    });
+
+    // Login mit Enter-Taste
+    document.getElementById('admin-password').addEventListener('keypress', async (e) => {
+        if (e.key === 'Enter') {
+            const password = e.target.value;
+            handleLogin(password);
         }
     });
 
@@ -1067,31 +1055,24 @@
         document.getElementById('admin-password').value = '';
     });
 
-    // Enter-Taste im Passwort-Feld
-    document.getElementById('admin-password').addEventListener('keypress', async (e) => {
-        if (e.key === 'Enter') {
-            const password = e.target.value;
-            
-            if (password.trim() === "") {
-                alert("Bitte geben Sie ein Passwort ein");
-                return;
-            }
-            
-            if (await checkAdminPassword(password)) {
-                isLoggedIn = true;
-                adminLoginBtn.textContent = "Log Out Away亗";
-                adminPanel.classList.remove("hidden");
-                document.getElementById('login-modal').style.display = 'none';
-                e.target.value = '';
-                loadSocialLinks();
-            } else {
-                alert("Falsches Passwort!");
-            }
+    // Login Handler Funktion
+    async function handleLogin(password) {
+        if (password.trim() === "") {
+            alert("Bitte geben Sie ein Passwort ein");
+            return;
         }
-    });
-
-    // Entfernen Sie den alten Event Listener für das Admin Panel Toggle
-    document.getElementById('admin-panel').removeEventListener('click', () => {});
+        
+        if (await checkAdminPassword(password)) {
+            isLoggedIn = true;
+            document.getElementById('admin-login-btn').textContent = "Log Out Away亗";
+            document.getElementById('admin-panel').classList.remove("hidden");
+            document.getElementById('login-modal').style.display = 'none';
+            document.getElementById('admin-password').value = '';
+            loadSocialLinks();
+        } else {
+            alert("Falsches Passwort!");
+        }
+    }
 </script>
     
 <script src="script.js"></script>

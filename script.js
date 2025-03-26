@@ -96,20 +96,56 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    adminLoginBtn.addEventListener("click", async () => {
-        const password = prompt("Bitte Admin-Passwort eingeben:");
+    adminLoginBtn.addEventListener("click", () => {
+        const loginModal = document.getElementById('login-modal');
+        const passwordInput = document.getElementById('admin-password');
+        loginModal.style.display = 'block';
+        loginModal.classList.remove('hidden');
+        passwordInput.focus();
+    });
+
+    document.getElementById('login-submit').addEventListener('click', async () => {
+        const password = document.getElementById('admin-password').value;
         
-        if (password === null || password.trim() === "") {
-            adminPanel.classList.add("hidden");
+        if (password.trim() === "") {
+            alert("Bitte geben Sie ein Passwort ein");
             return;
         }
         
         if (await checkAdminPassword(password)) {
             adminPanel.classList.remove("hidden");
+            document.getElementById('login-modal').style.display = 'none';
+            document.getElementById('admin-password').value = '';
             loadSocialLinks();
         } else {
-            adminPanel.classList.add("hidden");
             alert("Falsches Passwort!");
+        }
+    });
+
+    document.getElementById('login-cancel').addEventListener('click', () => {
+        const loginModal = document.getElementById('login-modal');
+        loginModal.style.display = 'none';
+        document.getElementById('admin-password').value = '';
+        adminPanel.classList.add("hidden");
+    });
+
+    document.getElementById('admin-password').addEventListener('keypress', async (e) => {
+        if (e.key === 'Enter') {
+            const password = e.target.value;
+            
+            if (password.trim() === "") {
+                alert("Bitte geben Sie ein Passwort ein");
+                return;
+            }
+            
+            if (await checkAdminPassword(password)) {
+                adminPanel.classList.remove("hidden");
+                document.getElementById('login-modal').style.display = 'none';
+                e.target.value = '';
+                loadSocialLinks();
+            } else {
+                alert("Falsches Passwort!");
+            }
         }
     });
 

@@ -1014,24 +1014,20 @@
         }
     }
 
-    // Admin Panel Toggle
-    document.getElementById('admin-login-btn').addEventListener('click', function() {
-        document.getElementById('admin-panel').classList.toggle('hidden');
-    });
-
-    // Links beim Laden der Seite laden
-    window.addEventListener('load', loadSocialLinks);
-
     let isLoggedIn = false;
     const adminLoginBtn = document.getElementById('admin-login-btn');
+    const adminPanel = document.getElementById('admin-panel');
 
+    // Entfernen Sie den alten admin-login-btn Event Listener
+    adminLoginBtn.removeEventListener('click', () => {});
+
+    // Neuer Event Listener für den Login/Logout Button
     adminLoginBtn.addEventListener("click", () => {
         if (isLoggedIn) {
             // Logout
             isLoggedIn = false;
             adminLoginBtn.textContent = "Login Away亗";
-            document.getElementById('admin-panel').classList.add("hidden");
-            // Optional: Spiele neu laden um Edit-Buttons zu verstecken
+            adminPanel.classList.add("hidden");
             renderGames();
         } else {
             // Login Modal öffnen
@@ -1043,7 +1039,7 @@
         }
     });
 
-    // Anpassen des bestehenden login-submit Event Listeners
+    // Login Submit Button
     document.getElementById('login-submit').addEventListener('click', async () => {
         const password = document.getElementById('admin-password').value;
         
@@ -1064,14 +1060,14 @@
         }
     });
 
-    // Anpassen des login-cancel Event Listeners
+    // Login Cancel Button
     document.getElementById('login-cancel').addEventListener('click', () => {
         const loginModal = document.getElementById('login-modal');
         loginModal.style.display = 'none';
         document.getElementById('admin-password').value = '';
     });
 
-    // Anpassen des Passwort-Input Event Listeners für die Enter-Taste
+    // Enter-Taste im Passwort-Feld
     document.getElementById('admin-password').addEventListener('keypress', async (e) => {
         if (e.key === 'Enter') {
             const password = e.target.value;
@@ -1093,6 +1089,9 @@
             }
         }
     });
+
+    // Entfernen Sie den alten Event Listener für das Admin Panel Toggle
+    document.getElementById('admin-panel').removeEventListener('click', () => {});
 </script>
     
 <script src="script.js"></script>

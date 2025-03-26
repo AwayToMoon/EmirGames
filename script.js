@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('admin-panel').classList.add('hidden');
     const gameList = document.getElementById("game-list");
     const adminLoginBtn = document.getElementById("admin-login-btn");
     const adminPanel = document.getElementById("admin-panel");
@@ -97,10 +98,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
     adminLoginBtn.addEventListener("click", async () => {
         const password = prompt("Bitte Admin-Passwort eingeben:");
+        
+        if (password === null || password.trim() === "") {
+            adminPanel.classList.add("hidden");
+            return;
+        }
+        
         if (await checkAdminPassword(password)) {
             adminPanel.classList.remove("hidden");
             loadSocialLinks();
         } else {
+            adminPanel.classList.add("hidden");
             alert("Falsches Passwort!");
         }
     });

@@ -228,6 +228,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const name = gameNameInput.value;
         const link = gameLinkInput.value;
         const image = gameImageInput.value;
+        const isNew = document.getElementById('is-new-game').checked;
 
         if (name && link && image) {
             try {
@@ -236,14 +237,16 @@ document.addEventListener('DOMContentLoaded', function() {
                         name,
                         link,
                         image,
-                        genres: selectedGenres
+                        genres: selectedGenres,
+                        isNew: isNew
                     });
                 } else {
                     await db.collection("games").add({
                         name,
                         link,
                         image,
-                        genres: selectedGenres
+                        genres: selectedGenres,
+                        isNew: isNew
                     });
                 }
 
@@ -286,6 +289,13 @@ document.addEventListener('DOMContentLoaded', function() {
     function displayGame(game, isEditable = false) {
         const gameElement = document.createElement('div');
         gameElement.className = 'game';
+        
+        if (game.isNew) {
+            const newLabel = document.createElement('div');
+            newLabel.className = 'new-label';
+            newLabel.textContent = 'NEU';
+            gameElement.appendChild(newLabel);
+        }
         
         const img = document.createElement('img');
         img.src = game.image;
@@ -344,6 +354,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 gameNameInput.value = game.name;
                 gameLinkInput.value = game.link;
                 gameImageInput.value = game.image;
+                document.getElementById('is-new-game').checked = game.isNew || false;
                 updateGenreSelection(game.genres || []);
                 document.querySelector('#game-form h2').textContent = "Spiel bearbeiten";
                 gameForm.classList.remove("hidden");

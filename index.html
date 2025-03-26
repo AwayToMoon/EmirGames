@@ -1021,6 +1021,78 @@
 
     // Links beim Laden der Seite laden
     window.addEventListener('load', loadSocialLinks);
+
+    let isLoggedIn = false;
+    const adminLoginBtn = document.getElementById('admin-login-btn');
+
+    adminLoginBtn.addEventListener("click", () => {
+        if (isLoggedIn) {
+            // Logout
+            isLoggedIn = false;
+            adminLoginBtn.textContent = "Login Away亗";
+            document.getElementById('admin-panel').classList.add("hidden");
+            // Optional: Spiele neu laden um Edit-Buttons zu verstecken
+            renderGames();
+        } else {
+            // Login Modal öffnen
+            const loginModal = document.getElementById('login-modal');
+            const passwordInput = document.getElementById('admin-password');
+            loginModal.style.display = 'block';
+            loginModal.classList.remove('hidden');
+            passwordInput.focus();
+        }
+    });
+
+    // Anpassen des bestehenden login-submit Event Listeners
+    document.getElementById('login-submit').addEventListener('click', async () => {
+        const password = document.getElementById('admin-password').value;
+        
+        if (password.trim() === "") {
+            alert("Bitte geben Sie ein Passwort ein");
+            return;
+        }
+        
+        if (await checkAdminPassword(password)) {
+            isLoggedIn = true;
+            adminLoginBtn.textContent = "Log Out Away亗";
+            adminPanel.classList.remove("hidden");
+            document.getElementById('login-modal').style.display = 'none';
+            document.getElementById('admin-password').value = '';
+            loadSocialLinks();
+        } else {
+            alert("Falsches Passwort!");
+        }
+    });
+
+    // Anpassen des login-cancel Event Listeners
+    document.getElementById('login-cancel').addEventListener('click', () => {
+        const loginModal = document.getElementById('login-modal');
+        loginModal.style.display = 'none';
+        document.getElementById('admin-password').value = '';
+    });
+
+    // Anpassen des Passwort-Input Event Listeners für die Enter-Taste
+    document.getElementById('admin-password').addEventListener('keypress', async (e) => {
+        if (e.key === 'Enter') {
+            const password = e.target.value;
+            
+            if (password.trim() === "") {
+                alert("Bitte geben Sie ein Passwort ein");
+                return;
+            }
+            
+            if (await checkAdminPassword(password)) {
+                isLoggedIn = true;
+                adminLoginBtn.textContent = "Log Out Away亗";
+                adminPanel.classList.remove("hidden");
+                document.getElementById('login-modal').style.display = 'none';
+                e.target.value = '';
+                loadSocialLinks();
+            } else {
+                alert("Falsches Passwort!");
+            }
+        }
+    });
 </script>
     
 <script src="script.js"></script>

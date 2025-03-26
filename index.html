@@ -620,6 +620,59 @@
             margin: 0;
             cursor: pointer;
         }
+
+        .edit-games-list {
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+        
+        .edit-game-item {
+            background: rgba(43, 9, 52, 0.7);
+            border: 1px solid rgba(156, 9, 219, 0.4);
+            border-radius: 8px;
+            margin: 10px 0;
+            padding: 10px;
+        }
+        
+        .game-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .game-header h3 {
+            margin: 0;
+        }
+        
+        .edit-form {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .edit-form.hidden {
+            display: none;
+        }
+        
+        .edit-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .edit-game-btn {
+            padding: 5px 10px;
+            background: #9c09db;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .edit-game-btn:hover {
+            background: #b01af7;
+        }
     </style>
 </head>
 <body>
@@ -946,40 +999,45 @@
         try {
             const snapshot = await db.collection('games').get();
             const gameList = document.createElement('div');
+            gameList.className = 'edit-games-list';
             
             snapshot.forEach(doc => {
                 const game = doc.data();
-                const editForm = document.createElement('div');
-                editForm.className = 'game-edit-form';
+                const gameItem = document.createElement('div');
+                gameItem.className = 'edit-game-item';
                 
-                editForm.innerHTML = `
-                    <h3>${game.name}</h3>
-                    <input type="text" value="${game.name}" placeholder="Spielname">
-                    <input type="text" value="${game.link}" placeholder="Spiel-URL">
-                    <input type="text" value="${game.image}" placeholder="Bild-URL">
-                    <div class="new-game-option">
-                        <label>
-                            <input type="checkbox" ${game.isNew ? 'checked' : ''}> Als "NEU" markieren
-                        </label>
+                // Zeige zunächst nur den Spielnamen und einen Bearbeiten-Button
+                gameItem.innerHTML = `
+                    <div class="game-header">
+                        <h3>${game.name}</h3>
+                        <button class="edit-game-btn">Bearbeiten</button>
                     </div>
-                    <button onclick="updateGame('${doc.id}', this.parentElement)">Speichern</button>
-                    <button onclick="deleteGame('${doc.id}')">Löschen</button>
+                    <div class="edit-form hidden">
+                        <input type="text" value="${game.name}" placeholder="Spielname">
+                        <input type="text" value="${game.link}" placeholder="Spiel-URL">
+                        <input type="text" value="${game.image}" placeholder="Bild-URL">
+                        <div class="new-game-option">
+                            <label>
+                                <input type="checkbox" ${game.isNew ? 'checked' : ''}> Als "NEU" markieren
+                            </label>
+                        </div>
+                        <div class="edit-buttons">
+                            <button onclick="updateGame('${doc.id}', this.parentElement.parentElement)">Speichern</button>
+                            <button onclick="deleteGame('${doc.id}')">Löschen</button>
+                        </div>
+                    </div>
                 `;
                 
-                // Event Listener für die Checkbox
-                const checkbox = editForm.querySelector('input[type="checkbox"]');
-                checkbox.onchange = async () => {
-                    try {
-                        await db.collection('games').doc(doc.id).update({
-                            isNew: checkbox.checked
-                        });
-                    } catch (error) {
-                        console.error('Fehler beim Aktualisieren des NEU-Status:', error);
-                        checkbox.checked = !checkbox.checked; // Setze Checkbox zurück bei Fehler
-                    }
+                // Event Listener für den Bearbeiten-Button
+                const editBtn = gameItem.querySelector('.edit-game-btn');
+                const editForm = gameItem.querySelector('.edit-form');
+                
+                editBtn.onclick = () => {
+                    editForm.classList.toggle('hidden');
+                    editBtn.textContent = editForm.classList.contains('hidden') ? 'Bearbeiten' : 'Schließen';
                 };
                 
-                gameList.appendChild(editForm);
+                gameList.appendChild(gameItem);
             });
             
             const modal = document.createElement('div');
@@ -995,7 +1053,7 @@
             closeBtn.innerHTML = '&times;';
             closeBtn.onclick = () => {
                 modal.remove();
-                loadGames(); // Aktualisiere die Spieleliste
+                loadGames();
             };
             
             modalContent.insertBefore(closeBtn, modalContent.firstChild);

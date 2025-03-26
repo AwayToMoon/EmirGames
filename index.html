@@ -580,6 +580,26 @@
             background: linear-gradient(45deg, #ff69b4, #ff1493);
             border: 1px solid #ff69b4;
         }
+
+        .new-label {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #ff0000;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 10;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .new-label:hover {
+            background: #cc0000;
+            transform: scale(1.1);
+        }
     </style>
 </head>
 <body>
@@ -812,6 +832,87 @@
 
     // Links beim Laden der Seite laden
     window.addEventListener('load', loadSocialLinks);
+
+    document.getElementById('save-game').addEventListener('click', async function() {
+        try {
+            const name = document.getElementById('game-name').value;
+            const link = document.getElementById('game-link').value;
+            const image = document.getElementById('game-image').value;
+            const selectedGenres = Array.from(document.querySelectorAll('.genre-option.selected'))
+                .map(el => el.dataset.genre);
+
+            if (!name || !link || !image) {
+                alert('Bitte alle Felder ausfüllen!');
+                return;
+            }
+
+            const gameData = {
+                name,
+                link,
+                image,
+                genres: selectedGenres,
+                isNew: true,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            await db.collection('games').add(gameData);
+            document.getElementById('game-form').style.display = 'none';
+            loadGames();
+        } catch (error) {
+            console.error('Fehler beim Speichern:', error);
+            alert('Fehler beim Speichern!');
+        }
+    });
+
+    async function loadGames() {
+        const gameList = document.getElementById('game-list');
+        gameList.innerHTML = '';
+
+        try {
+            const snapshot = await db.collection('games').get();
+            snapshot.forEach(doc => {
+                const game = doc.data();
+                const gameElement = document.createElement('div');
+                gameElement.className = 'game';
+                
+                if (game.isNew) {
+                    const newLabel = document.createElement('div');
+                    newLabel.className = 'new-label';
+                    newLabel.textContent = 'NEU';
+                    newLabel.onclick = async (e) => {
+                        e.stopPropagation();
+                        try {
+                            await db.collection('games').doc(doc.id).update({
+                                isNew: false
+                            });
+                            newLabel.remove();
+                        } catch (error) {
+                            console.error('Fehler beim Entfernen des NEU-Labels:', error);
+                        }
+                    };
+                    gameElement.appendChild(newLabel);
+                }
+
+                // Fügen Sie den Rest des Game-Elements hinzu
+                gameElement.innerHTML += `
+                    <img src="${game.image}" alt="${game.name}" onclick="window.open('${game.link}', '_blank')">
+                    <div class="game-content">
+                        <h2>${game.name}</h2>
+                        <div class="game-divider"></div>
+                        <div class="game-genres">
+                            ${game.genres.map(genre => `
+                                <span class="genre-tag" data-genre="${genre}">${genre}</span>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+                
+                gameList.appendChild(gameElement);
+            });
+        } catch (error) {
+            console.error('Fehler beim Laden der Spiele:', error);
+        }
+    }
 </script>
     
 <script src="script.js"></script>

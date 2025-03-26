@@ -600,6 +600,26 @@
             background: #cc0000;
             transform: scale(1.1);
         }
+
+        .new-game-option {
+            margin: 10px 0;
+            color: white;
+            display: flex;
+            align-items: center;
+        }
+
+        .new-game-option label {
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .new-game-option input[type="checkbox"] {
+            width: auto;
+            margin: 0;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -657,6 +677,11 @@
                     <div class="genre-option" data-genre="Racing">Racing</div>
                     <div class="genre-option" data-genre="Horror">Horror</div>
                     <div class="genre-option" data-genre="Story">Story</div>
+                </div>
+                <div class="new-game-option">
+                    <label>
+                        <input type="checkbox" id="is-new-game"> Als "NEU" markieren
+                    </label>
                 </div>
                 <input type="text" id="game-link" placeholder="Spiel-URL">
                 <input type="text" id="game-image" placeholder="Bild-URL">
@@ -838,6 +863,7 @@
             const name = document.getElementById('game-name').value;
             const link = document.getElementById('game-link').value;
             const image = document.getElementById('game-image').value;
+            const isNew = document.getElementById('is-new-game').checked;
             const selectedGenres = Array.from(document.querySelectorAll('.genre-option.selected'))
                 .map(el => el.dataset.genre);
 
@@ -851,7 +877,7 @@
                 link,
                 image,
                 genres: selectedGenres,
-                isNew: true,
+                isNew: isNew,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             };
 
@@ -913,6 +939,41 @@
             console.error('Fehler beim Laden der Spiele:', error);
         }
     }
+
+    // Im edit-games-btn Event Listener
+    document.getElementById('edit-games-btn').addEventListener('click', async function() {
+        try {
+            const snapshot = await db.collection('games').get();
+            snapshot.forEach(doc => {
+                const game = doc.data();
+                // ... existing edit code ...
+                
+                // Füge Checkbox zum Bearbeiten-Formular hinzu
+                const isNewCheckbox = document.createElement('input');
+                isNewCheckbox.type = 'checkbox';
+                isNewCheckbox.checked = game.isNew || false;
+                isNewCheckbox.onchange = async () => {
+                    try {
+                        await db.collection('games').doc(doc.id).update({
+                            isNew: isNewCheckbox.checked
+                        });
+                        loadGames(); // Aktualisiere die Anzeige
+                    } catch (error) {
+                        console.error('Fehler beim Aktualisieren des NEU-Status:', error);
+                    }
+                };
+                
+                const label = document.createElement('label');
+                label.appendChild(isNewCheckbox);
+                label.appendChild(document.createTextNode(' Als "NEU" markieren'));
+                
+                // Füge die Checkbox zum Bearbeiten-Formular hinzu
+                editForm.appendChild(label);
+            });
+        } catch (error) {
+            console.error('Fehler beim Laden der Spiele:', error);
+        }
+    });
 </script>
     
 <script src="script.js"></script>

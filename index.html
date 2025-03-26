@@ -54,9 +54,10 @@
         .site-title {
             background: linear-gradient(
                 to right, 
-                #9c09db, 
-                #b01af7, 
-                #9c09db
+                #9c09db,  /* Start: Dunkles Violett */
+                #ff00ff,  /* Mitte: Helles Pink */
+                #b01af7,  /* Übergang */
+                #9c09db   /* Ende: Zurück zum Start */
             );
             background-size: 200% auto;
             color: transparent;
@@ -64,7 +65,7 @@
             background-clip: text;
             animation: shine 3s linear infinite;
             font-weight: bold;
-            text-shadow: 0 0 10px rgba(156, 9, 219, 0.3);
+            text-shadow: 0 0 15px rgba(156, 9, 219, 0.5);
             margin: 0;
             padding: 0;
             text-align: left;
@@ -85,7 +86,7 @@
 
         .site-title:hover {
             animation: shine 1.5s linear infinite;
-            text-shadow: 0 0 15px rgba(156, 9, 219, 0.5);
+            text-shadow: 0 0 20px rgba(156, 9, 219, 0.8);
         }
 
         .social-media {

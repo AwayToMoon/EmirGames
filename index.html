@@ -580,99 +580,6 @@
             background: linear-gradient(45deg, #ff69b4, #ff1493);
             border: 1px solid #ff69b4;
         }
-
-        .new-label {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #ff0000;
-            color: white;
-            padding: 5px 10px;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: bold;
-            z-index: 10;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .new-label:hover {
-            background: #cc0000;
-            transform: scale(1.1);
-        }
-
-        .new-game-option {
-            margin: 10px 0;
-            color: white;
-            display: flex;
-            align-items: center;
-        }
-
-        .new-game-option label {
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .new-game-option input[type="checkbox"] {
-            width: auto;
-            margin: 0;
-            cursor: pointer;
-        }
-
-        .edit-games-list {
-            max-height: 70vh;
-            overflow-y: auto;
-        }
-        
-        .edit-game-item {
-            background: rgba(43, 9, 52, 0.7);
-            border: 1px solid rgba(156, 9, 219, 0.4);
-            border-radius: 8px;
-            margin: 10px 0;
-            padding: 10px;
-        }
-        
-        .game-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-        
-        .game-header h3 {
-            margin: 0;
-        }
-        
-        .edit-form {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        
-        .edit-form.hidden {
-            display: none;
-        }
-        
-        .edit-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-        }
-        
-        .edit-game-btn {
-            padding: 5px 10px;
-            background: #9c09db;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        
-        .edit-game-btn:hover {
-            background: #b01af7;
-        }
     </style>
 </head>
 <body>
@@ -730,11 +637,6 @@
                     <div class="genre-option" data-genre="Racing">Racing</div>
                     <div class="genre-option" data-genre="Horror">Horror</div>
                     <div class="genre-option" data-genre="Story">Story</div>
-                </div>
-                <div class="new-game-option">
-                    <label>
-                        <input type="checkbox" id="is-new-game"> Als "NEU" markieren
-                    </label>
                 </div>
                 <input type="text" id="game-link" placeholder="Spiel-URL">
                 <input type="text" id="game-image" placeholder="Bild-URL">
@@ -819,7 +721,7 @@
                 const gameElement = document.createElement('div');
                 gameElement.className = 'game';
                 
-                let gameHTML = `
+                gameElement.innerHTML = `
                     <img src="${game.image}" alt="${game.name}" onclick="window.open('${game.link}', '_blank')">
                     <div class="game-content">
                         <h2>${game.name}</h2>
@@ -831,12 +733,6 @@
                         </div>
                     </div>
                 `;
-
-                if (game.isNew) {
-                    gameHTML = `<div class="new-label">NEU</div>${gameHTML}`;
-                }
-
-                gameElement.innerHTML = gameHTML;
 
                 if (!document.getElementById('admin-panel').classList.contains('hidden')) {
                     const adminButtons = document.createElement('div');
@@ -861,9 +757,6 @@
 
     // Funktion zum Bearbeiten eines Spiels
     async function editGame(docId) {
-        isEditMode = true;
-        currentDocId = docId;
-        
         try {
             const doc = await db.collection('games').doc(docId).get();
             const game = doc.data();
@@ -871,7 +764,6 @@
             document.getElementById('game-name').value = game.name;
             document.getElementById('game-link').value = game.link;
             document.getElementById('game-image').value = game.image;
-            document.getElementById('is-new-game').checked = game.isNew || false;
             
             document.querySelectorAll('.genre-option').forEach(option => {
                 option.classList.remove('selected');
@@ -893,7 +785,6 @@
                 name: document.getElementById('game-name').value,
                 link: document.getElementById('game-link').value,
                 image: document.getElementById('game-image').value,
-                isNew: document.getElementById('is-new-game').checked,
                 genres: Array.from(document.querySelectorAll('.genre-option.selected'))
                     .map(el => el.dataset.genre)
             };
@@ -903,17 +794,14 @@
                 return;
             }
 
-            if (isEditMode && currentDocId) {
-                // Spiel aktualisieren
+            if (currentDocId) {
                 await db.collection('games').doc(currentDocId).update(gameData);
             } else {
-                // Neues Spiel hinzufügen
                 gameData.timestamp = firebase.firestore.FieldValue.serverTimestamp();
                 await db.collection('games').add(gameData);
             }
 
             document.getElementById('game-form').style.display = 'none';
-            isEditMode = false;
             currentDocId = null;
             await loadGames();
         } catch (error) {
@@ -930,7 +818,6 @@
         document.getElementById('game-name').value = '';
         document.getElementById('game-link').value = '';
         document.getElementById('game-image').value = '';
-        document.getElementById('is-new-game').checked = false;
         
         document.querySelectorAll('.genre-option').forEach(option => {
             option.classList.remove('selected');

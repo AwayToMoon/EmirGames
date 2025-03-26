@@ -634,6 +634,79 @@
             background: linear-gradient(45deg, #ff69b4, #ff1493);
             border: 1px solid #ff69b4;
         }
+
+        .login-content {
+            max-width: 400px;
+            background: linear-gradient(45deg, rgba(61, 13, 76, 0.95), rgba(156, 9, 219, 0.95));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .login-form input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 12px;
+            border-radius: 8px;
+            color: white;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .login-form input:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.4);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .login-form input::placeholder {
+            color: rgba(255, 255, 255, 0.6);
+        }
+
+        .login-buttons {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
+
+        .login-buttons button {
+            padding: 10px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        #login-submit {
+            background: #9c09db;
+            color: white;
+        }
+
+        #login-submit:hover {
+            background: #b01af7;
+            transform: translateY(-2px);
+        }
+
+        #login-cancel {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        #login-cancel:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: translateY(-2px);
+        }
     </style>
 </head>
 <body>
@@ -715,6 +788,20 @@
                 <input type="text" id="logo-link" placeholder="Tab Icon URL (32x32px empfohlen)">
                 <input type="text" id="admin-logo-link" placeholder="Admin Logo URL (empfohlen: 40x40px)">
                 <button id="save-social">Speichern</button>
+            </div>
+        </div>
+
+        <div id="login-modal" class="modal hidden">
+            <div class="modal-content login-content">
+                <span class="close-modal">&times;</span>
+                <h2>Admin Login</h2>
+                <div class="login-form">
+                    <input type="password" id="admin-password" placeholder="Passwort eingeben">
+                    <div class="login-buttons">
+                        <button id="login-submit">Login</button>
+                        <button id="login-cancel">Abbrechen</button>
+                    </div>
+                </div>
             </div>
         </div>
 

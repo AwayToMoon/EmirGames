@@ -1021,9 +1021,13 @@
             const gameForm = document.getElementById('game-form');
             gameForm.style.display = 'block';
             
-            // Speichern-Button-Handler anpassen
+            // Entferne alle bestehenden Event Listener vom Speichern-Button
             const saveButton = document.getElementById('save-game');
-            saveButton.onclick = async () => {
+            const newSaveButton = saveButton.cloneNode(true);
+            saveButton.parentNode.replaceChild(newSaveButton, saveButton);
+            
+            // Füge neuen Event Listener hinzu
+            newSaveButton.addEventListener('click', async () => {
                 try {
                     const updatedGame = {
                         name: document.getElementById('game-name').value,
@@ -1041,7 +1045,7 @@
                     console.error('Fehler beim Aktualisieren:', error);
                     alert('Fehler beim Aktualisieren des Spiels!');
                 }
-            };
+            });
         } catch (error) {
             console.error('Fehler beim Laden des Spiels:', error);
         }
@@ -1061,9 +1065,13 @@
         // Form anzeigen
         document.getElementById('game-form').style.display = 'block';
         
-        // Speichern-Button-Handler für neues Spiel
+        // Entferne alle bestehenden Event Listener vom Speichern-Button
         const saveButton = document.getElementById('save-game');
-        saveButton.onclick = async () => {
+        const newSaveButton = saveButton.cloneNode(true);
+        saveButton.parentNode.replaceChild(newSaveButton, saveButton);
+        
+        // Füge neuen Event Listener hinzu
+        newSaveButton.addEventListener('click', async () => {
             try {
                 const gameData = {
                     name: document.getElementById('game-name').value,
@@ -1075,6 +1083,11 @@
                     timestamp: firebase.firestore.FieldValue.serverTimestamp()
                 };
                 
+                if (!gameData.name || !gameData.link || !gameData.image) {
+                    alert('Bitte alle Felder ausfüllen!');
+                    return;
+                }
+                
                 await db.collection('games').add(gameData);
                 document.getElementById('game-form').style.display = 'none';
                 loadGames();
@@ -1082,7 +1095,7 @@
                 console.error('Fehler beim Speichern:', error);
                 alert('Fehler beim Speichern!');
             }
-        };
+        });
     });
 </script>
     

@@ -954,9 +954,8 @@
                 const gameElement = document.createElement('div');
                 gameElement.className = 'game';
                 
-                // Erstelle zuerst den Basis-HTML-Inhalt
                 gameElement.innerHTML = `
-                    <img src="${game.image}" alt="${game.name}" onclick="window.open('${game.link}', '_blank')">
+                    <img src="${game.image}" alt="${game.name}">
                     <div class="game-content">
                         <h2>${game.name}</h2>
                         <div class="game-divider"></div>
@@ -966,9 +965,14 @@
                             `).join('')}
                         </div>
                     </div>
+                    <button class="edit-game" onclick="editGame('${doc.id}')">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="delete-game" onclick="deleteGame('${doc.id}')">
+                        <i class="fas fa-trash"></i>
+                    </button>
                 `;
-                
-                // Füge das NEU-Label hinzu, wenn isNew true ist
+
                 if (game.isNew) {
                     const newLabel = document.createElement('div');
                     newLabel.className = 'new-label';
@@ -984,7 +988,7 @@
                             console.error('Fehler beim Entfernen des NEU-Labels:', error);
                         }
                     };
-                    gameElement.insertBefore(newLabel, gameElement.firstChild);
+                    gameElement.appendChild(newLabel);
                 }
                 
                 gameList.appendChild(gameElement);
@@ -994,94 +998,56 @@
         }
     }
 
-    // Korrigierte edit-games-btn Event Listener
-    document.getElementById('edit-games-btn').addEventListener('click', async function() {
+    // Fügen Sie diese neue Funktion für das Bearbeiten hinzu
+    async function editGame(docId) {
         try {
-            const snapshot = await db.collection('games').get();
-            const gameList = document.createElement('div');
-            gameList.className = 'edit-games-list';
+            const doc = await db.collection('games').doc(docId).get();
+            const game = doc.data();
             
-            snapshot.forEach(doc => {
-                const game = doc.data();
-                const gameItem = document.createElement('div');
-                gameItem.className = 'edit-game-item';
-                
-                // Zeige zunächst nur den Spielnamen und einen Bearbeiten-Button
-                gameItem.innerHTML = `
-                    <div class="game-header">
-                        <h3>${game.name}</h3>
-                        <button class="edit-game-btn">Bearbeiten</button>
-                    </div>
-                    <div class="edit-form hidden">
-                        <input type="text" value="${game.name}" placeholder="Spielname">
-                        <input type="text" value="${game.link}" placeholder="Spiel-URL">
-                        <input type="text" value="${game.image}" placeholder="Bild-URL">
-                        <div class="new-game-option">
-                            <label>
-                                <input type="checkbox" ${game.isNew ? 'checked' : ''}> Als "NEU" markieren
-                            </label>
-                        </div>
-                        <div class="edit-buttons">
-                            <button onclick="updateGame('${doc.id}', this.parentElement.parentElement)">Speichern</button>
-                            <button onclick="deleteGame('${doc.id}')">Löschen</button>
-                        </div>
-                    </div>
-                `;
-                
-                // Event Listener für den Bearbeiten-Button
-                const editBtn = gameItem.querySelector('.edit-game-btn');
-                const editForm = gameItem.querySelector('.edit-form');
-                
-                editBtn.onclick = () => {
-                    editForm.classList.toggle('hidden');
-                    editBtn.textContent = editForm.classList.contains('hidden') ? 'Bearbeiten' : 'Schließen';
-                };
-                
-                gameList.appendChild(gameItem);
+            document.getElementById('game-name').value = game.name;
+            document.getElementById('game-link').value = game.link;
+            document.getElementById('game-image').value = game.image;
+            document.getElementById('is-new-game').checked = game.isNew;
+            
+            // Genres zurücksetzen
+            document.querySelectorAll('.genre-option').forEach(option => {
+                option.classList.remove('selected');
+                if (game.genres.includes(option.dataset.genre)) {
+                    option.classList.add('selected');
+                }
             });
             
-            const modal = document.createElement('div');
-            modal.className = 'modal';
-            modal.style.display = 'block';
+            const gameForm = document.getElementById('game-form');
+            gameForm.style.display = 'block';
             
-            const modalContent = document.createElement('div');
-            modalContent.className = 'modal-content';
-            modalContent.appendChild(gameList);
+            // Speichern-Button-Handler anpassen
+            const saveButton = document.getElementById('save-game');
+            const originalClickHandler = saveButton.onclick;
             
-            const closeBtn = document.createElement('span');
-            closeBtn.className = 'close-modal';
-            closeBtn.innerHTML = '&times;';
-            closeBtn.onclick = () => {
-                modal.remove();
-                loadGames();
+            saveButton.onclick = async () => {
+                try {
+                    const updatedGame = {
+                        name: document.getElementById('game-name').value,
+                        link: document.getElementById('game-link').value,
+                        image: document.getElementById('game-image').value,
+                        isNew: document.getElementById('is-new-game').checked,
+                        genres: Array.from(document.querySelectorAll('.genre-option.selected'))
+                            .map(el => el.dataset.genre)
+                    };
+                    
+                    await db.collection('games').doc(docId).update(updatedGame);
+                    gameForm.style.display = 'none';
+                    loadGames();
+                    
+                    // Handler zurücksetzen
+                    saveButton.onclick = originalClickHandler;
+                } catch (error) {
+                    console.error('Fehler beim Aktualisieren:', error);
+                    alert('Fehler beim Aktualisieren des Spiels!');
+                }
             };
-            
-            modalContent.insertBefore(closeBtn, modalContent.firstChild);
-            modal.appendChild(modalContent);
-            document.body.appendChild(modal);
         } catch (error) {
-            console.error('Fehler beim Laden der Spiele:', error);
-        }
-    });
-
-    // Funktion zum Aktualisieren eines Spiels
-    async function updateGame(docId, form) {
-        try {
-            const inputs = form.querySelectorAll('input');
-            const isNew = form.querySelector('input[type="checkbox"]').checked;
-            
-            await db.collection('games').doc(docId).update({
-                name: inputs[0].value,
-                link: inputs[1].value,
-                image: inputs[2].value,
-                isNew: isNew
-            });
-            
-            loadGames();
-            alert('Spiel wurde aktualisiert!');
-        } catch (error) {
-            console.error('Fehler beim Aktualisieren:', error);
-            alert('Fehler beim Aktualisieren des Spiels!');
+            console.error('Fehler beim Laden des Spiels:', error);
         }
     }
 </script>

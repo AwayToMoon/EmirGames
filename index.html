@@ -954,8 +954,9 @@
                 const gameElement = document.createElement('div');
                 gameElement.className = 'game';
                 
-                gameElement.innerHTML = `
-                    <img src="${game.image}" alt="${game.name}">
+                // Basis-HTML für das Spiel
+                const gameHTML = `
+                    <img src="${game.image}" alt="${game.name}" onclick="window.open('${game.link}', '_blank')">
                     <div class="game-content">
                         <h2>${game.name}</h2>
                         <div class="game-divider"></div>
@@ -965,30 +966,30 @@
                             `).join('')}
                         </div>
                     </div>
-                    <button class="edit-game" onclick="editGame('${doc.id}')">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="delete-game" onclick="deleteGame('${doc.id}')">
-                        <i class="fas fa-trash"></i>
-                    </button>
                 `;
-
+                
+                // NEU-Label hinzufügen, wenn isNew true ist
                 if (game.isNew) {
-                    const newLabel = document.createElement('div');
-                    newLabel.className = 'new-label';
-                    newLabel.textContent = 'NEU';
-                    newLabel.onclick = async (e) => {
-                        e.stopPropagation();
-                        try {
-                            await db.collection('games').doc(doc.id).update({
-                                isNew: false
-                            });
-                            newLabel.remove();
-                        } catch (error) {
-                            console.error('Fehler beim Entfernen des NEU-Labels:', error);
-                        }
-                    };
-                    gameElement.appendChild(newLabel);
+                    gameElement.innerHTML = `
+                        <div class="new-label">NEU</div>
+                        ${gameHTML}
+                    `;
+                } else {
+                    gameElement.innerHTML = gameHTML;
+                }
+                
+                // Admin-Buttons nur anzeigen, wenn das Admin-Panel sichtbar ist
+                if (!document.getElementById('admin-panel').classList.contains('hidden')) {
+                    const adminButtons = document.createElement('div');
+                    adminButtons.innerHTML = `
+                        <button class="edit-game" onclick="editGame('${doc.id}')">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="delete-game" onclick="deleteGame('${doc.id}')">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    `;
+                    gameElement.appendChild(adminButtons);
                 }
                 
                 gameList.appendChild(gameElement);
@@ -998,7 +999,7 @@
         }
     }
 
-    // Fügen Sie diese neue Funktion für das Bearbeiten hinzu
+    // Funktion zum Bearbeiten eines Spiels
     async function editGame(docId) {
         try {
             const doc = await db.collection('games').doc(docId).get();
@@ -1007,7 +1008,7 @@
             document.getElementById('game-name').value = game.name;
             document.getElementById('game-link').value = game.link;
             document.getElementById('game-image').value = game.image;
-            document.getElementById('is-new-game').checked = game.isNew;
+            document.getElementById('is-new-game').checked = game.isNew || false;
             
             // Genres zurücksetzen
             document.querySelectorAll('.genre-option').forEach(option => {
@@ -1022,8 +1023,6 @@
             
             // Speichern-Button-Handler anpassen
             const saveButton = document.getElementById('save-game');
-            const originalClickHandler = saveButton.onclick;
-            
             saveButton.onclick = async () => {
                 try {
                     const updatedGame = {
@@ -1038,9 +1037,6 @@
                     await db.collection('games').doc(docId).update(updatedGame);
                     gameForm.style.display = 'none';
                     loadGames();
-                    
-                    // Handler zurücksetzen
-                    saveButton.onclick = originalClickHandler;
                 } catch (error) {
                     console.error('Fehler beim Aktualisieren:', error);
                     alert('Fehler beim Aktualisieren des Spiels!');
@@ -1050,6 +1046,44 @@
             console.error('Fehler beim Laden des Spiels:', error);
         }
     }
+
+    // Event Listener für das Hinzufügen eines neuen Spiels
+    document.getElementById('add-game-btn').addEventListener('click', function() {
+        // Form zurücksetzen
+        document.getElementById('game-name').value = '';
+        document.getElementById('game-link').value = '';
+        document.getElementById('game-image').value = '';
+        document.getElementById('is-new-game').checked = false;
+        document.querySelectorAll('.genre-option').forEach(option => {
+            option.classList.remove('selected');
+        });
+        
+        // Form anzeigen
+        document.getElementById('game-form').style.display = 'block';
+        
+        // Speichern-Button-Handler für neues Spiel
+        const saveButton = document.getElementById('save-game');
+        saveButton.onclick = async () => {
+            try {
+                const gameData = {
+                    name: document.getElementById('game-name').value,
+                    link: document.getElementById('game-link').value,
+                    image: document.getElementById('game-image').value,
+                    isNew: document.getElementById('is-new-game').checked,
+                    genres: Array.from(document.querySelectorAll('.genre-option.selected'))
+                        .map(el => el.dataset.genre),
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                };
+                
+                await db.collection('games').add(gameData);
+                document.getElementById('game-form').style.display = 'none';
+                loadGames();
+            } catch (error) {
+                console.error('Fehler beim Speichern:', error);
+                alert('Fehler beim Speichern!');
+            }
+        };
+    });
 </script>
     
 <script src="script.js"></script>

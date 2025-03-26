@@ -542,8 +542,8 @@
         }
 
         .genre-option[data-genre="Horror"] {
-            background: linear-gradient(45deg, #ff0000, #cc0000);
-            border: 1px solid #ff0000;
+            background: linear-gradient(45deg, #990000, #660000);
+            border: 1px solid #990000;
         }
 
         .genre-option[data-genre="Story"] {
@@ -621,8 +621,8 @@
         }
 
         .genre-tag[data-genre="Horror"] {
-            background: linear-gradient(45deg, #ff0000, #cc0000);
-            border: 1px solid #ff0000;
+            background: linear-gradient(45deg, #990000, #660000);
+            border: 1px solid #990000;
         }
 
         .genre-tag[data-genre="Adventure"] {
@@ -737,6 +737,40 @@
             background: rgba(255, 255, 255, 0.2);
             transform: translateY(-2px);
         }
+
+        .new-label {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: linear-gradient(45deg, #ff0000, #cc0000);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 10;
+            text-transform: uppercase;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        .new-game-option {
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .new-game-option input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            cursor: pointer;
+        }
+
+        .new-game-option label {
+            color: white;
+            cursor: pointer;
+            user-select: none;
+        }
     </style>
 </head>
 <body>
@@ -782,6 +816,10 @@
             <div class="modal-content">
                 <span class="close-modal">&times;</span>
                 <h2>Spiel bearbeiten</h2>
+                <div class="new-game-option">
+                    <input type="checkbox" id="is-new-game">
+                    <label for="is-new-game">Als "NEU" markieren</label>
+                </div>
                 <input type="text" id="game-name" placeholder="Spielname">
                 <div class="genre-container">
                     <div class="genre-option" data-genre="Action">Action</div>

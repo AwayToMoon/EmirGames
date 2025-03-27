@@ -833,6 +833,163 @@
         .suggestion-badge.hidden {
             display: none;
         }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+                padding: 15px;
+            }
+
+            .social-media {
+                position: static;
+                transform: none;
+                justify-content: center;
+            }
+
+            .admin-section {
+                margin: 0;
+                width: 100%;
+                justify-content: center;
+            }
+
+            .site-title {
+                font-size: 20px;
+            }
+
+            #game-list {
+                grid-template-columns: 1fr;
+                padding: 10px;
+                gap: 15px;
+            }
+
+            .game {
+                width: 100%;
+                max-width: 324px;
+                margin: 0 auto;
+            }
+
+            .modal-content {
+                width: 95%;
+                padding: 20px;
+                margin: 20px auto;
+            }
+
+            .genre-container {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 8px;
+            }
+
+            .genre-option {
+                padding: 6px;
+                font-size: 12px;
+            }
+
+            .footer-container {
+                padding: 10px;
+            }
+
+            .made-by-container {
+                position: static;
+                flex-direction: column;
+                align-items: center;
+                margin-bottom: 10px;
+                gap: 10px;
+            }
+
+            .footer-social {
+                margin: 10px 0;
+            }
+
+            .corner-image {
+                display: none;
+            }
+
+            .suggest-button {
+                width: 90%;
+                max-width: 300px;
+            }
+
+            #admin-panel {
+                margin: 10px;
+                padding: 15px;
+            }
+
+            #admin-panel button {
+                width: 100%;
+                margin: 5px 0;
+            }
+
+            .suggestion-item {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .suggestion-item img {
+                width: 100%;
+                max-width: 200px;
+                margin-bottom: 10px;
+            }
+
+            .suggestion-actions {
+                display: flex;
+                gap: 10px;
+                margin-top: 10px;
+            }
+
+            .login-buttons {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .login-buttons button {
+                width: 100%;
+            }
+        }
+
+        .suggestion-item {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+        }
+
+        .suggestion-item img {
+            width: 120px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 4px;
+        }
+
+        .suggestion-details {
+            flex: 1;
+        }
+
+        .suggestion-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .suggestion-actions button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .suggestion-actions button:first-child {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .suggestion-actions button:last-child {
+            background: #f44336;
+            color: white;
+        }
     </style>
 </head>
 <body>

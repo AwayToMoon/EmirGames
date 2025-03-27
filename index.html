@@ -771,6 +771,68 @@
             cursor: pointer;
             user-select: none;
         }
+
+        .suggest-button {
+            background: linear-gradient(45deg, #9c09db, #6a0dad);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            margin: 20px auto;
+            display: block;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 15px rgba(156, 9, 219, 0.3);
+        }
+
+        .suggest-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(156, 9, 219, 0.4);
+            background: linear-gradient(45deg, #b01af7, #7b0ec7);
+        }
+
+        .suggest-content {
+            max-width: 500px;
+            background: linear-gradient(45deg, rgba(61, 13, 76, 0.95), rgba(156, 9, 219, 0.95));
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .suggest-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .suggest-form input {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            padding: 12px;
+            border-radius: 8px;
+            color: white;
+            font-size: 14px;
+        }
+
+        .suggest-form input:focus {
+            outline: none;
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .suggestion-badge {
+            background: #ff0000;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-size: 12px;
+            margin-left: 5px;
+        }
+
+        .suggestion-badge.hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -808,8 +870,10 @@
             <button id="add-game-btn">Spiel hinzufügen</button>
             <button id="edit-games-btn">Spiele bearbeiten</button>
             <button id="edit-social-btn">Social Media Links bearbeiten</button>
+            <button id="view-suggestions-btn">Vorschläge ansehen <span id="suggestion-count" class="suggestion-badge hidden">0</span></button>
         </div>
 
+        <button id="suggest-game-btn" class="suggest-button">Spiel vorschlagen</button>
         <div id="game-list"></div>
 
         <div id="game-form" class="modal hidden">
@@ -869,6 +933,31 @@
                         <button id="login-submit">Login</button>
                         <button id="login-cancel">Abbrechen</button>
                     </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="suggest-form" class="modal hidden">
+            <div class="modal-content suggest-content">
+                <span class="close-modal">&times;</span>
+                <h2>Spiel vorschlagen</h2>
+                <div class="suggest-form">
+                    <input type="text" id="suggest-name" placeholder="Spielname">
+                    <input type="text" id="suggest-link" placeholder="Link zum Spiel">
+                    <input type="text" id="suggest-image" placeholder="Link zum Spielbild">
+                    <div class="genre-container">
+                        <div class="genre-option" data-genre="Action">Action</div>
+                        <div class="genre-option" data-genre="Adventure">Adventure</div>
+                        <div class="genre-option" data-genre="Soulslike">Soulslike</div>
+                        <div class="genre-option" data-genre="Shooter">Shooter</div>
+                        <div class="genre-option" data-genre="Sport">Sport</div>
+                        <div class="genre-option" data-genre="Strategie">Strategie</div>
+                        <div class="genre-option" data-genre="Rätsel">Rätsel</div>
+                        <div class="genre-option" data-genre="Racing">Racing</div>
+                        <div class="genre-option" data-genre="Horror">Horror</div>
+                        <div class="genre-option" data-genre="Story">Story</div>
+                    </div>
+                    <button id="submit-suggestion">Vorschlag einreichen</button>
                 </div>
             </div>
         </div>
@@ -1021,6 +1110,222 @@
 
     // Links beim Laden der Seite laden
     window.addEventListener('load', loadSocialLinks);
+
+    // Entfernen Sie die globale suggestSelectedGenres Variable und den alten Event Listener
+    // Fügen Sie stattdessen diesen Event Listener für die Genre-Auswahl hinzu
+    document.querySelectorAll('#suggest-form .genre-option').forEach(option => {
+        option.addEventListener('click', function() {
+            this.classList.toggle('selected');
+        });
+    });
+
+    // Event Listener für den Vorschlag-Button
+    document.getElementById('suggest-game-btn').addEventListener('click', () => {
+        const suggestForm = document.getElementById('suggest-form');
+        suggestForm.classList.remove('hidden');
+        suggestForm.style.display = 'block';
+        
+        // Formular zurücksetzen
+        document.getElementById('suggest-name').value = '';
+        document.getElementById('suggest-link').value = '';
+        document.getElementById('suggest-image').value = '';
+        document.querySelectorAll('#suggest-form .genre-option').forEach(option => {
+            option.classList.remove('selected');
+        });
+    });
+
+    // Event Listener für das Einreichen eines Vorschlags
+    document.getElementById('submit-suggestion').addEventListener('click', async () => {
+        try {
+            const name = document.getElementById('suggest-name').value;
+            const link = document.getElementById('suggest-link').value;
+            const image = document.getElementById('suggest-image').value;
+            const selectedGenres = Array.from(document.querySelectorAll('#suggest-form .genre-option.selected'))
+                .map(el => el.dataset.genre);
+
+            if (!name || !link || !image) {
+                alert('Bitte alle Felder ausfüllen!');
+                return;
+            }
+
+            // Vorschlag zur games Collection mit status "pending" hinzufügen
+            await db.collection('games').add({
+                name: name,
+                link: link,
+                image: image,
+                genres: selectedGenres,
+                isPending: true, // Markierung als Vorschlag
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            // Formular zurücksetzen
+            document.getElementById('suggest-name').value = '';
+            document.getElementById('suggest-link').value = '';
+            document.getElementById('suggest-image').value = '';
+            document.querySelectorAll('#suggest-form .genre-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+
+            // Modal schließen
+            document.getElementById('suggest-form').style.display = 'none';
+            
+            // Erfolgsmeldung anzeigen
+            alert('Vielen Dank für deinen Vorschlag!');
+            
+        } catch (error) {
+            console.error('Error adding suggestion:', error);
+            alert('Fehler beim Speichern des Vorschlags. Bitte versuche es später erneut.');
+        }
+    });
+
+    // Vorschläge im Admin Panel anzeigen
+    document.getElementById('view-suggestions-btn').addEventListener('click', async () => {
+        try {
+            const snapshot = await db.collection('games').where('isPending', '==', true).get();
+            
+            // Wenn keine Vorschläge vorhanden sind
+            if (snapshot.empty) {
+                alert('Keine Vorschläge vorhanden');
+                return;
+            }
+
+            let suggestionsHtml = '<div class="suggestions-list">';
+            
+            snapshot.forEach(doc => {
+                const suggestion = doc.data();
+                suggestionsHtml += `
+                    <div class="suggestion-item">
+                        <img src="${suggestion.image}" alt="${suggestion.name}">
+                        <div class="suggestion-details">
+                            <h3>${suggestion.name}</h3>
+                            <p>Link: ${suggestion.link}</p>
+                            <div class="suggestion-genres">
+                                ${suggestion.genres.map(genre => 
+                                    `<span class="genre-tag" data-genre="${genre}">${genre}</span>`
+                                ).join('')}
+                            </div>
+                        </div>
+                        <div class="suggestion-actions">
+                            <button onclick="acceptSuggestion('${doc.id}')">Akzeptieren</button>
+                            <button onclick="deleteSuggestion('${doc.id}')">Ablehnen</button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            suggestionsHtml += '</div>';
+            
+            // Entferne vorhandenes Modal falls vorhanden
+            const existingModal = document.querySelector('.modal');
+            if (existingModal) {
+                existingModal.remove();
+            }
+            
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <span class="close-modal">&times;</span>
+                    <h2>Spielvorschläge</h2>
+                    ${suggestionsHtml}
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            modal.style.display = 'block';
+            
+            modal.querySelector('.close-modal').onclick = () => {
+                modal.remove();
+            };
+        } catch (error) {
+            console.error('Error loading suggestions:', error);
+            alert('Fehler beim Laden der Vorschläge');
+        }
+    });
+
+    // Ersetzen Sie die acceptSuggestion Funktion mit dieser Version
+    async function acceptSuggestion(id) {
+        try {
+            // Hole den Vorschlag aus der Datenbank
+            const suggestionDoc = await db.collection('games').doc(id).get();
+            const suggestionData = suggestionDoc.data();
+
+            // Erstelle ein neues Spiel-Dokument ohne isPending
+            const { isPending, ...gameData } = suggestionData;
+            
+            // Füge das Spiel als neues Dokument hinzu
+            await db.collection('games').add({
+                ...gameData,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            // Lösche den alten Vorschlag
+            await db.collection('games').doc(id).delete();
+
+            // Aktualisiere den Vorschlagszähler
+            await updateSuggestionCount();
+            
+            // Schließe das Modal
+            const modal = document.querySelector('.modal');
+            if (modal) {
+                modal.remove();
+            }
+
+            // Zeige Erfolgsmeldung
+            alert('Vorschlag wurde akzeptiert!');
+            
+            // Lade die Spiele neu
+            location.reload();
+            
+        } catch (error) {
+            console.error('Error accepting suggestion:', error);
+        }
+    }
+
+    // Funktion zum Löschen eines Vorschlags
+    async function deleteSuggestion(id) {
+        if (confirm('Möchten Sie diesen Vorschlag wirklich ablehnen?')) {
+            try {
+                await db.collection('games').doc(id).delete();
+                
+                // Modal schließen und neu laden
+                const modal = document.querySelector('.modal');
+                if (modal) {
+                    modal.remove();
+                }
+                
+                // Vorschlagszähler aktualisieren
+                await updateSuggestionCount();
+                
+                alert('Vorschlag wurde abgelehnt');
+                
+            } catch (error) {
+                console.error('Error deleting suggestion:', error);
+                alert('Fehler beim Ablehnen des Vorschlags');
+            }
+        }
+    }
+
+    // Funktion zum Aktualisieren des Zählers
+    async function updateSuggestionCount() {
+        try {
+            const snapshot = await db.collection('games').where('isPending', '==', true).get();
+            const count = snapshot.size;
+            const badge = document.getElementById('suggestion-count');
+            
+            if (count > 0) {
+                badge.textContent = count;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        } catch (error) {
+            console.error('Error updating suggestion count:', error);
+        }
+    }
+
+    // Initialisiere den Zähler beim Laden der Seite
+    updateSuggestionCount();
 </script>
     
 <script src="script.js"></script>

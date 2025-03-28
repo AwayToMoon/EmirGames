@@ -1371,9 +1371,30 @@
         }
     }
 
-    // Admin Panel Toggle
+    // Ersetzen Sie den Event Listener für den Admin Login Button mit dieser Version
     document.getElementById('admin-login-btn').addEventListener('click', function() {
-        document.getElementById('admin-panel').classList.toggle('hidden');
+        const loginModal = document.getElementById('login-modal');
+        loginModal.style.display = 'block';
+
+        // Verhindere das Schließen beim Klicken außerhalb des Modals
+        loginModal.addEventListener('click', function(e) {
+            if (e.target === loginModal) {
+                e.stopPropagation();
+            }
+        });
+    });
+
+    // Aktualisieren Sie den Event Listener für den Cancel Button
+    document.getElementById('login-cancel').addEventListener('click', function() {
+        document.getElementById('login-modal').style.display = 'none';
+        document.getElementById('admin-panel').classList.add('hidden');
+        document.getElementById('admin-password').value = '';
+    });
+
+    // Aktualisieren Sie den Event Listener für den Login Submit Button
+    document.getElementById('login-submit').addEventListener('click', async function() {
+        // ... bestehender Login-Code ...
+        document.getElementById('login-modal').style.display = 'none';
     });
 
     // Links beim Laden der Seite laden

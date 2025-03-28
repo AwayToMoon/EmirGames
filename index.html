@@ -1138,6 +1138,109 @@
                 font-size: 13px;
             }
         }
+
+        /* Randomizer Button Styles */
+        #game-randomizer {
+            background: linear-gradient(45deg, #9c09db, #6a0dad);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 20px auto;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            box-shadow: 0 4px 15px rgba(156, 9, 219, 0.3);
+        }
+
+        #game-randomizer:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(156, 9, 219, 0.4);
+            background: linear-gradient(45deg, #b01af7, #7b0ec7);
+        }
+
+        #game-randomizer i {
+            font-size: 1.2em;
+        }
+
+        .game.highlight {
+            animation: pulse 0.5s;
+            border: 2px solid #ff00ff;
+            box-shadow: 0 0 20px rgba(255, 0, 255, 0.5);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* Modal für den Randomizer */
+        .randomizer-modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(45deg, rgba(61, 13, 76, 0.95), rgba(156, 9, 219, 0.95));
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(156, 9, 219, 0.5);
+            z-index: 1100;
+            text-align: center;
+            max-width: 400px;
+            width: 90%;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .randomizer-modal h2 {
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .randomizer-modal img {
+            width: 200px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin: 10px 0;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .randomizer-modal .play-button {
+            background: linear-gradient(45deg, #ff00ff, #9c09db);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+
+        .randomizer-modal .play-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(156, 9, 219, 0.4);
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            z-index: 1050;
+        }
     </style>
 </head>
 <body>
@@ -1178,6 +1281,10 @@
             <button id="view-suggestions-btn">Vorschläge ansehen <span id="suggestion-count" class="suggestion-badge hidden">0</span></button>
         </div>
 
+        <button id="game-randomizer">
+            <i class="fas fa-dice"></i>
+            Zufälliges Spiel
+        </button>
         <button id="suggest-game-btn" class="suggest-button">Spiel vorschlagen</button>
         <div id="game-list"></div>
 
@@ -1659,8 +1766,75 @@
 
     // Initialisiere den Zähler beim Laden der Seite
     updateSuggestionCount();
+
+    // Randomizer Funktionalität
+    document.getElementById('game-randomizer').addEventListener('click', async () => {
+        try {
+            const snapshot = await db.collection('games').get();
+            
+            const games = [];
+            snapshot.forEach(doc => {
+                const game = doc.data();
+                if (!game.isPending) {
+                    games.push(game);
+                }
+            });
+
+            if (games.length === 0) {
+                alert('Keine Spiele verfügbar!');
+                return;
+            }
+
+            const overlay = document.querySelector('.modal-overlay');
+            const modal = document.querySelector('.randomizer-modal');
+            overlay.style.display = 'block';
+            modal.style.display = 'block';
+
+            // Animation der Spielauswahl
+            let cycles = 0;
+            const maxCycles = 20;
+            const interval = setInterval(() => {
+                const randomIndex = Math.floor(Math.random() * games.length);
+                const game = games[randomIndex];
+                
+                document.getElementById('randomizer-content').innerHTML = `
+                    <img src="${game.image}" alt="${game.name}">
+                    <h3>${game.name}</h3>
+                    <button class="play-button" onclick="window.open('${game.link}', '_blank')">
+                        Spielen
+                    </button>
+                    <button class="play-button" onclick="closeRandomizer()" style="background: #666; margin-left: 10px;">
+                        Schließen
+                    </button>
+                `;
+
+                cycles++;
+                if (cycles >= maxCycles) {
+                    clearInterval(interval);
+                }
+            }, 100);
+
+        } catch (error) {
+            console.error('Error in randomizer:', error);
+            alert('Fehler beim Laden der Spiele');
+        }
+    });
+
+    // Füge diese neue Funktion hinzu
+    function closeRandomizer() {
+        document.querySelector('.modal-overlay').style.display = 'none';
+        document.querySelector('.randomizer-modal').style.display = 'none';
+    }
+
+    // Aktualisiere den Event Listener für das Overlay
+    document.querySelector('.modal-overlay').addEventListener('click', closeRandomizer);
 </script>
     
 <script src="script.js"></script>
+<div class="modal-overlay"></div>
+<div class="randomizer-modal">
+    <h2>Dein zufälliges Spiel ist...</h2>
+    <div id="randomizer-content"></div>
+</div>
 </body>
 </html>

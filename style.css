@@ -1190,8 +1190,8 @@ body {
     }
 }
 
-#submit-suggestion, #save-game {
-    background: linear-gradient(45deg, #9c09db, #6a0dad);
+#submit-suggestion, #save-game, #save-social {
+    background: linear-gradient(45deg, #6a0dad, #4a0d77);
     color: white;
     border: none;
     padding: 12px 30px;
@@ -1207,13 +1207,13 @@ body {
     font-size: 14px;
 }
 
-#submit-suggestion:hover, #save-game:hover {
+#submit-suggestion:hover, #save-game:hover, #save-social:hover {
+    background: linear-gradient(45deg, #7b0ec7, #5a0e8f);
     transform: translateY(-2px);
     box-shadow: 0 6px 20px rgba(156, 9, 219, 0.4);
-    background: linear-gradient(45deg, #b01af7, #7b0ec7);
 }
 
-#submit-suggestion:active, #save-game:active {
+#submit-suggestion:active, #save-game:active, #save-social:active {
     transform: translateY(0);
     box-shadow: 0 2px 10px rgba(156, 9, 219, 0.3);
 }

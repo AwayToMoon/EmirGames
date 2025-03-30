@@ -375,7 +375,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const snapshot = await db.collection("games").get();
             const games = [];
             snapshot.forEach(doc => {
-                games.push({ id: doc.id, ...doc.data() });
+                const gameData = doc.data();
+                if (!gameData.isPending) {
+                    games.push({ id: doc.id, ...gameData });
+                }
             });
             
             games.forEach(game => {

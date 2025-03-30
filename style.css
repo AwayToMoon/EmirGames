@@ -340,7 +340,6 @@ background-color: #3d0d4c;
 padding: 40px; /* Erhöht von 30px */
 width: 90%;
 max-width: 600px; /* Erhöht von 400px */
-min-height: 400px; /* Neu hinzugefügt */
 border-radius: 10px;
 box-shadow: 0 0 20px rgba(156, 9, 219, 0.3);
 position: relative;
@@ -654,7 +653,7 @@ margin: 50px auto;
 }
 
 .login-content {
-    max-width: 400px;
+    max-width: 300px;
     background: linear-gradient(45deg, rgba(61, 13, 76, 0.95), rgba(156, 9, 219, 0.95));
     border: 1px solid rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(10px);

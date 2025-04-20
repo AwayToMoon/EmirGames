@@ -1389,3 +1389,38 @@ margin: 30px auto;
     background: linear-gradient(45deg, #150419, #1a0622);
     border: 1px solid rgba(156, 9, 219, 0.3);
 }
+
+.modal-content textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid rgba(156, 9, 219, 0.3);
+    border-radius: 5px;
+    background: rgba(42, 9, 52, 0.5);
+    color: white;
+    box-sizing: border-box;
+    resize: vertical;
+    min-height: 100px;
+    font-family: Arial, sans-serif;
+}
+
+.modal-content textarea:focus {
+    outline: none;
+    border-color: #b01af7;
+}
+
+.game-description {
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 14px;
+    margin: 10px 0;
+    padding: 0 12px;
+    text-align: left;
+    line-height: 1.4;
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+}
+
+.game:hover .game-description {
+    max-height: 200px;
+}

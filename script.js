@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const gameNameInput = document.getElementById("game-name");
     const gameLinkInput = document.getElementById("game-link");
     const gameImageInput = document.getElementById("game-image");
+    const gameDescriptionInput = document.getElementById("game-description");
 
     let currentGameId = null;
     let isEditMode = false;
@@ -155,6 +156,7 @@ document.addEventListener('DOMContentLoaded', function() {
         gameNameInput.value = "";
         gameLinkInput.value = "";
         gameImageInput.value = "";
+        gameDescriptionInput.value = "";
         selectedGenres = [];
         updateGenreSelection([]);
         document.querySelector('#game-form h2').textContent = "Neues Spiel hinzufügen";
@@ -228,6 +230,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const name = gameNameInput.value;
         const link = gameLinkInput.value;
         const image = gameImageInput.value;
+        const description = gameDescriptionInput.value;
         const isNew = document.getElementById('is-new-game').checked;
 
         if (name && link && image) {
@@ -237,6 +240,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         name,
                         link,
                         image,
+                        description,
                         genres: selectedGenres,
                         isNew: isNew
                     });
@@ -245,6 +249,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         name,
                         link,
                         image,
+                        description,
                         genres: selectedGenres,
                         isNew: isNew
                     });
@@ -253,6 +258,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 gameNameInput.value = "";
                 gameLinkInput.value = "";
                 gameImageInput.value = "";
+                gameDescriptionInput.value = "";
                 selectedGenres = [];
                 updateGenreSelection([]);
                 gameForm.classList.add("hidden");
@@ -310,6 +316,13 @@ document.addEventListener('DOMContentLoaded', function() {
         h2.textContent = game.name;
         content.appendChild(h2);
         
+        if (game.description) {
+            const description = document.createElement('div');
+            description.className = 'game-description';
+            description.textContent = game.description;
+            content.appendChild(description);
+        }
+        
         const divider = document.createElement('div');
         divider.className = 'game-divider';
         content.appendChild(divider);
@@ -354,6 +367,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 gameNameInput.value = game.name;
                 gameLinkInput.value = game.link;
                 gameImageInput.value = game.image;
+                gameDescriptionInput.value = game.description || "";
                 document.getElementById('is-new-game').checked = game.isNew || false;
                 updateGenreSelection(game.genres || []);
                 document.querySelector('#game-form h2').textContent = "Spiel bearbeiten";

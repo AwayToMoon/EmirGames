@@ -604,7 +604,23 @@
 <div class="modal-overlay"></div>
 <div class="randomizer-modal">
     <h2>Dein zufälliges Spiel ist...</h2>
-    <div id="randomizer-content"></div>
+    <div class="game-showcase">
+        <div class="preview-container">
+            <!-- Wird dynamisch mit JavaScript gefüllt -->
+        </div>
+        <div class="game-card">
+            <div class="game-card-inner">
+                <img src="" alt="">
+                <div class="game-card-content">
+                    <h3></h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="button-container">
+        <button class="play-button" id="play-random-game">Spielen</button>
+        <button class="play-button" id="close-random-game" style="background: #666;">Schließen</button>
+    </div>
 </div>
 </body>
 </html>

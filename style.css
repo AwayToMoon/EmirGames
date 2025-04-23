@@ -24,11 +24,14 @@ body {
     align-items: center;
     justify-content: space-between;
     padding: 20px;
+    padding-top: 8px;
     width: 100vw;
     box-sizing: border-box;
     position: relative;
     margin-left: calc(-50vw + 50%);
     margin-right: calc(-50vw + 50%);
+    flex-direction: column;
+    gap: 5px;
 }
 
 @keyframes gradientBG {
@@ -41,6 +44,9 @@ body {
     display: flex;
     align-items: center;
     gap: 15px;
+    width: 100%;
+    justify-content: flex-start;
+    margin-bottom: -8px;
 }
 
 .header-logo {
@@ -88,20 +94,80 @@ body {
 }
 
 .social-media {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
     display: flex;
-    flex-direction: row;
-    gap: 15px;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
     z-index: 1000;
+    margin-bottom: 8px;
+    margin-top: -8px;
+}
+
+.social-buttons {
+    display: flex;
+    gap: 15px;
+    margin-top: 5px;
+}
+
+.social-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(45deg, #6a0dad, #4a0d77);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.social-btn:hover {
+    background: linear-gradient(45deg, #7b0ec7, #5a0e8f);
+    transform: translateY(-2px);
+}
+
+.kofi-btn {
+    height: 40px;
+    background: linear-gradient(45deg, #6a0dad, #4a0d77);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    padding: 0 20px;
+    border: none;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+}
+
+.kofi-btn:hover {
+    background: linear-gradient(45deg, #7b0ec7, #5a0e8f);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(156, 9, 219, 0.4);
+}
+
+.kofi-btn i {
+    font-size: 16px;
 }
 
 .admin-section {
-    margin-left: auto;
     display: flex;
     align-items: center;
     gap: 15px;
+    position: absolute;
+    right: 20px;
+    top: 20px;
+}
+
+.admin-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 .admin-logo {
@@ -190,6 +256,7 @@ body {
     text-transform: uppercase;
     letter-spacing: 1px;
     box-shadow: 0 4px 15px rgba(156, 9, 219, 0.3);
+    width: 100%;
 }
 
 #admin-login-btn:hover {
@@ -360,24 +427,6 @@ body {
     align-items: center;
     justify-content: center;
     z-index: 10;
-}
-
-.social-btn {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    background: linear-gradient(45deg, #6a0dad, #4a0d77);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    text-decoration: none;
-    transition: all 0.3s ease;
-}
-
-.social-btn:hover {
-    background: linear-gradient(45deg, #7b0ec7, #5a0e8f);
-    transform: translateY(-2px);
 }
 
 .modal {

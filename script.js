@@ -19,6 +19,82 @@ document.addEventListener('DOMContentLoaded', function() {
     let isEditMode = false;
     let selectedGenres = [];
 
+    // Genre Filter Funktionalität
+    const genreButtons = document.querySelectorAll('.genre-filter-btn');
+    let activeGenres = new Set(['all']);
+
+    genreButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const genre = button.dataset.genre;
+            
+            if (genre === 'all') {
+                // Wenn "Alle" geklickt wird, deaktiviere alle anderen Filter
+                activeGenres.clear();
+                activeGenres.add('all');
+                genreButtons.forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                button.classList.add('active');
+            } else {
+                // Entferne "Alle" aus den aktiven Genres
+                activeGenres.delete('all');
+                document.querySelector('.genre-filter-btn[data-genre="all"]').classList.remove('active');
+                
+                // Toggle das ausgewählte Genre
+                if (activeGenres.has(genre)) {
+                    activeGenres.delete(genre);
+                    button.classList.remove('active');
+                    
+                    // Wenn kein Genre ausgewählt ist, aktiviere "Alle"
+                    if (activeGenres.size === 0) {
+                        activeGenres.add('all');
+                        document.querySelector('.genre-filter-btn[data-genre="all"]').classList.add('active');
+                    }
+                } else {
+                    activeGenres.add(genre);
+                    button.classList.add('active');
+                }
+            }
+            
+            filterGames();
+        });
+    });
+
+    function filterGames() {
+        const gameElements = Array.from(document.querySelectorAll('.game'));
+        const gameListContainer = document.getElementById('game-list');
+        
+        // Leere die Spieleliste
+        gameListContainer.innerHTML = '';
+        
+        // Sortiere die Spiele: Gefilterte zuerst, dann die anderen
+        const sortedGames = gameElements.sort((a, b) => {
+            const aGenres = Array.from(a.querySelectorAll('.genre-tag')).map(tag => tag.dataset.genre);
+            const bGenres = Array.from(b.querySelectorAll('.genre-tag')).map(tag => tag.dataset.genre);
+            
+            const aMatches = activeGenres.has('all') || aGenres.some(genre => activeGenres.has(genre));
+            const bMatches = activeGenres.has('all') || bGenres.some(genre => activeGenres.has(genre));
+            
+            if (aMatches && !bMatches) return -1;
+            if (!aMatches && bMatches) return 1;
+            return 0;
+        });
+        
+        // Füge die Spiele wieder hinzu und wende die Animation an
+        sortedGames.forEach(game => {
+            const genreTags = Array.from(game.querySelectorAll('.genre-tag')).map(tag => tag.dataset.genre);
+            const matches = activeGenres.has('all') || genreTags.some(genre => activeGenres.has(genre));
+            
+            if (matches) {
+                game.classList.remove('filtered-out');
+            } else {
+                game.classList.add('filtered-out');
+            }
+            
+            gameListContainer.appendChild(game);
+        });
+    }
+
     async function checkAdminPassword(inputPassword) {
         try {
             const doc = await db.collection("settings").doc("admin").get();
@@ -399,6 +475,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 const gameElement = displayGame(game, !adminPanel.classList.contains("hidden") && isEditMode);
                 gameList.appendChild(gameElement);
             });
+            
+            // Wende den aktuellen Filter an
+            filterGames();
         } catch (error) {
             console.error("Error rendering games:", error);
             alert("Fehler beim Laden der Spiele");

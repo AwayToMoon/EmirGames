@@ -453,7 +453,7 @@ document.addEventListener('DOMContentLoaded', function() {
             // Mische die Spiele für die Vorschau
             const previewGames = [...games]
                 .sort(() => Math.random() - 0.5)
-                .slice(0, 12); // Reduziere auf 6 zufällige Spiele
+                .slice(0, 25); // Reduziere auf 6 zufällige Spiele
             
             // Füge das ausgewählte Spiel am Ende hinzu
             previewGames.push(selectedGame);

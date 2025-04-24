@@ -1787,3 +1787,134 @@ margin: 30px auto;
     box-shadow: 0 0 30px rgba(255, 0, 255, 0.8);
     z-index: 1;
 }
+
+/* Genre Filter Styles */
+.genre-filter-container {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 0 20px;
+    text-align: center;
+}
+
+.genre-filter-container h3 {
+    color: white;
+    font-size: 24px;
+    margin-bottom: 20px;
+    background: linear-gradient(45deg, #ff00ff, #9c09db);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    display: inline-block;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.genre-filter-buttons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 30px;
+}
+
+.genre-filter-btn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-size: 14px;
+    color: white;
+    background: rgba(26, 6, 34, 0.8);
+    border: 1px solid rgba(156, 9, 219, 0.3);
+}
+
+.genre-filter-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(156, 9, 219, 0.3);
+}
+
+.genre-filter-btn.active {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(156, 9, 219, 0.5);
+}
+
+.genre-filter-btn[data-genre="all"].active {
+    background: linear-gradient(45deg, #6a0dad, #4a0d77);
+    border-color: #6a0dad;
+}
+
+.genre-filter-btn[data-genre="Action"].active {
+    background: linear-gradient(45deg, #6a0dad, #4a0d77);
+    border-color: #6a0dad;
+}
+
+.genre-filter-btn[data-genre="Adventure"].active {
+    background: linear-gradient(45deg, #4CAF50, #45a049);
+    border-color: #4CAF50;
+}
+
+.genre-filter-btn[data-genre="Soulslike"].active {
+    background: linear-gradient(45deg, #00ff00, #00cc00);
+    border-color: #00ff00;
+}
+
+.genre-filter-btn[data-genre="Shooter"].active {
+    background: linear-gradient(45deg, #ff9800, #f57c00);
+    border-color: #ff9800;
+}
+
+.genre-filter-btn[data-genre="Sport"].active {
+    background: linear-gradient(45deg, #2196F3, #1976D2);
+    border-color: #2196F3;
+}
+
+.genre-filter-btn[data-genre="Strategie"].active {
+    background: linear-gradient(45deg, #607D8B, #455A64);
+    border-color: #607D8B;
+}
+
+.genre-filter-btn[data-genre="Rätsel"].active {
+    background: linear-gradient(45deg, #E91E63, #C2185B);
+    border-color: #E91E63;
+}
+
+.genre-filter-btn[data-genre="Roblox"].active {
+    background: linear-gradient(45deg, #FFC107, #FFA000);
+    border-color: #FFC107;
+}
+
+.genre-filter-btn[data-genre="Horror"].active {
+    background: linear-gradient(45deg, #990000, #660000);
+    border-color: #990000;
+}
+
+.genre-filter-btn[data-genre="Story"].active {
+    background: linear-gradient(45deg, #ff69b4, #ff1493);
+    border-color: #ff69b4;
+}
+
+/* Animation für gefilterte Spiele */
+.game.filtered-out {
+    opacity: 0;
+    transform: scale(0.8);
+    pointer-events: none;
+}
+
+@media (max-width: 768px) {
+    .genre-filter-container {
+        padding: 0 10px;
+    }
+
+    .genre-filter-buttons {
+        gap: 8px;
+    }
+
+    .genre-filter-btn {
+        padding: 8px 16px;
+        font-size: 12px;
+    }
+}

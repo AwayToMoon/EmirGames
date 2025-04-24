@@ -488,7 +488,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 previewContainer.appendChild(previewDiv);
 
                 // Aktiviere das neue Vorschaubild
-                setTimeout(() => previewDiv.classList.add('active'), 5); // Schnelleres Einblenden
+                setTimeout(() => previewDiv.classList.add('active'), 0,5); // Schnelleres Einblenden
 
                 currentIndex++;
 

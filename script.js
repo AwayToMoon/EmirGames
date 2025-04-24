@@ -494,7 +494,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                 // Wenn noch nicht alle Bilder gezeigt wurden, zeige nächstes
                 if (currentIndex < previewGames.length) {
-                    setTimeout(showNextPreview, 200); // Schnellerer Bildwechsel
+                    setTimeout(showNextPreview, 100); // Schnellerer Bildwechsel
                 } else {
                     // Animation beenden und finale Karte zeigen
                     setTimeout(() => {

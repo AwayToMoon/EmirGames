@@ -126,6 +126,8 @@ body {
     z-index: 1000;
     margin-bottom: 8px;
     margin-top: -8px;
+    position: relative;
+    bottom: 20px;
 }
 
 .social-buttons {

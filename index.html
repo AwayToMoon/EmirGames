@@ -79,6 +79,17 @@
             </div>
         </div>
 
+        <div class="progress-filter-container">
+            <h3>Nach Fortschritt filtern</h3>
+            <div class="progress-filter-buttons">
+                <button class="progress-filter-btn" data-progress="all">Alle</button>
+                <button class="progress-filter-btn" data-progress="not-started">Nicht begonnen</button>
+                <button class="progress-filter-btn" data-progress="in-progress">In Arbeit</button>
+                <button class="progress-filter-btn" data-progress="completed">Abgeschlossen</button>
+                <button class="progress-filter-btn" data-progress="planned">Geplant</button>
+            </div>
+        </div>
+
         <div id="game-list"></div>
 
         <div id="game-form" class="modal hidden">
@@ -105,6 +116,16 @@
                 <input type="text" id="game-link" placeholder="Spiel-URL">
                 <input type="text" id="game-image" placeholder="Bild-URL">
                 <textarea id="game-description" placeholder="Spielbeschreibung" rows="4"></textarea>
+                <div class="progress-status-container">
+                    <label for="progress-status">Fortschritt:</label>
+                    <select id="progress-status">
+                        <option value="">Kein Status</option>
+                        <option value="not-started">Nicht begonnen</option>
+                        <option value="in-progress">In Arbeit</option>
+                        <option value="completed">Abgeschlossen</option>
+                        <option value="planned">Geplant</option>
+                    </select>
+                </div>
                 <button id="save-game">Speichern</button>
             </div>
         </div>

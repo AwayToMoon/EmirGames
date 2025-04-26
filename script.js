@@ -540,13 +540,13 @@ document.addEventListener('DOMContentLoaded', function() {
             const games = [];
             snapshot.forEach(doc => {
                 const game = doc.data();
-                if (!game.isPending) {
+                if (!game.isPending && !game.progress) {
                     games.push(game);
                 }
             });
 
             if (games.length === 0) {
-                alert('Keine Spiele verfügbar!');
+                alert('Keine verfügbaren Spiele für den Randomizer!');
                 return;
             }
 

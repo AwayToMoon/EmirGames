@@ -23,6 +23,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const genreButtons = document.querySelectorAll('.genre-filter-btn');
     let activeGenres = new Set(['all']);
 
+    // Progress Filter Funktionalität
+    const progressButtons = document.querySelectorAll('.progress-filter-btn');
+    let activeProgress = 'all';
+
     genreButtons.forEach(button => {
         button.addEventListener('click', () => {
             const genre = button.dataset.genre;
@@ -60,32 +64,47 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
+    progressButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            progressButtons.forEach(btn => btn.classList.remove('active'));
+            button.classList.add('active');
+            activeProgress = button.dataset.progress;
+            filterGames();
+        });
+    });
+
     function filterGames() {
         const gameElements = Array.from(document.querySelectorAll('.game'));
         const gameListContainer = document.getElementById('game-list');
         
-        // Leere die Spieleliste
         gameListContainer.innerHTML = '';
         
-        // Sortiere die Spiele: Gefilterte zuerst, dann die anderen
         const sortedGames = gameElements.sort((a, b) => {
             const aGenres = Array.from(a.querySelectorAll('.genre-tag')).map(tag => tag.dataset.genre);
             const bGenres = Array.from(b.querySelectorAll('.genre-tag')).map(tag => tag.dataset.genre);
             
-            const aMatches = activeGenres.has('all') || aGenres.some(genre => activeGenres.has(genre));
-            const bMatches = activeGenres.has('all') || bGenres.some(genre => activeGenres.has(genre));
+            const aProgress = a.querySelector('.progress-badge')?.dataset.status || '';
+            const bProgress = b.querySelector('.progress-badge')?.dataset.status || '';
             
-            if (aMatches && !bMatches) return -1;
-            if (!aMatches && bMatches) return 1;
+            const aMatchesGenre = activeGenres.has('all') || aGenres.some(genre => activeGenres.has(genre));
+            const bMatchesGenre = activeGenres.has('all') || bGenres.some(genre => activeGenres.has(genre));
+            
+            const aMatchesProgress = activeProgress === 'all' || aProgress === activeProgress;
+            const bMatchesProgress = activeProgress === 'all' || bProgress === activeProgress;
+            
+            if (aMatchesGenre && aMatchesProgress && (!bMatchesGenre || !bMatchesProgress)) return -1;
+            if (bMatchesGenre && bMatchesProgress && (!aMatchesGenre || !aMatchesProgress)) return 1;
             return 0;
         });
         
-        // Füge die Spiele wieder hinzu und wende die Animation an
         sortedGames.forEach(game => {
             const genreTags = Array.from(game.querySelectorAll('.genre-tag')).map(tag => tag.dataset.genre);
-            const matches = activeGenres.has('all') || genreTags.some(genre => activeGenres.has(genre));
+            const progress = game.querySelector('.progress-badge')?.dataset.status || '';
             
-            if (matches) {
+            const matchesGenre = activeGenres.has('all') || genreTags.some(genre => activeGenres.has(genre));
+            const matchesProgress = activeProgress === 'all' || progress === activeProgress;
+            
+            if (matchesGenre && matchesProgress) {
                 game.classList.remove('filtered-out');
             } else {
                 game.classList.add('filtered-out');
@@ -308,6 +327,7 @@ document.addEventListener('DOMContentLoaded', function() {
         const image = gameImageInput.value;
         const description = gameDescriptionInput.value;
         const isNew = document.getElementById('is-new-game').checked;
+        const progress = document.getElementById('progress-status').value;
 
         if (name && link && image) {
             try {
@@ -318,7 +338,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         image,
                         description,
                         genres: selectedGenres,
-                        isNew: isNew
+                        isNew: isNew,
+                        progress: progress
                     });
                 } else {
                     await db.collection("games").add({
@@ -327,7 +348,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         image,
                         description,
                         genres: selectedGenres,
-                        isNew: isNew
+                        isNew: isNew,
+                        progress: progress
                     });
                 }
 
@@ -335,6 +357,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 gameLinkInput.value = "";
                 gameImageInput.value = "";
                 gameDescriptionInput.value = "";
+                document.getElementById('progress-status').value = "";
                 selectedGenres = [];
                 updateGenreSelection([]);
                 gameForm.classList.add("hidden");
@@ -378,7 +401,7 @@ document.addEventListener('DOMContentLoaded', function() {
             newLabel.textContent = 'NEU';
             gameElement.appendChild(newLabel);
         }
-        
+
         const img = document.createElement('img');
         img.src = game.image;
         img.alt = game.name;
@@ -387,6 +410,24 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const content = document.createElement('div');
         content.className = 'game-content';
+
+        if (game.progress) {
+            const progressBadge = document.createElement('div');
+            progressBadge.className = 'progress-badge';
+            progressBadge.setAttribute('data-status', game.progress);
+            
+            const progressTexts = {
+                'not-started': 'Nicht begonnen',
+                'in-progress': 'In Arbeit',
+                'completed': 'Abgeschlossen',
+                'planned': 'Geplant'
+            };
+            
+            progressBadge.textContent = progressTexts[game.progress] || '';
+            if (progressBadge.textContent) {
+                content.appendChild(progressBadge);
+            }
+        }
         
         const h2 = document.createElement('h2');
         h2.textContent = game.name;

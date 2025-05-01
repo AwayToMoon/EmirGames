@@ -672,7 +672,7 @@ body {
     border: 1px solid #ff9800;
 }
 
-.genre-option[data-genre="Sport"] {
+.genre-option[data-genre="Survival"] {
     background: linear-gradient(45deg, #2196F3, #1976D2);
     border: 1px solid #2196F3;
 }
@@ -795,7 +795,7 @@ body {
     border: 1px solid #ff9800;
 }
 
-.genre-tag[data-genre="Sport"] {
+.genre-tag[data-genre="Survival"] {
     background: linear-gradient(45deg, #2196F3, #1976D2);
     border: 1px solid #2196F3;
 }
@@ -1897,7 +1897,7 @@ margin: 30px auto;
     border-color: #ff9800;
 }
 
-.genre-filter-btn[data-genre="Sport"].active {
+.genre-filter-btn[data-genre="Survival"].active {
     background: linear-gradient(45deg, #2196F3, #1976D2);
     border-color: #2196F3;
 }

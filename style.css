@@ -155,7 +155,7 @@ body {
 }
 
 .kofi-btn {
-    height: 40px;
+    height: 45px;
     background: linear-gradient(45deg, #6a0dad, #4a0d77);
     border-radius: 20px;
     display: flex;
@@ -672,7 +672,7 @@ body {
     border: 1px solid #ff9800;
 }
 
-.genre-option[data-genre="Survival"] {
+.genre-option[data-genre="Sport"] {
     background: linear-gradient(45deg, #2196F3, #1976D2);
     border: 1px solid #2196F3;
 }
@@ -795,7 +795,7 @@ body {
     border: 1px solid #ff9800;
 }
 
-.genre-tag[data-genre="Survival"] {
+.genre-tag[data-genre="Sport"] {
     background: linear-gradient(45deg, #2196F3, #1976D2);
     border: 1px solid #2196F3;
 }
@@ -944,12 +944,90 @@ body {
     border-radius: 8px;
     cursor: pointer;
     font-weight: 500;
-    margin: 20px auto;
-    display: block;
     transition: all 0.3s ease;
     text-transform: uppercase;
     letter-spacing: 1px;
     box-shadow: 0 4px 15px rgba(156, 9, 219, 0.3);
+}
+
+.action-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    margin: 20px auto;
+    flex-wrap: wrap;
+}
+
+.minigames-button {
+    background: linear-gradient(45deg, #ff00ff, #9c09db);
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    box-shadow: 0 4px 15px rgba(156, 9, 219, 0.3);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.minigames-button i {
+    font-size: 1em;
+    transition: transform 0.3s ease;
+}
+
+.minigames-button i.fa-chevron-left {
+    animation: moveLeft 1.5s infinite;
+}
+
+.minigames-button i.fa-chevron-right {
+    animation: moveRight 1.5s infinite;
+}
+
+@keyframes moveLeft {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(-5px); }
+}
+
+@keyframes moveRight {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(5px); }
+}
+
+.minigames-button:hover {
+    background: linear-gradient(45deg, #ff33ff, #b01af7);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(156, 9, 219, 0.4);
+}
+
+.minigames-button:hover i.fa-chevron-left {
+    animation: moveLeft 0.8s infinite;
+}
+
+.minigames-button:hover i.fa-chevron-right {
+    animation: moveRight 0.8s infinite;
+}
+
+.minigames-button:active {
+    transform: translateY(1px);
+}
+
+@media (max-width: 768px) {
+    .action-buttons {
+        flex-direction: column;
+        align-items: center;
+        gap: 15px;
+    }
+
+    .minigames-button, .suggest-button {
+        width: 90%;
+        max-width: 300px;
+    }
 }
 
 .suggest-button:hover {
@@ -1897,7 +1975,7 @@ margin: 30px auto;
     border-color: #ff9800;
 }
 
-.genre-filter-btn[data-genre="Survival"].active {
+.genre-filter-btn[data-genre="Sport"].active {
     background: linear-gradient(45deg, #2196F3, #1976D2);
     border-color: #2196F3;
 }

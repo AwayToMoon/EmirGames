@@ -248,10 +248,13 @@ document.addEventListener('DOMContentLoaded', function() {
     addGameBtn.addEventListener("click", () => {
         currentGameId = null;
         isEditMode = false;
-        document.getElementById("steam-link").value = "";
-        document.getElementById("steam-fetch-status").style.display = "none";
-        document.getElementById("steam-preview").style.display = "none";
-        document.querySelector('#game-form h2').textContent = "Spiel hinzufügen";
+        gameNameInput.value = "";
+        gameLinkInput.value = "";
+        gameImageInput.value = "";
+        gameDescriptionInput.value = "";
+        selectedGenres = [];
+        updateGenreSelection([]);
+        document.querySelector('#game-form h2').textContent = "Neues Spiel hinzufügen";
         gameForm.classList.remove("hidden");
         gameForm.style.display = 'block';
     });
@@ -319,70 +322,54 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     saveGameBtn.addEventListener("click", async () => {
-        const steamGameRaw = gameForm.dataset.steamGame;
-        if (!steamGameRaw) {
-            alert('Bitte gib einen gültigen Steam-Link ein und warte auf die Vorschau!');
-            return;
-        }
-        const steamGame = JSON.parse(steamGameRaw);
-        try {
-            await db.collection("games").add({
-                name: steamGame.name,
-                link: steamGame.link,
-                image: steamGame.image,
-                genres: steamGame.genres,
-                isNew: true
-            });
-            gameForm.classList.add("hidden");
-            gameForm.style.display = 'none';
-            gameForm.dataset.steamGame = "";
-            await renderGames();
-        } catch (error) {
-            alert('Fehler beim Speichern des Spiels!');
-        }
-    });
+        const name = gameNameInput.value;
+        const link = gameLinkInput.value;
+        const image = gameImageInput.value;
+        const description = gameDescriptionInput.value;
+        const isNew = document.getElementById('is-new-game').checked;
+        const progress = document.getElementById('progress-status').value;
 
-    // Steam-Link Verarbeitung
-    document.getElementById("steam-link").addEventListener("change", async function() {
-        const link = this.value.trim();
-        const status = document.getElementById("steam-fetch-status");
-        const preview = document.getElementById("steam-preview");
-        status.style.display = "block";
-        status.textContent = "Lade Spieldaten von Steam...";
-        preview.style.display = "none";
-        let appid = null;
-        try {
-            // Versuche die AppID aus dem Link zu extrahieren
-            const match = link.match(/store\.steampowered\.com\/app\/(\d+)/);
-            if (match) {
-                appid = match[1];
-            } else {
-                status.textContent = "Ungültiger Steam-Link!";
-                return;
+        if (name && link && image) {
+            try {
+                if (currentGameId) {
+                    await db.collection("games").doc(currentGameId).update({
+                        name,
+                        link,
+                        image,
+                        description,
+                        genres: selectedGenres,
+                        isNew: isNew,
+                        progress: progress
+                    });
+                } else {
+                    await db.collection("games").add({
+                        name,
+                        link,
+                        image,
+                        description,
+                        genres: selectedGenres,
+                        isNew: isNew,
+                        progress: progress
+                    });
+                }
+
+                gameNameInput.value = "";
+                gameLinkInput.value = "";
+                gameImageInput.value = "";
+                gameDescriptionInput.value = "";
+                document.getElementById('progress-status').value = "";
+                selectedGenres = [];
+                updateGenreSelection([]);
+                gameForm.classList.add("hidden");
+                gameForm.style.display = 'none';
+                currentGameId = null;
+                await renderGames();
+            } catch (error) {
+                console.error("Error saving game:", error);
+                alert("Fehler beim Speichern des Spiels");
             }
-            // Hole Spieldaten
-            const res = await fetch(`https://store.steampowered.com/api/appdetails?appids=${appid}&l=german`);
-            const data = await res.json();
-            if (!data[appid] || !data[appid].success) {
-                status.textContent = "Spiel nicht gefunden!";
-                return;
-            }
-            const game = data[appid].data;
-            // Zeige Vorschau
-            document.getElementById("steam-image").src = game.header_image;
-            document.getElementById("steam-name").textContent = game.name;
-            document.getElementById("steam-genres").textContent = (game.genres||[]).map(g=>g.description).join(", ");
-            preview.style.display = "block";
-            status.style.display = "none";
-            // Speichere für später
-            gameForm.dataset.steamGame = JSON.stringify({
-                name: game.name,
-                image: game.header_image,
-                genres: (game.genres||[]).map(g=>g.description),
-                link: link
-            });
-        } catch (e) {
-            status.textContent = "Fehler beim Laden der Spieldaten!";
+        } else {
+            alert('Bitte füllen Sie alle Felder aus');
         }
     });
 

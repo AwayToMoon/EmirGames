@@ -27,42 +27,62 @@ document.addEventListener('DOMContentLoaded', function() {
     const progressButtons = document.querySelectorAll('.progress-filter-btn');
     let activeProgress = 'all';
 
-    genreButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            const genre = button.dataset.genre;
-            
-            if (genre === 'all') {
-                // Wenn "Alle" geklickt wird, deaktiviere alle anderen Filter
-                activeGenres.clear();
-                activeGenres.add('all');
-                genreButtons.forEach(btn => {
-                    btn.classList.remove('active');
-                });
-                button.classList.add('active');
-            } else {
-                // Entferne "Alle" aus den aktiven Genres
-                activeGenres.delete('all');
-                document.querySelector('.genre-filter-btn[data-genre="all"]').classList.remove('active');
-                
-                // Toggle das ausgewählte Genre
-                if (activeGenres.has(genre)) {
-                    activeGenres.delete(genre);
-                    button.classList.remove('active');
-                    
-                    // Wenn kein Genre ausgewählt ist, aktiviere "Alle"
-                    if (activeGenres.size === 0) {
-                        activeGenres.add('all');
-                        document.querySelector('.genre-filter-btn[data-genre="all"]').classList.add('active');
-                    }
-                } else {
-                    activeGenres.add(genre);
-                    button.classList.add('active');
-                }
+    // Dynamische Genre-Filter-Buttons
+    async function updateGenreFilterButtons() {
+        const genreSet = new Set();
+        const snapshot = await db.collection("games").get();
+        snapshot.forEach(doc => {
+            const game = doc.data();
+            if (Array.isArray(game.genres)) {
+                game.genres.forEach(genre => genreSet.add(genre));
             }
-            
-            filterGames();
         });
-    });
+
+        const container = document.querySelector('.genre-filter-buttons');
+        // Nur den „Alle“-Button behalten
+        container.innerHTML = '';
+        const allBtn = document.createElement('button');
+        allBtn.className = 'genre-filter-btn active';
+        allBtn.dataset.genre = 'all';
+        allBtn.textContent = 'Alle';
+        container.appendChild(allBtn);
+
+        genreSet.forEach(genre => {
+            const btn = document.createElement('button');
+            btn.className = 'genre-filter-btn';
+            btn.dataset.genre = genre;
+            btn.textContent = genre;
+            container.appendChild(btn);
+        });
+
+        // Event Listener neu setzen
+        document.querySelectorAll('.genre-filter-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                const genre = button.dataset.genre;
+                if (genre === 'all') {
+                    activeGenres.clear();
+                    activeGenres.add('all');
+                    document.querySelectorAll('.genre-filter-btn').forEach(btn => btn.classList.remove('active'));
+                    button.classList.add('active');
+                } else {
+                    activeGenres.delete('all');
+                    document.querySelector('.genre-filter-btn[data-genre="all"]').classList.remove('active');
+                    if (activeGenres.has(genre)) {
+                        activeGenres.delete(genre);
+                        button.classList.remove('active');
+                        if (activeGenres.size === 0) {
+                            activeGenres.add('all');
+                            document.querySelector('.genre-filter-btn[data-genre="all"]').classList.add('active');
+                        }
+                    } else {
+                        activeGenres.add(genre);
+                        button.classList.add('active');
+                    }
+                }
+                filterGames();
+            });
+        });
+    }
 
     progressButtons.forEach(button => {
         button.addEventListener('click', () => {
@@ -582,6 +602,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialisierung beim Laden der Seite
     renderGames();
     loadSocialLinks();
+    updateGenreFilterButtons();
 
     // Randomizer Funktionalität
     document.getElementById('game-randomizer').addEventListener('click', async () => {

@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="de">
 <head>
@@ -65,7 +64,7 @@
             <button id="suggest-game-btn" class="suggest-button">Spiel vorschlagen</button>
             <a href="https://minigames-emir.vercel.app/" class="minigames-button" target="_blank">
                 <i class="fas fa-chevron-right"></i>
-                Minigame
+                MiniGames Emir
                 <i class="fas fa-chevron-left"></i>
             </a>
         </div>
@@ -103,36 +102,13 @@
         <div id="game-form" class="modal hidden">
             <div class="modal-content">
                 <span class="close-modal">&times;</span>
-                <h2>Spiel bearbeiten</h2>
-                <div class="new-game-option">
-                    <input type="checkbox" id="is-new-game">
-                    <label for="is-new-game">Als "NEU" markieren</label>
-                </div>
-                <input type="text" id="game-name" placeholder="Spielname">
-                <div class="genre-container">
-                    <div class="genre-option" data-genre="Action">Action</div>
-                    <div class="genre-option" data-genre="Adventure">Adventure</div>
-                    <div class="genre-option" data-genre="Soulslike">Soulslike</div>
-                    <div class="genre-option" data-genre="Shooter">Shooter</div>
-                    <div class="genre-option" data-genre="Sport">Sport</div>
-                    <div class="genre-option" data-genre="Strategie">Strategie</div>
-                    <div class="genre-option" data-genre="Rätsel">Rätsel</div>
-                    <div class="genre-option" data-genre="Roblox">Roblox</div>
-                    <div class="genre-option" data-genre="Horror">Horror</div>
-                    <div class="genre-option" data-genre="Story">Story</div>
-                </div>
-                <input type="text" id="game-link" placeholder="Spiel-URL">
-                <input type="text" id="game-image" placeholder="Bild-URL">
-                <textarea id="game-description" placeholder="Spielbeschreibung" rows="4"></textarea>
-                <div class="progress-status-container">
-                    <label for="progress-status">Fortschritt:</label>
-                    <select id="progress-status">
-                        <option value="">Kein Status</option>
-                        <option value="not-started">Nicht begonnen</option>
-                        <option value="in-progress">In Arbeit</option>
-                        <option value="completed">Abgeschlossen</option>
-                        <option value="planned">Geplant</option>
-                    </select>
+                <h2>Spiel hinzufügen</h2>
+                <input type="text" id="steam-link" placeholder="Steam-Link einfügen">
+                <div id="steam-fetch-status" style="color:#ff00ff; margin:10px 0; display:none;"></div>
+                <div id="steam-preview" style="display:none; margin-bottom:10px;">
+                    <img id="steam-image" src="" alt="Steam Bild" style="width:100px; height:60px; object-fit:cover; border-radius:6px; margin-bottom:5px;"><br>
+                    <span id="steam-name" style="font-weight:bold;"></span><br>
+                    <span id="steam-genres" style="font-size:12px; color:#aaa;"></span>
                 </div>
                 <button id="save-game">Speichern</button>
             </div>

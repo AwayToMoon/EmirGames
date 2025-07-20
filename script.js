@@ -386,12 +386,50 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    function getGenreColor(genre) {
+        // Bekannte Farben (wie in style.css)
+        const genreColors = {
+            "Action": "#6a0dad",
+            "Adventure": "#4CAF50",
+            "Soulslike": "#00ff00",
+            "Shooter": "#ff9800",
+            "Sport": "#2196F3",
+            "Strategie": "#607D8B",
+            "Rätsel": "#E91E63",
+            "Roblox": "#FFC107",
+            "Horror": "#990000",
+            "Story": "#ff69b4"
+        };
+        if (genreColors[genre]) return genreColors[genre];
+        // Für unbekannte Genres: Hash zu Farbe
+        let hash = 0;
+        for (let i = 0; i < genre.length; i++) {
+            hash = genre.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        const color = `hsl(${hash % 360}, 60%, 45%)`;
+        return color;
+    }
+
     function createGenreTag(genre, container, isEditable = false) {
         const tag = document.createElement('div');
         tag.className = 'genre-tag';
         tag.setAttribute('data-genre', genre);
         tag.textContent = genre;
-        
+
+        // Dynamische Farbe für unbekannte Genres
+        if (!document.querySelector(`style[data-genre-style="${genre}"]`)) {
+            const color = getGenreColor(genre);
+            const style = document.createElement('style');
+            style.setAttribute('data-genre-style', genre);
+            style.innerHTML = `
+                .genre-tag[data-genre="${genre}"] {
+                    background: ${color};
+                    border: 1px solid ${color};
+                }
+            `;
+            document.head.appendChild(style);
+        }
+
         if (isEditable) {
             const removeButton = document.createElement('span');
             removeButton.className = 'remove-genre';
@@ -399,7 +437,7 @@ document.addEventListener('DOMContentLoaded', function() {
             removeButton.onclick = () => tag.remove();
             tag.appendChild(removeButton);
         }
-        
+
         container.appendChild(tag);
         return tag;
     }

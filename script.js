@@ -406,6 +406,58 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Steam-Link Verarbeitung für Vorschlagsformular
+    const suggestSteamLinkInput = document.getElementById("suggest-steam-link");
+    if (suggestSteamLinkInput) {
+        suggestSteamLinkInput.addEventListener("change", async function() {
+            const link = this.value.trim();
+            const status = document.getElementById("suggest-steam-fetch-status");
+            const preview = document.getElementById("suggest-steam-preview");
+            status.style.display = "block";
+            status.textContent = "Lade Spieldaten von Steam...";
+            preview.style.display = "none";
+            let appid = null;
+            try {
+                // Versuche die AppID aus dem Link zu extrahieren
+                const match = link.match(/store\.steampowered\.com\/app\/(\d+)/);
+                if (match) {
+                    appid = match[1];
+                } else {
+                    status.textContent = "Ungültiger Steam-Link!";
+                    return;
+                }
+                // Hole Spieldaten (mit CORS-Proxy wie im Admin-Formular)
+                const res = await fetch(`https://corsproxy.io/?https://store.steampowered.com/api/appdetails?appids=${appid}&l=german`);
+                const data = await res.json();
+                if (!data[appid] || !data[appid].success) {
+                    status.textContent = "Spiel nicht gefunden!";
+                    return;
+                }
+                const game = data[appid].data;
+                // Zeige Vorschau
+                document.getElementById("suggest-steam-image").src = game.header_image;
+                document.getElementById("suggest-steam-name").textContent = game.name;
+                document.getElementById("suggest-steam-genres").textContent = (game.genres||[]).map(g=>g.description).join(", ");
+                preview.style.display = "block";
+                status.style.display = "none";
+                // Felder automatisch ausfüllen
+                document.getElementById("suggest-name").value = game.name;
+                document.getElementById("suggest-link").value = link;
+                document.getElementById("suggest-image").value = game.header_image;
+                // Genres auswählen
+                const genres = (game.genres||[]).map(g=>g.description);
+                document.querySelectorAll('#suggest-form .genre-option').forEach(option => {
+                    option.classList.remove('selected');
+                    if (genres.includes(option.dataset.genre)) {
+                        option.classList.add('selected');
+                    }
+                });
+            } catch (e) {
+                status.textContent = "Fehler beim Laden der Spieldaten!";
+            }
+        });
+    }
+
     function getGenreColor(genre) {
         // Bekannte Farben (wie in style.css)
         const genreColors = {

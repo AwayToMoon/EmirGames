@@ -458,6 +458,72 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    document.getElementById('submit-suggestion').addEventListener('click', async () => {
+        try {
+            const steamLink = document.getElementById('suggest-steam-link').value.trim();
+            const selectedGenres = Array.from(document.querySelectorAll('#suggest-form .genre-option.selected'))
+                .map(el => el.getAttribute('data-genre'));
+
+            if (!steamLink || selectedGenres.length === 0) {
+                alert('Bitte einen Steam-Link eingeben und mindestens ein Genre auswählen!');
+                return;
+            }
+
+            // Hole Spieldaten von Steam API
+            let appid = null;
+            const match = steamLink.match(/store\.steampowered\.com\/app\/(\d+)/);
+            if (match) {
+                appid = match[1];
+            } else {
+                alert('Ungültiger Steam-Link!');
+                return;
+            }
+            let gameData = {};
+            try {
+                const res = await fetch(`https://corsproxy.io/?https://store.steampowered.com/api/appdetails?appids=${appid}&l=german`);
+                const data = await res.json();
+                if (data[appid] && data[appid].success) {
+                    const game = data[appid].data;
+                    gameData = {
+                        name: game.name,
+                        link: steamLink,
+                        image: game.header_image,
+                        genres: selectedGenres,
+                        isPending: true,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                    };
+                } else {
+                    alert('Spiel nicht gefunden!');
+                    return;
+                }
+            } catch (e) {
+                alert('Fehler beim Laden der Spieldaten!');
+                return;
+            }
+
+            // Vorschlag zur games Collection hinzufügen
+            await db.collection('games').add(gameData);
+
+            // Formular zurücksetzen
+            document.getElementById('suggest-steam-link').value = '';
+            document.querySelectorAll('#suggest-form .genre-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            document.getElementById('suggest-steam-fetch-status').style.display = 'none';
+            document.getElementById('suggest-steam-preview').style.display = 'none';
+            document.getElementById('suggest-form').style.display = 'none';
+
+            // Erfolgsmeldung anzeigen
+            alert('Vielen Dank für deinen Vorschlag!');
+
+            // Vorschlagszähler aktualisieren
+            await updateSuggestionCount();
+        } catch (error) {
+            console.error('Error adding suggestion:', error);
+            alert('Fehler beim Speichern des Vorschlags. Bitte versuche es später erneut.');
+        }
+    });
+
     function getGenreColor(genre) {
         // Bekannte Farben (wie in style.css)
         const genreColors = {

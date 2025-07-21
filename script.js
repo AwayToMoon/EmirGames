@@ -338,6 +338,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // --- Admin: Spiel speichern ---
     saveGameBtn.addEventListener("click", async () => {
         const steamGameRaw = gameForm.dataset.steamGame;
         if (!steamGameRaw) {
@@ -351,6 +352,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 link: steamGame.link,
                 image: steamGame.image,
                 genres: steamGame.genres,
+                description: steamGame.description || "",
                 isNew: true
             });
             gameForm.classList.add("hidden");
@@ -362,7 +364,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Steam-Link Verarbeitung
+    // --- Admin: Steam-Link Verarbeitung ---
     document.getElementById("steam-link").addEventListener("change", async function() {
         const link = this.value.trim();
         const status = document.getElementById("steam-fetch-status");
@@ -399,14 +401,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 name: game.name,
                 image: game.header_image,
                 genres: (game.genres||[]).map(g=>g.description),
-                link: link
+                link: link,
+                description: game.short_description || ""
             });
         } catch (e) {
             status.textContent = "Fehler beim Laden der Spieldaten!";
         }
     });
 
-    // Steam-Link Verarbeitung für Vorschlagsformular
+    // --- Vorschlagsformular: Steam-Link Verarbeitung ---
     const suggestSteamLinkInput = document.getElementById("suggest-steam-link");
     if (suggestSteamLinkInput) {
         suggestSteamLinkInput.addEventListener("change", async function() {
@@ -440,24 +443,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 document.getElementById("suggest-steam-genres").textContent = (game.genres||[]).map(g=>g.description).join(", ");
                 preview.style.display = "block";
                 status.style.display = "none";
-                // Felder automatisch ausfüllen
-                document.getElementById("suggest-name").value = game.name;
-                document.getElementById("suggest-link").value = link;
-                document.getElementById("suggest-image").value = game.header_image;
-                // Genres auswählen
-                const genres = (game.genres||[]).map(g=>g.description);
-                document.querySelectorAll('#suggest-form .genre-option').forEach(option => {
-                    option.classList.remove('selected');
-                    if (genres.includes(option.dataset.genre)) {
-                        option.classList.add('selected');
-                    }
-                });
+                // Speichere Beschreibung für später
+                suggestSteamLinkInput.dataset.description = game.short_description || "";
             } catch (e) {
                 status.textContent = "Fehler beim Laden der Spieldaten!";
             }
         });
     }
 
+    // --- Vorschlagsformular: Spiel einreichen ---
     document.getElementById('submit-suggestion').addEventListener('click', async () => {
         try {
             const steamLink = document.getElementById('suggest-steam-link').value.trim();
@@ -486,6 +480,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         link: steamLink,
                         image: game.header_image,
                         genres: (game.genres||[]).map(g=>g.description),
+                        description: game.short_description || "",
                         isPending: true,
                         timestamp: firebase.firestore.FieldValue.serverTimestamp()
                     };
@@ -574,6 +569,7 @@ document.addEventListener('DOMContentLoaded', function() {
         return tag;
     }
 
+    // --- Anzeige: Beschreibung im Spiel-Listing ---
     function displayGame(game, isEditable = false) {
         const gameElement = document.createElement('div');
         gameElement.className = 'game';

@@ -151,31 +151,26 @@
             <div class="modal-content suggest-content">
                 <span class="close-modal">&times;</span>
                 <h2>Spiel vorschlagen</h2>
-                <div class="suggest-form">
-                    <input type="text" id="suggest-steam-link" placeholder="Steam-Link einfügen (optional)">
-                    <div id="suggest-steam-fetch-status" style="color:#ff00ff; margin:10px 0; display:none;"></div>
-                    <div id="suggest-steam-preview" style="display:none; margin-bottom:10px;">
-                        <img id="suggest-steam-image" src="" alt="Steam Bild" style="width:100px; height:60px; object-fit:cover; border-radius:6px; margin-bottom:5px;"><br>
-                        <span id="suggest-steam-name" style="font-weight:bold;"></span><br>
-                        <span id="suggest-steam-genres" style="font-size:12px; color:#aaa;"></span>
-                    </div>
-                    <input type="text" id="suggest-name" placeholder="Spielname">
-                    <input type="text" id="suggest-link" placeholder="Link zum Spiel">
-                    <input type="text" id="suggest-image" placeholder="Link zum Spielbild">
-                    <div class="genre-container">
-                        <div class="genre-option" data-genre="Action">Action</div>
-                        <div class="genre-option" data-genre="Adventure">Adventure</div>
-                        <div class="genre-option" data-genre="Soulslike">Soulslike</div>
-                        <div class="genre-option" data-genre="Shooter">Shooter</div>
-                        <div class="genre-option" data-genre="Sport">Sport</div>
-                        <div class="genre-option" data-genre="Strategie">Strategie</div>
-                        <div class="genre-option" data-genre="Rätsel">Rätsel</div>
-                        <div class="genre-option" data-genre="Roblox">Roblox</div>
-                        <div class="genre-option" data-genre="Horror">Horror</div>
-                        <div class="genre-option" data-genre="Story">Story</div>
-                    </div>
-                    <button id="submit-suggestion">Vorschlag einreichen</button>
+                <input type="text" id="suggest-steam-link" placeholder="Steam-Link einfügen">
+                <div id="suggest-steam-fetch-status" style="color:#ff00ff; margin:10px 0; display:none;"></div>
+                <div id="suggest-steam-preview" style="display:none; margin-bottom:10px;">
+                    <img id="suggest-steam-image" src="" alt="Steam Bild" style="width:100px; height:60px; object-fit:cover; border-radius:6px; margin-bottom:5px;"><br>
+                    <span id="suggest-steam-name" style="font-weight:bold;"></span><br>
+                    <span id="suggest-steam-genres" style="font-size:12px; color:#aaa;"></span>
                 </div>
+                <div class="genre-container">
+                    <div class="genre-option" data-genre="Action">Action</div>
+                    <div class="genre-option" data-genre="Adventure">Adventure</div>
+                    <div class="genre-option" data-genre="Soulslike">Soulslike</div>
+                    <div class="genre-option" data-genre="Shooter">Shooter</div>
+                    <div class="genre-option" data-genre="Sport">Sport</div>
+                    <div class="genre-option" data-genre="Strategie">Strategie</div>
+                    <div class="genre-option" data-genre="Rätsel">Rätsel</div>
+                    <div class="genre-option" data-genre="Roblox">Roblox</div>
+                    <div class="genre-option" data-genre="Horror">Horror</div>
+                    <div class="genre-option" data-genre="Story">Story</div>
+                </div>
+                <button id="submit-suggestion">Vorschlag einreichen</button>
             </div>
         </div>
 
@@ -359,9 +354,6 @@
         document.getElementById('suggest-steam-link').value = '';
         document.getElementById('suggest-steam-fetch-status').style.display = 'none';
         document.getElementById('suggest-steam-preview').style.display = 'none';
-        document.getElementById('suggest-name').value = '';
-        document.getElementById('suggest-link').value = '';
-        document.getElementById('suggest-image').value = '';
         
         // Genre-Event-Listener neu hinzufügen
         document.querySelectorAll('#suggest-form .genre-option').forEach(option => {
@@ -381,32 +373,25 @@
     // Fügen Sie diesen Event Listener für das Einreichen eines Vorschlags hinzu
     document.getElementById('submit-suggestion').addEventListener('click', async () => {
         try {
-            const name = document.getElementById('suggest-name').value.trim();
-            const link = document.getElementById('suggest-link').value.trim();
-            const image = document.getElementById('suggest-image').value.trim();
             const steamLink = document.getElementById('suggest-steam-link').value.trim();
             const selectedGenres = Array.from(document.querySelectorAll('#suggest-form .genre-option.selected'))
                 .map(el => el.getAttribute('data-genre'));
 
-            if (!name || !link || !image || selectedGenres.length === 0) {
-                alert('Bitte alle Felder ausfüllen und mindestens ein Genre auswählen!');
+            if (!steamLink || selectedGenres.length === 0) {
+                alert('Bitte einen Steam-Link eingeben und mindestens ein Genre auswählen!');
                 return;
             }
 
             // Vorschlag zur games Collection hinzufügen
             await db.collection('games').add({
-                name: name,
-                link: link,
-                image: image,
+                steamLink: steamLink,
                 genres: selectedGenres,
                 isPending: true,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             });
 
             // Formular zurücksetzen
-            document.getElementById('suggest-name').value = '';
-            document.getElementById('suggest-link').value = '';
-            document.getElementById('suggest-image').value = '';
+            document.getElementById('suggest-steam-link').value = '';
             document.querySelectorAll('#suggest-form .genre-option').forEach(option => {
                 option.classList.remove('selected');
             });

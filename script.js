@@ -660,12 +660,13 @@ document.addEventListener('DOMContentLoaded', function() {
             editBtn.onclick = (e) => {
                 e.stopPropagation();
                 currentGameId = game.id;
-                gameNameInput.value = game.name;
-                gameLinkInput.value = game.link;
-                gameImageInput.value = game.image;
-                gameDescriptionInput.value = game.description || "";
-                document.getElementById('is-new-game').checked = game.isNew || false;
-                updateGenreSelection(game.genres || []);
+                // Nur Felder befüllen, die im Formular existieren
+                if (document.getElementById('steam-link')) {
+                    document.getElementById('steam-link').value = game.link || '';
+                    // Optional: Vorschau und Status zurücksetzen
+                    document.getElementById('steam-fetch-status').style.display = 'none';
+                    document.getElementById('steam-preview').style.display = 'none';
+                }
                 document.querySelector('#game-form h2').textContent = "Spiel bearbeiten";
                 gameForm.classList.remove("hidden");
                 gameForm.style.display = 'block';

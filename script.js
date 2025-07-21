@@ -461,11 +461,8 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('submit-suggestion').addEventListener('click', async () => {
         try {
             const steamLink = document.getElementById('suggest-steam-link').value.trim();
-            const selectedGenres = Array.from(document.querySelectorAll('#suggest-form .genre-option.selected'))
-                .map(el => el.getAttribute('data-genre'));
-
-            if (!steamLink || selectedGenres.length === 0) {
-                alert('Bitte einen Steam-Link eingeben und mindestens ein Genre auswählen!');
+            if (!steamLink) {
+                alert('Bitte einen Steam-Link eingeben!');
                 return;
             }
 
@@ -488,7 +485,7 @@ document.addEventListener('DOMContentLoaded', function() {
                         name: game.name,
                         link: steamLink,
                         image: game.header_image,
-                        genres: selectedGenres,
+                        genres: (game.genres||[]).map(g=>g.description),
                         isPending: true,
                         timestamp: firebase.firestore.FieldValue.serverTimestamp()
                     };
@@ -506,9 +503,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
             // Formular zurücksetzen
             document.getElementById('suggest-steam-link').value = '';
-            document.querySelectorAll('#suggest-form .genre-option').forEach(option => {
-                option.classList.remove('selected');
-            });
             document.getElementById('suggest-steam-fetch-status').style.display = 'none';
             document.getElementById('suggest-steam-preview').style.display = 'none';
             document.getElementById('suggest-form').style.display = 'none';

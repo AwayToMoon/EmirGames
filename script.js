@@ -23,6 +23,36 @@ document.addEventListener('DOMContentLoaded', function() {
     const genreButtons = document.querySelectorAll('.genre-filter-btn');
     let activeGenres = new Set(['all']);
 
+    genreButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            const genre = button.dataset.genre;
+            if (genre === 'all') {
+                activeGenres.clear();
+                activeGenres.add('all');
+                document.querySelectorAll('.genre-filter-btn').forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                renderGames(); // Originalreihenfolge wiederherstellen
+            } else {
+                activeGenres.delete('all');
+                document.querySelector('.genre-filter-btn[data-genre="all"]').classList.remove('active');
+                if (activeGenres.has(genre)) {
+                    activeGenres.delete(genre);
+                    button.classList.remove('active');
+                    if (activeGenres.size === 0) {
+                        activeGenres.add('all');
+                        document.querySelector('.genre-filter-btn[data-genre="all"]').classList.add('active');
+                        renderGames(); // Falls alle abgewählt, auch Originalreihenfolge
+                        return;
+                    }
+                } else {
+                    activeGenres.add(genre);
+                    button.classList.add('active');
+                }
+                filterGames();
+            }
+        });
+    });
+
     // Progress Filter Funktionalität
     const progressButtons = document.querySelectorAll('.progress-filter-btn');
     let activeProgress = 'all';
@@ -719,11 +749,22 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
+    // Einmalig die aktuelle Reihenfolge der Spiele speichern
+    async function saveInitialOrderIfNotExists(games) {
+        const orderDoc = await db.collection('settings').doc('order').get();
+        if (!orderDoc.exists || !orderDoc.data().order) {
+            const order = games.map(g => g.id);
+            await db.collection('settings').doc('order').set({ order });
+        }
+    }
+
+    let originalGamesOrder = [];
+
     async function renderGames() {
         try {
             gameList.innerHTML = "";
             const snapshot = await db.collection("games").get();
-            const games = [];
+            let games = [];
             snapshot.forEach(doc => {
                 const gameData = doc.data();
                 if (!gameData.isPending) {
@@ -740,6 +781,23 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
             });
+            // Einmalig Reihenfolge speichern
+            if (originalGamesOrder.length === 0 && currentTab === 'all' && activeGenres.has('all') && activeProgress === 'all') {
+                await saveInitialOrderIfNotExists(games);
+            }
+            // Reihenfolge aus DB holen, falls vorhanden
+            if (originalGamesOrder.length === 0) {
+                const orderDoc = await db.collection('settings').doc('order').get();
+                if (orderDoc.exists && orderDoc.data().order) {
+                    originalGamesOrder = orderDoc.data().order;
+                } else {
+                    originalGamesOrder = games.map(g => g.id);
+                }
+            }
+            // Wenn "Alle" gewählt ist, sortiere nach Originalreihenfolge
+            if (currentTab === 'all' && activeGenres.has('all') && activeProgress === 'all' && originalGamesOrder.length > 0) {
+                games.sort((a, b) => originalGamesOrder.indexOf(a.id) - originalGamesOrder.indexOf(b.id));
+            }
             games.forEach(game => {
                 const gameElement = displayGame(game, !adminPanel.classList.contains("hidden") && isEditMode);
                 gameList.appendChild(gameElement);

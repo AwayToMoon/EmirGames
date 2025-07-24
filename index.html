@@ -15,180 +15,173 @@
 <body>
     <div class="content-container">
         <div class="header">
-            <div class="logo-title-container">
-                <img id="header-logo" src="#" alt="Logo" class="header-logo">
-                <h1 class="site-title">HigherCellF Games</h1>
+                <div class="logo-title-container">
+                    <img id="header-logo" src="#" alt="Logo" class="header-logo">
+                    <h1 class="site-title">HigherCellF Games</h1>
+                </div>
+                
+                <div class="social-media">
+                    <a href="https://ko-fi.com/awayy" class="kofi-btn" target="_blank">
+                        <i class="fas fa-mug-hot"></i>
+                        <span>Support Mich Gern :D </span>
+                    </a>
+                    <div class="social-buttons">
+                        <a href="#" class="social-btn" id="tiktok-btn" title="TikTok" target="_blank">
+                            <i class="fab fa-tiktok"></i>
+                        </a>
+                        <a href="#" class="social-btn" id="discord-btn" title="Discord" target="_blank">
+                            <i class="fab fa-discord"></i>
+                        </a>
+                        <a href="#" class="social-btn" id="instagram-btn" title="Instagram" target="_blank">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="social-btn" id="kick-btn" title="Kick" target="_blank">
+                            <i class="fas fa-k"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="admin-section">
+                    <img id="admin-logo" src="#" alt="Admin Logo" class="admin-logo">
+                    <button id="admin-login-btn">Login Away亗</button>
+                </div>
             </div>
             
-            <div class="social-media">
-                <a href="https://ko-fi.com/awayy" class="kofi-btn" target="_blank">
-                    <i class="fas fa-mug-hot"></i>
-                    <span>Support Mich Gern :D </span>
+            <div class="header-divider"></div>
+
+            <div id="admin-panel" class="hidden">
+                <button id="add-game-btn">Spiel hinzufügen</button>
+                <button id="edit-games-btn">Spiele bearbeiten</button>
+                <button id="edit-social-btn">Social Media Links bearbeiten</button>
+                <button id="view-suggestions-btn">Vorschläge ansehen <span id="suggestion-count" class="suggestion-badge hidden">0</span></button>
+            </div>
+
+            <button id="game-randomizer">
+                <i class="fas fa-dice"></i>
+                Zufälliges Spiel
+            </button>
+            <div class="action-buttons">
+                <button id="suggest-game-btn" class="suggest-button">Spiel vorschlagen</button>
+                <a href="https://minigames-emir.vercel.app/" class="minigames-button" target="_blank">
+                    <i class="fas fa-chevron-right"></i>
+                    MiniGames Emir
+                    <i class="fas fa-chevron-left"></i>
                 </a>
-                <div class="social-buttons">
-                    <a href="#" class="social-btn" id="tiktok-btn" title="TikTok" target="_blank">
-                        <i class="fab fa-tiktok"></i>
-                    </a>
-                    <a href="#" class="social-btn" id="discord-btn" title="Discord" target="_blank">
-                        <i class="fab fa-discord"></i>
-                    </a>
-                    <a href="#" class="social-btn" id="instagram-btn" title="Instagram" target="_blank">
-                        <i class="fab fa-instagram"></i>
-                    </a>
-                    <a href="#" class="social-btn" id="kick-btn" title="Kick" target="_blank">
-                        <i class="fas fa-k"></i>
-                    </a>
+            </div>
+            
+            <div class="main-content-flex" style="display:flex; gap:120px; align-items:flex-start; justify-content:center; width:100%; max-width:1200px; margin:0 auto;">
+                <div class="genre-filter-container">
+                    <h3>Nach Genre filtern</h3>
+                    <div class="genre-filter-buttons">
+                        <button class="genre-filter-btn" data-genre="all">Alle</button>
+                        <button class="genre-filter-btn" data-genre="Action">Action</button>
+                        <button class="genre-filter-btn" data-genre="Adventure">Adventure</button>
+                        <button class="genre-filter-btn" data-genre="Soulslike">Soulslike</button>
+                        <button class="genre-filter-btn" data-genre="Shooter">Shooter</button>
+                        <button class="genre-filter-btn" data-genre="Sport">Sport</button>
+                        <button class="genre-filter-btn" data-genre="Strategie">Strategie</button>
+                        <button class="genre-filter-btn" data-genre="Rätsel">Rätsel</button>
+                        <button class="genre-filter-btn" data-genre="Roblox">Roblox</button>
+                        <button class="genre-filter-btn" data-genre="Horror">Horror</button>
+                        <button class="genre-filter-btn" data-genre="Story">Story</button>
+                    </div>
+                </div>
+                <div style="flex:1; min-width:0;">
+                    <div id="game-tabs" class="game-tabs-container" style="display:flex;justify-content:center;gap:50px;margin-top:20px;">
+                        <button id="tab-all-games" class="game-tab-btn active">Alle Spiele</button>
+                        <button id="tab-unreleased-games" class="game-tab-btn">Unreleased Spiele</button>
+                    </div>
+                    <div id="game-list"></div>
                 </div>
             </div>
 
-            <div class="admin-section">
-                <img id="admin-logo" src="#" alt="Admin Logo" class="admin-logo">
-                <button id="admin-login-btn">Login Away亗</button>
-            </div>
-        </div>
-        
-        <div class="header-divider"></div>
-
-        <div id="admin-panel" class="hidden">
-            <button id="add-game-btn">Spiel hinzufügen</button>
-            <button id="edit-games-btn">Spiele bearbeiten</button>
-            <button id="edit-social-btn">Social Media Links bearbeiten</button>
-            <button id="view-suggestions-btn">Vorschläge ansehen <span id="suggestion-count" class="suggestion-badge hidden">0</span></button>
-        </div>
-
-        <button id="game-randomizer">
-            <i class="fas fa-dice"></i>
-            Zufälliges Spiel
-        </button>
-        <div class="action-buttons">
-            <button id="suggest-game-btn" class="suggest-button">Spiel vorschlagen</button>
-            <a href="https://minigames-emir.vercel.app/" class="minigames-button" target="_blank">
-                <i class="fas fa-chevron-right"></i>
-                MiniGames Emir
-                <i class="fas fa-chevron-left"></i>
-            </a>
-        </div>
-        
-        <div class="genre-filter-container">
-            <h3>Nach Genre filtern</h3>
-            <div class="genre-filter-buttons">
-                <button class="genre-filter-btn" data-genre="all">Alle</button>
-                <button class="genre-filter-btn" data-genre="Action">Action</button>
-                <button class="genre-filter-btn" data-genre="Adventure">Adventure</button>
-                <button class="genre-filter-btn" data-genre="Soulslike">Soulslike</button>
-                <button class="genre-filter-btn" data-genre="Shooter">Shooter</button>
-                <button class="genre-filter-btn" data-genre="Sport">Sport</button>
-                <button class="genre-filter-btn" data-genre="Strategie">Strategie</button>
-                <button class="genre-filter-btn" data-genre="Rätsel">Rätsel</button>
-                <button class="genre-filter-btn" data-genre="Roblox">Roblox</button>
-                <button class="genre-filter-btn" data-genre="Horror">Horror</button>
-                <button class="genre-filter-btn" data-genre="Story">Story</button>
-            </div>
-        </div>
-
-        <div class="progress-filter-container">
-            <h3>Nach Fortschritt filtern</h3>
-            <div class="progress-filter-buttons">
-                <button class="progress-filter-btn" data-progress="all">Alle</button>
-                <button class="progress-filter-btn" data-progress="not-started">Nicht begonnen</button>
-                <button class="progress-filter-btn" data-progress="in-progress">In Arbeit</button>
-                <button class="progress-filter-btn" data-progress="completed">Abgeschlossen</button>
-                <button class="progress-filter-btn" data-progress="planned">Geplant</button>
-            </div>
-        </div>
-
-        <div id="game-tabs" class="game-tabs-container" style="display:flex; justify-content:center; gap:10px; margin-top:20px;">
-            <button id="tab-all-games" class="game-tab-btn active">Alle Spiele</button>
-            <button id="tab-unreleased-games" class="game-tab-btn">Unreleased Spiele</button>
-        </div>
-        <div id="game-list"></div>
-
-        <div id="game-form" class="modal hidden">
-            <div class="modal-content">
-                <span class="close-modal">&times;</span>
-                <h2>Spiel hinzufügen</h2>
-                <input type="text" id="steam-link" placeholder="Steam-Link einfügen">
-                <div id="steam-fetch-status" style="color:#ff00ff; margin:10px 0; display:none;"></div>
-                <div id="steam-preview" style="display:none; margin-bottom:10px;">
-                    <img id="steam-image" src="" alt="Steam Bild" style="width:100px; height:60px; object-fit:cover; border-radius:6px; margin-bottom:5px;"><br>
-                    <span id="steam-name" style="font-weight:bold;"></span><br>
-                    <span id="steam-genres" style="font-size:12px; color:#aaa;"></span>
+            <div id="game-form" class="modal hidden">
+                <div class="modal-content">
+                    <span class="close-modal">&times;</span>
+                    <h2>Spiel hinzufügen</h2>
+                    <input type="text" id="steam-link" placeholder="Steam-Link einfügen">
+                    <div id="steam-fetch-status" style="color:#ff00ff; margin:10px 0; display:none;"></div>
+                    <div id="steam-preview" style="display:none; margin-bottom:10px;">
+                        <img id="steam-image" src="" alt="Steam Bild" style="width:100px; height:60px; object-fit:cover; border-radius:6px; margin-bottom:5px;"><br>
+                        <span id="steam-name" style="font-weight:bold;"></span><br>
+                        <span id="steam-genres" style="font-size:12px; color:#aaa;"></span>
+                    </div>
+                    <button id="save-game">Speichern</button>
                 </div>
-                <button id="save-game">Speichern</button>
             </div>
-        </div>
 
-        <div id="social-form" class="modal hidden">
-            <div class="modal-content">
-                <span class="close-modal">&times;</span>
-                <h2>Social Media Links bearbeiten</h2>
-                <input type="text" id="tiktok-link" placeholder="TikTok URL">
-                <input type="text" id="discord-link" placeholder="Discord URL">
-                <input type="text" id="instagram-link" placeholder="Instagram URL">
-                <input type="text" id="kick-link" placeholder="Kick URL">
-                <h3>Footer Social Media Links</h3>
-                <input type="text" id="footer-instagram-link" placeholder="Footer Instagram URL">
-                <input type="text" id="footer-tiktok-link" placeholder="Footer TikTok URL">
-                <input type="text" id="footer-twitter-link" placeholder="Footer Twitter URL">
-                <h3>Logo URLs</h3>
-                <input type="text" id="header-logo-link" placeholder="Header Logo URL (empfohlen: 40x40px)">
-                <input type="text" id="logo-link" placeholder="Tab Icon URL (32x32px empfohlen)">
-                <input type="text" id="admin-logo-link" placeholder="Admin Logo URL (empfohlen: 40x40px)">
-                <button id="save-social">Speichern</button>
+            <div id="social-form" class="modal hidden">
+                <div class="modal-content">
+                    <span class="close-modal">&times;</span>
+                    <h2>Social Media Links bearbeiten</h2>
+                    <input type="text" id="tiktok-link" placeholder="TikTok URL">
+                    <input type="text" id="discord-link" placeholder="Discord URL">
+                    <input type="text" id="instagram-link" placeholder="Instagram URL">
+                    <input type="text" id="kick-link" placeholder="Kick URL">
+                    <h3>Footer Social Media Links</h3>
+                    <input type="text" id="footer-instagram-link" placeholder="Footer Instagram URL">
+                    <input type="text" id="footer-tiktok-link" placeholder="Footer TikTok URL">
+                    <input type="text" id="footer-twitter-link" placeholder="Footer Twitter URL">
+                    <h3>Logo URLs</h3>
+                    <input type="text" id="header-logo-link" placeholder="Header Logo URL (empfohlen: 40x40px)">
+                    <input type="text" id="logo-link" placeholder="Tab Icon URL (32x32px empfohlen)">
+                    <input type="text" id="admin-logo-link" placeholder="Admin Logo URL (empfohlen: 40x40px)">
+                    <button id="save-social">Speichern</button>
+                </div>
             </div>
-        </div>
 
-        <div id="login-modal" class="modal hidden">
-            <div class="modal-content login-content">
-                <h2>Admin Login</h2>
-                <div class="login-form">
-                    <input type="password" id="admin-password" placeholder="Passwort eingeben">
-                    <div class="login-buttons">
-                        <button id="login-submit">Login</button>
-                        <button id="login-cancel">Abbrechen</button>
+            <div id="login-modal" class="modal hidden">
+                <div class="modal-content login-content">
+                    <h2>Admin Login</h2>
+                    <div class="login-form">
+                        <input type="password" id="admin-password" placeholder="Passwort eingeben">
+                        <div class="login-buttons">
+                            <button id="login-submit">Login</button>
+                            <button id="login-cancel">Abbrechen</button>
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <div id="suggest-form" class="modal hidden">
-            <div class="modal-content suggest-content">
-                <span class="close-modal">&times;</span>
-                <h2>Spiel vorschlagen</h2>
-                <input type="text" id="suggest-steam-link" placeholder="Steam-Link einfügen">
-                <div id="suggest-steam-fetch-status" style="color:#ff00ff; margin:10px 0; display:none;"></div>
-                <div id="suggest-steam-preview" style="display:none; margin-bottom:10px;">
-                    <img id="suggest-steam-image" src="" alt="Steam Bild" style="width:100px; height:60px; object-fit:cover; border-radius:6px; margin-bottom:5px;"><br>
-                    <span id="suggest-steam-name" style="font-weight:bold;"></span><br>
-                    <span id="suggest-steam-genres" style="font-size:12px; color:#aaa;"></span>
-                </div>
-                <button id="submit-suggestion">Vorschlag einreichen</button>
-            </div>
-        </div>
-
-        <div class="footer-container">
-            <div class="made-by-container">
-                <div class="made-by">
-                    Made With <span class="heart">❤</span> from Away
-                </div>
-                <div class="footer-social">
-                    <a href="#" class="footer-social-btn" id="footer-instagram" title="Instagram" target="_blank">
-                        <i class="fab fa-instagram"></i>
-                    </a>
-                    <a href="#" class="footer-social-btn" id="footer-tiktok" title="TikTok" target="_blank">
-                        <i class="fab fa-tiktok"></i>
-                    </a>
-                    <a href="#" class="footer-social-btn" id="footer-twitter" title="X (Twitter)" target="_blank">
-                        <i class="fa-solid fa-x"></i>
-                    </a>
-                </div>
-
-                <div class="corner-image">
-                    <img src="https://i.imgur.com/PQrHi8j.png" alt="Corner Image">
+            <div id="suggest-form" class="modal hidden">
+                <div class="modal-content suggest-content">
+                    <span class="close-modal">&times;</span>
+                    <h2>Spiel vorschlagen</h2>
+                    <input type="text" id="suggest-steam-link" placeholder="Steam-Link einfügen">
+                    <div id="suggest-steam-fetch-status" style="color:#ff00ff; margin:10px 0; display:none;"></div>
+                    <div id="suggest-steam-preview" style="display:none; margin-bottom:10px;">
+                        <img id="suggest-steam-image" src="" alt="Steam Bild" style="width:100px; height:60px; object-fit:cover; border-radius:6px; margin-bottom:5px;"><br>
+                        <span id="suggest-steam-name" style="font-weight:bold;"></span><br>
+                        <span id="suggest-steam-genres" style="font-size:12px; color:#aaa;"></span>
+                    </div>
+                    <button id="submit-suggestion">Vorschlag einreichen</button>
                 </div>
             </div>
-            <div class="copyright">
-                Copyright © 2025 Marvin Weiss. Alle Rechte vorbehalten.
+
+            <div class="footer-container">
+                <div class="made-by-container">
+                    <div class="made-by">
+                        Made With <span class="heart">❤</span> from Away
+                    </div>
+                    <div class="footer-social">
+                        <a href="#" class="footer-social-btn" id="footer-instagram" title="Instagram" target="_blank">
+                            <i class="fab fa-instagram"></i>
+                        </a>
+                        <a href="#" class="footer-social-btn" id="footer-tiktok" title="TikTok" target="_blank">
+                            <i class="fab fa-tiktok"></i>
+                        </a>
+                        <a href="#" class="footer-social-btn" id="footer-twitter" title="X (Twitter)" target="_blank">
+                            <i class="fa-solid fa-x"></i>
+                        </a>
+                    </div>
+
+                    <div class="corner-image">
+                        <img src="https://i.imgur.com/PQrHi8j.png" alt="Corner Image">
+                    </div>
+                </div>
+                <div class="copyright">
+                    Copyright © 2025 Marvin Weiss. Alle Rechte vorbehalten.
+                </div>
             </div>
         </div>
     </div>

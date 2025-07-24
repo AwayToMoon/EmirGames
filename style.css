@@ -2139,3 +2139,65 @@ margin: 30px auto;
     background: linear-gradient(45deg, #6a0dad, #4a0d77);
     border-color: #6a0dad;
 }
+
+.game-tabs-container {
+    margin-bottom: 10px;
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+}
+
+.game-tab-btn {
+    padding: 10px 28px;
+    border: none;
+    border-radius: 20px;
+    background: linear-gradient(45deg, #6a0dad, #4a0d77);
+    color: white;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(156, 9, 219, 0.2);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.game-tab-btn:not(.active) {
+    background: rgba(26, 6, 34, 0.8);
+    color: #bbb;
+    box-shadow: none;
+    border: 1px solid rgba(156, 9, 219, 0.2);
+}
+
+.game-tab-btn.active {
+    background: linear-gradient(45deg, #ff00ff, #9c09db);
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(156, 9, 219, 0.3);
+    border: 1px solid #ff00ff;
+}
+
+.game-tab-btn:hover {
+    transform: translateY(-2px) scale(1.04);
+    background: linear-gradient(45deg, #8b10ef, #6a0dad);
+    color: #fff;
+}
+
+.toggle-unreleased-btn {
+    background: linear-gradient(45deg, #ff00ff, #9c09db);
+    color: white;
+    border: none;
+    border-radius: 20px;
+    padding: 6px 18px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-left: 8px;
+    margin-top: 2px;
+    transition: all 0.2s;
+    box-shadow: 0 2px 8px rgba(156, 9, 219, 0.15);
+}
+.toggle-unreleased-btn:hover {
+    background: linear-gradient(45deg, #8b10ef, #6a0dad);
+    color: #fff;
+    transform: translateY(-2px) scale(1.04);
+}

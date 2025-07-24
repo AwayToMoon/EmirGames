@@ -353,7 +353,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 image: steamGame.image,
                 genres: steamGame.genres,
                 description: steamGame.description || "",
-                isNew: true
+                isNew: true,
+                unreleased: steamGame.unreleased === true
             });
             gameForm.classList.add("hidden");
             gameForm.style.display = 'none';
@@ -402,7 +403,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 image: game.header_image,
                 genres: (game.genres||[]).map(g=>g.description),
                 link: link,
-                description: game.short_description || ""
+                description: game.short_description || "",
+                unreleased: game.release_date && game.release_date.coming_soon === true
             });
         } catch (e) {
             status.textContent = "Fehler beim Laden der Spieldaten!";
@@ -445,6 +447,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 status.style.display = "none";
                 // Speichere Beschreibung für später
                 suggestSteamLinkInput.dataset.description = game.short_description || "";
+                suggestSteamLinkInput.dataset.unreleased = game.release_date && game.release_date.coming_soon === true;
             } catch (e) {
                 status.textContent = "Fehler beim Laden der Spieldaten!";
             }
@@ -482,7 +485,8 @@ document.addEventListener('DOMContentLoaded', function() {
                         genres: (game.genres||[]).map(g=>g.description),
                         description: game.short_description || "",
                         isPending: true,
-                        timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                        unreleased: game.release_date && game.release_date.coming_soon === true
                     };
                 } else {
                     alert('Spiel nicht gefunden!');
@@ -672,12 +676,47 @@ document.addEventListener('DOMContentLoaded', function() {
                 gameForm.style.display = 'block';
             };
 
+            // Umschalt-Button für unreleased/released
+            const toggleUnreleasedBtn = document.createElement("button");
+            toggleUnreleasedBtn.classList.add("toggle-unreleased-btn");
+            toggleUnreleasedBtn.innerText = game.unreleased === true ? "Als Released markieren" : "Als Unreleased markieren";
+            toggleUnreleasedBtn.style.marginLeft = '8px';
+            toggleUnreleasedBtn.onclick = async (e) => {
+                e.stopPropagation();
+                try {
+                    await db.collection("games").doc(game.id).update({ unreleased: !(game.unreleased === true) });
+                    await renderGames();
+                } catch (error) {
+                    alert("Fehler beim Umschalten des Release-Status!");
+                }
+            };
+
             buttonContainer.appendChild(deleteBtn);
             buttonContainer.appendChild(editBtn);
+            buttonContainer.appendChild(toggleUnreleasedBtn);
             gameElement.appendChild(buttonContainer);
         }
         
         return gameElement;
+    }
+
+    // Tab-Logik für Spieleliste
+    let currentTab = 'all'; // 'all' oder 'unreleased'
+    const tabAll = document.getElementById('tab-all-games');
+    const tabUnreleased = document.getElementById('tab-unreleased-games');
+    if (tabAll && tabUnreleased) {
+        tabAll.addEventListener('click', () => {
+            currentTab = 'all';
+            tabAll.classList.add('active');
+            tabUnreleased.classList.remove('active');
+            renderGames();
+        });
+        tabUnreleased.addEventListener('click', () => {
+            currentTab = 'unreleased';
+            tabUnreleased.classList.add('active');
+            tabAll.classList.remove('active');
+            renderGames();
+        });
     }
 
     async function renderGames() {
@@ -688,15 +727,23 @@ document.addEventListener('DOMContentLoaded', function() {
             snapshot.forEach(doc => {
                 const gameData = doc.data();
                 if (!gameData.isPending) {
-                    games.push({ id: doc.id, ...gameData });
+                    // Tab-Filter: unreleased
+                    if (currentTab === 'unreleased') {
+                        if (gameData.unreleased === true) {
+                            games.push({ id: doc.id, ...gameData });
+                        }
+                    } else {
+                        // Tab 'all': nur Spiele, die NICHT unreleased sind (also released oder Feld fehlt)
+                        if (!gameData.unreleased) {
+                            games.push({ id: doc.id, ...gameData });
+                        }
+                    }
                 }
             });
-            
             games.forEach(game => {
                 const gameElement = displayGame(game, !adminPanel.classList.contains("hidden") && isEditMode);
                 gameList.appendChild(gameElement);
             });
-            
             // Wende den aktuellen Filter an
             filterGames();
         } catch (error) {
@@ -708,7 +755,25 @@ document.addEventListener('DOMContentLoaded', function() {
     // Globale Funktion für Genre-Entfernung
     window.removeGenre = removeGenre;
 
+    // Migration: Setze unreleased: false für alle Spiele, die das Feld noch nicht haben
+    async function migrateUnreleasedFlag() {
+        const snapshot = await db.collection('games').get();
+        const batch = db.batch();
+        let needsUpdate = false;
+        snapshot.forEach(doc => {
+            const data = doc.data();
+            if (typeof data.unreleased === 'undefined') {
+                batch.update(db.collection('games').doc(doc.id), { unreleased: false });
+                needsUpdate = true;
+            }
+        });
+        if (needsUpdate) {
+            await batch.commit();
+        }
+    }
+
     // Initialisierung beim Laden der Seite
+    migrateUnreleasedFlag();
     renderGames();
     loadSocialLinks();
     updateGenreFilterButtons();

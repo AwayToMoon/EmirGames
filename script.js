@@ -554,13 +554,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const gameElement = document.createElement('div');
         gameElement.className = 'game';
         
-        if (game.isNew) {
-            const newLabel = document.createElement('div');
-            newLabel.className = 'new-label';
-            newLabel.textContent = 'NEU';
-            gameElement.appendChild(newLabel);
-        }
-
         const img = document.createElement('img');
         img.src = game.image;
         img.alt = game.name;
@@ -569,7 +562,7 @@ document.addEventListener('DOMContentLoaded', function() {
         
         const content = document.createElement('div');
         content.className = 'game-content';
-
+        
         const h2 = document.createElement('h2');
         h2.textContent = game.name;
         content.appendChild(h2);

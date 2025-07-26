@@ -48,7 +48,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     activeGenres.add(genre);
                     button.classList.add('active');
                 }
-                filterGames();
             }
         });
     });

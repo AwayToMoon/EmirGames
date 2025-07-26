@@ -2083,104 +2083,39 @@ margin: 30px auto;
     }
 }
 
-/* Progress Status Styles */
-.progress-status-container {
-    margin: 15px 0;
+.genre-filter-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 240px;
+    height: 100vh;
+    z-index: 100;
     display: flex;
-    align-items: center;
-    gap: 10px;
+    align-items: flex-start;
+    justify-content: flex-end;
+    background: linear-gradient(135deg, #1a0622 80%, #2a0934 100%);
+    box-shadow: 4px 0 32px 0 rgba(156, 9, 219, 0.10);
+    border-right: 1.5px solid rgba(156, 9, 219, 0.10);
 }
 
-.progress-status-container label {
-    color: white;
-    font-size: 14px;
+.main-content {
+    margin-left: 240px;
+    transition: margin-left 0.2s;
 }
 
-#progress-status {
-    background: rgba(42, 9, 52, 0.5);
-    border: 1px solid rgba(156, 9, 219, 0.3);
-    padding: 8px;
-    border-radius: 5px;
-    color: white;
-    width: 100%;
-    cursor: pointer;
-}
-
-#progress-status:focus {
-    outline: none;
-    border-color: #b01af7;
-}
-
-.progress-badge {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 12px;
-    font-weight: bold;
-    color: white;
-    margin-top: 10px;
-    margin-bottom: 5px;
-}
-
-.progress-badge::before {
-    content: 'Game Status: ';
-    margin-right: 5px;
-    font-weight: normal;
-    opacity: 0.9;
-}
-
-.progress-badge[data-status="not-started"] {
-    background: linear-gradient(45deg, #607D8B, #455A64);
-}
-
-.progress-badge[data-status="in-progress"] {
-    background: linear-gradient(45deg, #FFC107, #FFA000);
-}
-
-.progress-badge[data-status="completed"] {
-    background: linear-gradient(45deg, #4CAF50, #45a049);
-}
-
-.progress-badge[data-status="planned"] {
-    background: linear-gradient(45deg, #2196F3, #1976D2);
-}
-
-/* Progress Filter Styles */
-.progress-filter-container {
-    margin: 20px auto;
-    text-align: center;
-}
-
-.progress-filter-buttons {
-    display: flex;
-    gap: 10px;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin: 10px 0;
-}
-
-.progress-filter-btn {
-    padding: 8px 16px;
-    border: none;
-    border-radius: 20px;
-    cursor: pointer;
-    font-size: 14px;
-    color: white;
-    background: rgba(26, 6, 34, 0.8);
-    border: 1px solid rgba(156, 9, 219, 0.3);
-    transition: all 0.3s ease;
-}
-
-.progress-filter-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(156, 9, 219, 0.3);
-}
-
-.progress-filter-btn.active {
-    background: linear-gradient(45deg, #6a0dad, #4a0d77);
-    border-color: #6a0dad;
+@media (max-width: 900px) {
+    .genre-filter-sidebar {
+        position: static;
+        width: 100%;
+        height: auto;
+        box-shadow: none;
+        border-right: none;
+        background: none;
+        margin-bottom: 0;
+    }
+    .main-content {
+        margin-left: 0;
+    }
 }
 
 .game-tabs-container {
@@ -2223,59 +2158,4 @@ margin: 30px auto;
     transform: translateY(-2px) scale(1.04);
     background: linear-gradient(45deg, #8b10ef, #6a0dad);
     color: #fff;
-}
-
-.toggle-unreleased-btn {
-    background: linear-gradient(45deg, #ff00ff, #9c09db);
-    color: white;
-    border: none;
-    border-radius: 20px;
-    padding: 6px 18px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    margin-left: 8px;
-    margin-top: 2px;
-    transition: all 0.2s;
-    box-shadow: 0 2px 8px rgba(156, 9, 219, 0.15);
-}
-.toggle-unreleased-btn:hover {
-    background: linear-gradient(45deg, #8b10ef, #6a0dad);
-    color: #fff;
-    transform: translateY(-2px) scale(1.04);
-}
-
-.genre-filter-sidebar {
-    position: fixed;
-    left: 0;
-    top: 0;
-    width: 240px;
-    height: 100vh;
-    z-index: 100;
-    display: flex;
-    align-items: flex-start;
-    justify-content: flex-end;
-    background: linear-gradient(135deg, #1a0622 80%, #2a0934 100%);
-    box-shadow: 4px 0 32px 0 rgba(156, 9, 219, 0.10);
-    border-right: 1.5px solid rgba(156, 9, 219, 0.10);
-}
-
-.main-content {
-    margin-left: 240px;
-    transition: margin-left 0.2s;
-}
-
-@media (max-width: 900px) {
-    .genre-filter-sidebar {
-        position: static;
-        width: 100%;
-        height: auto;
-        box-shadow: none;
-        border-right: none;
-        background: none;
-        margin-bottom: 0;
-    }
-    .main-content {
-        margin-left: 0;
-    }
 }

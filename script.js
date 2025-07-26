@@ -53,10 +53,6 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
 
-    // Progress Filter Funktionalität
-    const progressButtons = document.querySelectorAll('.progress-filter-btn');
-    let activeProgress = 'all';
-
     // Dynamische Genre-Filter-Buttons
     async function updateGenreFilterButtons() {
         const genreSet = new Set();
@@ -111,56 +107,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
                 filterGames();
             });
-        });
-    }
-
-    progressButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            progressButtons.forEach(btn => btn.classList.remove('active'));
-            button.classList.add('active');
-            activeProgress = button.dataset.progress;
-            filterGames();
-        });
-    });
-
-    function filterGames() {
-        const gameElements = Array.from(document.querySelectorAll('.game'));
-        const gameListContainer = document.getElementById('game-list');
-        
-        gameListContainer.innerHTML = '';
-        
-        const sortedGames = gameElements.sort((a, b) => {
-            const aGenres = Array.from(a.querySelectorAll('.genre-tag')).map(tag => tag.dataset.genre);
-            const bGenres = Array.from(b.querySelectorAll('.genre-tag')).map(tag => tag.dataset.genre);
-            
-            const aProgress = a.querySelector('.progress-badge')?.dataset.status || '';
-            const bProgress = b.querySelector('.progress-badge')?.dataset.status || '';
-            
-            const aMatchesGenre = activeGenres.has('all') || aGenres.some(genre => activeGenres.has(genre));
-            const bMatchesGenre = activeGenres.has('all') || bGenres.some(genre => activeGenres.has(genre));
-            
-            const aMatchesProgress = activeProgress === 'all' || aProgress === activeProgress;
-            const bMatchesProgress = activeProgress === 'all' || bProgress === activeProgress;
-            
-            if (aMatchesGenre && aMatchesProgress && (!bMatchesGenre || !bMatchesProgress)) return -1;
-            if (bMatchesGenre && bMatchesProgress && (!aMatchesGenre || !aMatchesProgress)) return 1;
-            return 0;
-        });
-        
-        sortedGames.forEach(game => {
-            const genreTags = Array.from(game.querySelectorAll('.genre-tag')).map(tag => tag.dataset.genre);
-            const progress = game.querySelector('.progress-badge')?.dataset.status || '';
-            
-            const matchesGenre = activeGenres.has('all') || genreTags.some(genre => activeGenres.has(genre));
-            const matchesProgress = activeProgress === 'all' || progress === activeProgress;
-            
-            if (matchesGenre && matchesProgress) {
-                game.classList.remove('filtered-out');
-            } else {
-                game.classList.add('filtered-out');
-            }
-            
-            gameListContainer.appendChild(game);
         });
     }
 
@@ -624,24 +570,6 @@ document.addEventListener('DOMContentLoaded', function() {
         const content = document.createElement('div');
         content.className = 'game-content';
 
-        if (game.progress) {
-            const progressBadge = document.createElement('div');
-            progressBadge.className = 'progress-badge';
-            progressBadge.setAttribute('data-status', game.progress);
-            
-            const progressTexts = {
-                'not-started': 'Nicht begonnen',
-                'in-progress': 'In Arbeit',
-                'completed': 'Abgeschlossen',
-                'planned': 'Geplant'
-            };
-            
-            progressBadge.textContent = progressTexts[game.progress] || '';
-            if (progressBadge.textContent) {
-                content.appendChild(progressBadge);
-            }
-        }
-        
         const h2 = document.createElement('h2');
         h2.textContent = game.name;
         content.appendChild(h2);
@@ -782,7 +710,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
             // Einmalig Reihenfolge speichern
-            if (originalGamesOrder.length === 0 && currentTab === 'all' && activeGenres.has('all') && activeProgress === 'all') {
+            if (originalGamesOrder.length === 0 && currentTab === 'all' && activeGenres.has('all')) {
                 await saveInitialOrderIfNotExists(games);
             }
             // Reihenfolge aus DB holen, falls vorhanden
@@ -795,7 +723,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }
             // Wenn "Alle" gewählt ist, sortiere nach Originalreihenfolge
-            if (currentTab === 'all' && activeGenres.has('all') && activeProgress === 'all' && originalGamesOrder.length > 0) {
+            if (currentTab === 'all' && activeGenres.has('all') && originalGamesOrder.length > 0) {
                 games.sort((a, b) => originalGamesOrder.indexOf(a.id) - originalGamesOrder.indexOf(b.id));
             }
             games.forEach(game => {
@@ -844,7 +772,7 @@ document.addEventListener('DOMContentLoaded', function() {
             const games = [];
             snapshot.forEach(doc => {
                 const game = doc.data();
-                if (!game.isPending && !game.progress) {
+                if (!game.isPending) {
                     games.push(game);
                 }
             });

@@ -48,6 +48,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     activeGenres.add(genre);
                     button.classList.add('active');
                 }
+                filterGames();
             }
         });
     });
@@ -730,7 +731,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 gameList.appendChild(gameElement);
             });
             // Wende den aktuellen Filter an
-            filterGames();
+            // filterGames(); // ENTFERNT, da nicht mehr vorhanden
         } catch (error) {
             console.error("Error rendering games:", error);
             alert("Fehler beim Laden der Spiele");

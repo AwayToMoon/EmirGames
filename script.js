@@ -649,9 +649,25 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             };
 
+            // Im Admin-Modus: Button zum Umschalten von "gespielt"/"nicht gespielt"
+            const togglePlayedBtn = document.createElement("button");
+            togglePlayedBtn.classList.add("toggle-played-btn");
+            togglePlayedBtn.innerText = game.played === true ? "Als nicht gespielt markieren" : "Als gespielt markieren";
+            togglePlayedBtn.style.marginLeft = '8px';
+            togglePlayedBtn.onclick = async (e) => {
+                e.stopPropagation();
+                try {
+                    await db.collection("games").doc(game.id).update({ played: !(game.played === true) });
+                    await renderGames();
+                } catch (error) {
+                    alert("Fehler beim Umschalten des Played-Status!");
+                }
+            };
+
             buttonContainer.appendChild(deleteBtn);
             buttonContainer.appendChild(editBtn);
             buttonContainer.appendChild(toggleUnreleasedBtn);
+            buttonContainer.appendChild(togglePlayedBtn);
             gameElement.appendChild(buttonContainer);
         }
         
@@ -659,20 +675,30 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Tab-Logik für Spieleliste
-    let currentTab = 'all'; // 'all' oder 'unreleased'
+    let currentTab = 'all'; // 'all', 'unreleased' oder 'played'
     const tabAll = document.getElementById('tab-all-games');
     const tabUnreleased = document.getElementById('tab-unreleased-games');
-    if (tabAll && tabUnreleased) {
+    const tabPlayed = document.getElementById('tab-played-games');
+    if (tabAll && tabUnreleased && tabPlayed) {
         tabAll.addEventListener('click', () => {
             currentTab = 'all';
             tabAll.classList.add('active');
             tabUnreleased.classList.remove('active');
+            tabPlayed.classList.remove('active');
             renderGames();
         });
         tabUnreleased.addEventListener('click', () => {
             currentTab = 'unreleased';
             tabUnreleased.classList.add('active');
             tabAll.classList.remove('active');
+            tabPlayed.classList.remove('active');
+            renderGames();
+        });
+        tabPlayed.addEventListener('click', () => {
+            currentTab = 'played';
+            tabPlayed.classList.add('active');
+            tabAll.classList.remove('active');
+            tabUnreleased.classList.remove('active');
             renderGames();
         });
     }
@@ -696,14 +722,17 @@ document.addEventListener('DOMContentLoaded', function() {
             snapshot.forEach(doc => {
                 const gameData = doc.data();
                 if (!gameData.isPending) {
-                    // Tab-Filter: unreleased
                     if (currentTab === 'unreleased') {
                         if (gameData.unreleased === true) {
                             games.push({ id: doc.id, ...gameData });
                         }
+                    } else if (currentTab === 'played') {
+                        if (gameData.played === true) {
+                            games.push({ id: doc.id, ...gameData });
+                        }
                     } else {
-                        // Tab 'all': nur Spiele, die NICHT unreleased sind (also released oder Feld fehlt)
-                        if (!gameData.unreleased) {
+                        // Im Tab 'all' nur Spiele, die NICHT unreleased und NICHT played sind
+                        if (!gameData.unreleased && !gameData.played) {
                             games.push({ id: doc.id, ...gameData });
                         }
                     }

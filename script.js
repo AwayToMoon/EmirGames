@@ -118,7 +118,7 @@ class GamingPlatform {
             const mockSession = {
                 id: '933524419882676254',
                 username: 'Away',
-                avatar: 'default',
+                avatar: null, // Will use default Discord avatar
                 access_token: 'mock_token'
             };
             
@@ -158,12 +158,17 @@ class GamingPlatform {
         loginText.textContent = 'Admin';
         adminPanel.classList.remove('hidden');
         
-        if (adminAvatar && session.avatar) {
-            adminAvatar.src = `https://cdn.discordapp.com/avatars/${session.id}/${session.avatar}.png`;
+        if (adminAvatar) {
+            if (session.avatar && session.avatar !== 'default') {
+                adminAvatar.src = `https://cdn.discordapp.com/avatars/${session.id}/${session.avatar}.png`;
+            } else {
+                // Fallback to default Discord avatar
+                adminAvatar.src = `https://cdn.discordapp.com/embed/avatars/${session.id % 5}.png`;
+            }
         }
         
         if (adminUsername) {
-            adminUsername.textContent = session.username;
+            adminUsername.textContent = session.username || 'Admin';
         }
     }
 

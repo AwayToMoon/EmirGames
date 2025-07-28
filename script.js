@@ -671,7 +671,7 @@ class GamingPlatform {
         // Check tab filter first
         let showByTab = false;
         if (this.currentTab === 'unreleased') {
-            showByTab = gameData.unreleased === true;
+            showByTab = gameData.unreleased === true && gameData.played !== true;
         } else if (this.currentTab === 'played') {
             showByTab = gameData.played === true;
         } else {

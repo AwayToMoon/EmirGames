@@ -315,8 +315,8 @@ body::before {
 #admin-panel button {
     background: linear-gradient(45deg, #667eea, #764ba2);
     border: none;
-    padding: 6px 16px;
-    border-radius: 20px;
+    padding: 8px 20px;
+    border-radius: 25px;
     color: white;
     font-weight: 600;
     cursor: pointer;
@@ -331,6 +331,7 @@ body::before {
     align-items: center;
     justify-content: center;
     gap: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 #admin-panel button::before {
@@ -349,9 +350,10 @@ body::before {
 }
 
 #admin-panel button:hover {
-    transform: translateY(-3px) scale(1.02);
-    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
     background: linear-gradient(45deg, #5a6fd8, #6a4190);
+    border: 1px solid rgba(255, 255, 255, 0.3);
 }
 
 /* Action Buttons */

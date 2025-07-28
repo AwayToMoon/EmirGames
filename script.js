@@ -90,7 +90,7 @@ class GamingPlatform {
     // Discord OAuth Functions
     startDiscordOAuth() {
         const DISCORD_CLIENT_ID = '1399190229214302208';
-        const DISCORD_REDIRECT_URI = 'https://emir-games.vercel.app/auth/callback';
+        const DISCORD_REDIRECT_URI = 'https://emir-games.vercel.app/';
         
         const params = new URLSearchParams({
             client_id: DISCORD_CLIENT_ID,

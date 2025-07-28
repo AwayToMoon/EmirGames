@@ -1,952 +1,1255 @@
-document.addEventListener('DOMContentLoaded', function() {
-    document.getElementById('admin-panel').classList.add('hidden');
-    const gameList = document.getElementById("game-list");
-    const adminLoginBtn = document.getElementById("admin-login-btn");
-    const adminPanel = document.getElementById("admin-panel");
-    const addGameBtn = document.getElementById("add-game-btn");
-    const editGamesBtn = document.getElementById("edit-games-btn");
-    const editSocialBtn = document.getElementById("edit-social-btn");
-    const gameForm = document.getElementById("game-form");
-    const socialForm = document.getElementById("social-form");
-    const saveGameBtn = document.getElementById("save-game");
-    const saveSocialBtn = document.getElementById("save-social");
-    const gameNameInput = document.getElementById("game-name");
-    const gameLinkInput = document.getElementById("game-link");
-    const gameImageInput = document.getElementById("game-image");
-    const gameDescriptionInput = document.getElementById("game-description");
+// Modern Gaming Platform - Enhanced JavaScript
+class GamingPlatform {
+    constructor() {
+        this.currentGameId = null;
+        this.isEditMode = false;
+        this.selectedGenres = [];
+        this.activeGenres = new Set(['all']);
+        this.currentTab = 'all';
+        this.originalGamesOrder = [];
+        this.isLoading = false;
+        this.discordSession = null;
+        
+        this.init();
+    }
 
-    let currentGameId = null;
-    let isEditMode = false;
-    let selectedGenres = [];
+    async init() {
+        try {
+            this.showLoading();
+            await this.setupEventListeners();
+            await this.loadInitialData();
+            this.hideLoading();
+            this.showNotification('Plattform erfolgreich geladen! 🎮', 'success');
+        } catch (error) {
+            console.error('Initialization error:', error);
+            this.showNotification('Fehler beim Laden der Plattform', 'error');
+        }
+    }
 
-    // Genre Filter Funktionalität
-    const genreButtons = document.querySelectorAll('.genre-filter-btn');
-    let activeGenres = new Set(['all']);
+    async setupEventListeners() {
+        // Admin Panel Events
+        this.setupAdminEvents();
+        
+        // Game Management Events
+        this.setupGameEvents();
+        
+        // Social Media Events
+        this.setupSocialEvents();
+        
+        // Filter and Tab Events
+        this.setupFilterEvents();
+        
+        // Modal Events
+        this.setupModalEvents();
+        
+        // Randomizer Events
+        this.setupRandomizerEvents();
+        
+        // Keyboard Events
+        this.setupKeyboardEvents();
+    }
 
-    genreButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            const genre = button.dataset.genre;
-            if (genre === 'all') {
-                activeGenres.clear();
-                activeGenres.add('all');
-                document.querySelectorAll('.genre-filter-btn').forEach(btn => btn.classList.remove('active'));
-                button.classList.add('active');
-                renderGames(); // Originalreihenfolge wiederherstellen
-            } else {
-                activeGenres.delete('all');
-                document.querySelector('.genre-filter-btn[data-genre="all"]').classList.remove('active');
-                if (activeGenres.has(genre)) {
-                    activeGenres.delete(genre);
-                    button.classList.remove('active');
-                    if (activeGenres.size === 0) {
-                        activeGenres.add('all');
-                        document.querySelector('.genre-filter-btn[data-genre="all"]').classList.add('active');
-                        renderGames(); // Falls alle abgewählt, auch Originalreihenfolge
-                        return;
-                    }
+    setupAdminEvents() {
+        // Discord OAuth Login
+        document.getElementById('admin-login-btn').addEventListener('click', () => {
+            if (this.discordSession) {
+                // Already logged in, show admin panel
+                document.getElementById('admin-panel').classList.remove('hidden');
                 } else {
-                    activeGenres.add(genre);
-                    button.classList.add('active');
-                }
-                filterGames();
-            }
-        });
-    });
-
-    // Dynamische Genre-Filter-Buttons
-    async function updateGenreFilterButtons() {
-        const genreSet = new Set();
-        const snapshot = await db.collection("games").get();
-        snapshot.forEach(doc => {
-            const game = doc.data();
-            if (Array.isArray(game.genres)) {
-                game.genres.forEach(genre => genreSet.add(genre));
+                // Start Discord OAuth flow
+                this.startDiscordOAuth();
             }
         });
 
-        const container = document.querySelector('.genre-filter-buttons');
-        // Nur den „Alle“-Button behalten
-        container.innerHTML = '';
-        const allBtn = document.createElement('button');
-        allBtn.className = 'genre-filter-btn active';
-        allBtn.dataset.genre = 'all';
-        allBtn.textContent = 'Alle';
-        container.appendChild(allBtn);
+        // Logout button
+        const logoutBtn = document.getElementById('logout-btn');
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', () => {
+                this.logoutDiscord();
+            });
+        }
 
-        genreSet.forEach(genre => {
-            const btn = document.createElement('button');
-            btn.className = 'genre-filter-btn';
-            btn.dataset.genre = genre;
-            btn.textContent = genre;
-            container.appendChild(btn);
+        // Admin Panel Buttons
+        document.getElementById('add-game-btn').addEventListener('click', () => {
+            this.openGameForm();
         });
 
-        // Event Listener neu setzen
+        document.getElementById('edit-games-btn').addEventListener('click', () => {
+            this.toggleEditMode();
+        });
+
+        document.getElementById('edit-social-btn').addEventListener('click', () => {
+            this.openSocialForm();
+        });
+
+        document.getElementById('view-suggestions-btn').addEventListener('click', () => {
+            this.viewSuggestions();
+        });
+    }
+
+    // Discord OAuth Functions
+    startDiscordOAuth() {
+        const DISCORD_CLIENT_ID = '1399190229214302208';
+        const DISCORD_REDIRECT_URI = 'https://emir-games.vercel.app/auth/callback';
+        
+        const params = new URLSearchParams({
+            client_id: DISCORD_CLIENT_ID,
+            redirect_uri: DISCORD_REDIRECT_URI,
+            response_type: 'code',
+            scope: 'identify'
+        });
+        
+        window.location.href = `https://discord.com/api/oauth2/authorize?${params}`;
+    }
+
+    async handleDiscordCallback() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get('code');
+        
+        if (code) {
+            await this.exchangeCodeForToken(code);
+        }
+    }
+
+    async exchangeCodeForToken(code) {
+        try {
+            // In a real implementation, you'd exchange the code server-side
+            // For now, we'll simulate a successful login
+            const mockSession = {
+                id: '933524419882676254',
+                username: 'Away',
+                avatar: 'default',
+                access_token: 'mock_token'
+            };
+            
+            this.saveDiscordSession(mockSession);
+            this.updateUIForLoggedInUser(mockSession);
+            window.history.replaceState({}, document.title, window.location.pathname);
+            this.showNotification('Erfolgreich mit Discord angemeldet! 🎉', 'success');
+        } catch (error) {
+            console.error('Discord OAuth error:', error);
+            this.showNotification('Fehler bei der Discord-Anmeldung', 'error');
+        }
+    }
+
+    saveDiscordSession(session) {
+        this.discordSession = session;
+        localStorage.setItem('discord_session', JSON.stringify(session));
+    }
+
+    loadDiscordSession() {
+        const session = localStorage.getItem('discord_session');
+        if (session) {
+            this.discordSession = JSON.parse(session);
+            this.updateUIForLoggedInUser(this.discordSession);
+            return true;
+        }
+        return false;
+    }
+
+    updateUIForLoggedInUser(session) {
+        const loginBtn = document.getElementById('admin-login-btn');
+        const loginText = document.getElementById('login-text');
+        const adminPanel = document.getElementById('admin-panel');
+        const adminAvatar = document.getElementById('admin-avatar');
+        const adminUsername = document.getElementById('admin-username');
+        
+        loginBtn.classList.add('logged-in');
+        loginText.textContent = 'Admin';
+        adminPanel.classList.remove('hidden');
+        
+        if (adminAvatar && session.avatar) {
+            adminAvatar.src = `https://cdn.discordapp.com/avatars/${session.id}/${session.avatar}.png`;
+        }
+        
+        if (adminUsername) {
+            adminUsername.textContent = session.username;
+        }
+    }
+
+    updateUIForLoggedOutUser() {
+        const loginBtn = document.getElementById('admin-login-btn');
+        const loginText = document.getElementById('login-text');
+        const adminPanel = document.getElementById('admin-panel');
+        
+        loginBtn.classList.remove('logged-in');
+        loginText.textContent = 'Admin Login';
+        adminPanel.classList.add('hidden');
+    }
+
+    logoutDiscord() {
+        this.discordSession = null;
+        localStorage.removeItem('discord_session');
+        this.updateUIForLoggedOutUser();
+        this.showNotification('Erfolgreich abgemeldet! 👋', 'success');
+    }
+
+    // Check if user is admin
+    isAdmin() {
+        if (!this.discordSession) return false;
+        return this.discordSession.id === '933524419882676254'; // Replace with your Discord User ID
+    }
+
+    setupGameEvents() {
+        // Game Form Events
+        document.getElementById('steam-link').addEventListener('input', this.debounce(async (e) => {
+            await this.handleSteamLinkInput(e.target.value);
+        }, 500));
+
+        document.getElementById('save-game').addEventListener('click', async () => {
+            await this.saveGame();
+        });
+
+        // Suggest Game Events
+        document.getElementById('suggest-game-btn').addEventListener('click', () => {
+            this.openModal('suggest-form');
+        });
+
+        document.getElementById('suggest-steam-link').addEventListener('input', this.debounce(async (e) => {
+            await this.handleSuggestSteamLinkInput(e.target.value);
+        }, 500));
+
+        document.getElementById('submit-suggestion').addEventListener('click', async () => {
+            await this.submitSuggestion();
+        });
+    }
+
+    setupSocialEvents() {
+        document.getElementById('save-social').addEventListener('click', async () => {
+            await this.saveSocialLinks();
+        });
+    }
+
+    setupFilterEvents() {
+        // Genre Filter Buttons
         document.querySelectorAll('.genre-filter-btn').forEach(button => {
             button.addEventListener('click', () => {
-                const genre = button.dataset.genre;
-                if (genre === 'all') {
-                    activeGenres.clear();
-                    activeGenres.add('all');
-                    document.querySelectorAll('.genre-filter-btn').forEach(btn => btn.classList.remove('active'));
-                    button.classList.add('active');
-                } else {
-                    activeGenres.delete('all');
-                    document.querySelector('.genre-filter-btn[data-genre="all"]').classList.remove('active');
-                    if (activeGenres.has(genre)) {
-                        activeGenres.delete(genre);
-                        button.classList.remove('active');
-                        if (activeGenres.size === 0) {
-                            activeGenres.add('all');
-                            document.querySelector('.genre-filter-btn[data-genre="all"]').classList.add('active');
-                        }
-                    } else {
-                        activeGenres.add(genre);
-                        button.classList.add('active');
-                    }
-                }
-                filterGames();
+                this.handleGenreFilter(button.dataset.genre);
+            });
+        });
+
+        // Tab Buttons
+        document.querySelectorAll('.game-tab-btn').forEach(button => {
+            button.addEventListener('click', () => {
+                this.handleTabChange(button.id);
             });
         });
     }
 
-    async function checkAdminPassword(inputPassword) {
-        try {
-            const doc = await db.collection("settings").doc("admin").get();
-            if (doc.exists) {
-                const data = doc.data();
-                const hashedInput = CryptoJS.SHA256(inputPassword).toString();
-                return hashedInput === data.passwordHash;
+    setupModalEvents() {
+        // Close Modal Buttons
+        document.querySelectorAll('.close-modal').forEach(button => {
+            button.addEventListener('click', () => {
+                this.closeModal(button.closest('.modal').id);
+            });
+        });
+
+        // Modal Overlay Click
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    this.closeModal(modal.id);
+                }
+            });
+        });
+    }
+
+    setupRandomizerEvents() {
+        document.getElementById('game-randomizer').addEventListener('click', async () => {
+            await this.startRandomizer();
+        });
+
+        // Add event listeners for randomizer buttons
+        document.addEventListener('click', (e) => {
+            if (e.target.id === 'play-random-game') {
+                this.playRandomGame();
+            } else if (e.target.id === 'close-random-game') {
+                this.closeRandomizer();
             }
-            return false;
-        } catch (error) {
-            console.error("Error checking password:", error);
-            return false;
+        });
+    }
+
+    setupKeyboardEvents() {
+        // Escape key for modals
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                this.closeAllModals();
+            }
+        });
+    }
+
+    async loadInitialData() {
+        // Load Discord session first
+        this.loadDiscordSession();
+        
+        // Handle Discord callback if present
+        await this.handleDiscordCallback();
+        
+        await Promise.all([
+            this.loadSocialLinks(),
+            this.renderGames(),
+            this.updateGenreFilterButtons(),
+            this.updateSuggestionCount(),
+            this.migrateUnreleasedFlag()
+        ]);
+    }
+
+    // Discord OAuth Admin Functions
+    async handleDiscordLogin() {
+        if (this.discordSession) {
+            document.getElementById('admin-panel').classList.remove('hidden');
+            this.showNotification('Willkommen zurück! 🎉', 'success');
+            } else {
+            this.startDiscordOAuth();
         }
     }
 
-    async function loadSocialLinks() {
+    openGameForm() {
+        this.currentGameId = null;
+        this.isEditMode = false;
+        this.resetGameForm();
+        
+        // Reset form title and button
+        const formTitle = document.querySelector('#game-form h2');
+        const saveButton = document.getElementById('save-game');
+        
+        formTitle.innerHTML = '<i class="fas fa-plus-circle"></i> Spiel hinzufügen';
+        saveButton.innerHTML = '<i class="fas fa-save"></i> Speichern';
+        
+        this.openModal('game-form');
+    }
+
+    toggleEditMode() {
+        this.isEditMode = !this.isEditMode;
+        this.renderGames();
+        const btn = document.getElementById('edit-games-btn');
+        btn.innerHTML = this.isEditMode ? 
+            '<i class="fas fa-times"></i> Bearbeiten beenden' : 
+            '<i class="fas fa-edit"></i> Spiele bearbeiten';
+    }
+
+    openSocialForm() {
+        this.loadSocialLinks();
+        this.openModal('social-form');
+    }
+
+    // Game Management Functions
+    async handleSteamLinkInput(link) {
+        const status = document.getElementById("steam-fetch-status");
+        const preview = document.getElementById("steam-preview");
+        
+        if (!link.trim()) {
+            status.classList.add('hidden');
+            preview.classList.add('hidden');
+            return;
+        }
+
+        status.classList.remove('hidden');
+        status.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Lade Spieldaten von Steam...';
+        preview.classList.add('hidden');
+
+        try {
+            const appid = this.extractSteamAppId(link);
+            if (!appid) {
+                status.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Ungültiger Steam-Link!';
+                return;
+            }
+
+            const gameData = await this.fetchSteamGameData(appid);
+            this.displaySteamPreview(gameData, 'steam');
+            status.classList.add('hidden');
+        } catch (error) {
+            console.error('Steam fetch error:', error);
+            status.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Fehler beim Laden der Spieldaten!';
+        }
+    }
+
+    async handleSuggestSteamLinkInput(link) {
+        const status = document.getElementById("suggest-steam-fetch-status");
+        const preview = document.getElementById("suggest-steam-preview");
+        
+        if (!link.trim()) {
+            status.classList.add('hidden');
+            preview.classList.add('hidden');
+            return;
+        }
+        
+        status.classList.remove('hidden');
+        status.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Lade Spieldaten von Steam...';
+        preview.classList.add('hidden');
+
+        try {
+            const appid = this.extractSteamAppId(link);
+            if (!appid) {
+                status.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Ungültiger Steam-Link!';
+            return;
+        }
+            
+            const gameData = await this.fetchSteamGameData(appid);
+            this.displaySteamPreview(gameData, 'suggest-steam');
+            status.classList.add('hidden');
+        } catch (error) {
+            console.error('Steam fetch error:', error);
+            status.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Fehler beim Laden der Spieldaten!';
+        }
+    }
+
+    extractSteamAppId(link) {
+            const match = link.match(/store\.steampowered\.com\/app\/(\d+)/);
+        return match ? match[1] : null;
+    }
+
+    async fetchSteamGameData(appid) {
+        const response = await fetch(`https://corsproxy.io/?https://store.steampowered.com/api/appdetails?appids=${appid}&l=german`);
+        const data = await response.json();
+        
+            if (!data[appid] || !data[appid].success) {
+            throw new Error('Spiel nicht gefunden');
+        }
+        
+        return data[appid].data;
+    }
+
+    displaySteamPreview(gameData, prefix) {
+        const image = document.getElementById(`${prefix}-image`);
+        const name = document.getElementById(`${prefix}-name`);
+        const genres = document.getElementById(`${prefix}-genres`);
+        const preview = document.getElementById(`${prefix}-preview`);
+
+        image.src = gameData.header_image;
+        name.textContent = gameData.name;
+        genres.textContent = (gameData.genres || []).map(g => g.description).join(", ");
+        preview.classList.remove('hidden');
+    }
+
+    async saveGame() {
+        const steamLink = document.getElementById('steam-link').value.trim();
+        if (!steamLink) {
+            this.showNotification('Bitte gib einen Steam-Link ein!', 'error');
+                    return;
+                }
+
+        try {
+            const appid = this.extractSteamAppId(steamLink);
+            if (!appid) {
+                this.showNotification('Ungültiger Steam-Link!', 'error');
+                    return;
+                }
+
+            const gameData = await this.fetchSteamGameData(appid);
+            const gameToSave = {
+                name: gameData.name,
+                steamLink: steamLink,
+                image: gameData.header_image,
+                genres: (gameData.genres || []).map(g => g.description),
+                description: gameData.short_description || "",
+                unreleased: gameData.release_date && gameData.release_date.coming_soon === true,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            };
+
+            if (this.currentGameId) {
+                // Update existing game
+                await db.collection("games").doc(this.currentGameId).update(gameToSave);
+                this.showNotification('Spiel erfolgreich bearbeitet! ✏️', 'success');
+            } else {
+                // Add new game
+                gameToSave.isNew = true;
+                await db.collection("games").add(gameToSave);
+                this.showNotification('Spiel erfolgreich hinzugefügt! 🎮', 'success');
+            }
+
+            this.closeModal('game-form');
+            this.resetGameForm();
+            this.currentGameId = null;
+            await this.renderGames();
+        } catch (error) {
+            console.error('Save game error:', error);
+            this.showNotification('Fehler beim Speichern des Spiels!', 'error');
+        }
+    }
+
+    async submitSuggestion() {
+            const steamLink = document.getElementById('suggest-steam-link').value.trim();
+            if (!steamLink) {
+            this.showNotification('Bitte einen Steam-Link eingeben!', 'error');
+                return;
+            }
+
+        try {
+            const appid = this.extractSteamAppId(steamLink);
+            if (!appid) {
+                this.showNotification('Ungültiger Steam-Link!', 'error');
+                return;
+            }
+
+            const gameData = await this.fetchSteamGameData(appid);
+            const suggestionData = {
+                name: gameData.name,
+                        link: steamLink,
+                image: gameData.header_image,
+                genres: (gameData.genres || []).map(g => g.description),
+                description: gameData.short_description || "",
+                        isPending: true,
+                        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+                unreleased: gameData.release_date && gameData.release_date.coming_soon === true
+            };
+
+            await db.collection('games').add(suggestionData);
+            this.resetSuggestForm();
+            this.closeModal('suggest-form');
+            await this.updateSuggestionCount();
+            this.showNotification('Vielen Dank für deinen Vorschlag! 🎉', 'success');
+        } catch (error) {
+            console.error('Submit suggestion error:', error);
+            this.showNotification('Fehler beim Speichern des Vorschlags', 'error');
+        }
+    }
+
+    // Social Media Functions
+    async loadSocialLinks() {
         try {
             const doc = await db.collection("settings").doc("social").get();
             if (doc.exists) {
                 const data = doc.data();
-                document.getElementById("tiktok-btn").href = data.tiktok || "#";
-                document.getElementById("discord-btn").href = data.discord || "#";
-                document.getElementById("instagram-btn").href = data.instagram || "#";
-                document.getElementById("kick-btn").href = data.kick || "#";
-                if (document.getElementById("logo-link")) {
-                    document.getElementById("logo-link").value = data.logo || "";
-                }
-                if (data.logo) {
-                    document.getElementById("favicon").href = data.logo;
-                }
+                this.updateSocialLinks(data);
+                this.populateSocialForm(data);
             }
         } catch (error) {
             console.error("Error loading social links:", error);
         }
     }
 
-    // Genre-Auswahl Event Listener
-    document.querySelectorAll('.genre-option').forEach(option => {
-        option.addEventListener('click', () => {
-            option.classList.toggle('selected');
-            const genre = option.dataset.genre;
-            if (option.classList.contains('selected')) {
-                if (!selectedGenres.includes(genre)) {
-                    selectedGenres.push(genre);
-                }
-            } else {
-                selectedGenres = selectedGenres.filter(g => g !== genre);
+    updateSocialLinks(data) {
+        const socialElements = {
+            'tiktok-btn': data.tiktok,
+            'discord-btn': data.discord,
+            'instagram-btn': data.instagram,
+            'kick-btn': data.kick,
+            'footer-instagram': data.footerInstagram,
+            'footer-tiktok': data.footerTiktok,
+            'footer-twitter': data.footerTwitter
+        };
+
+        Object.entries(socialElements).forEach(([id, url]) => {
+            const element = document.getElementById(id);
+            if (element && url) {
+                element.href = url;
             }
         });
-    });
 
-    function updateGenreSelection(genres) {
-        document.querySelectorAll('.genre-option').forEach(option => {
-            option.classList.remove('selected');
-            if (genres && genres.includes(option.dataset.genre)) {
-                option.classList.add('selected');
-            }
+        // Update logos
+        if (data.headerLogo) document.getElementById("header-logo").src = data.headerLogo;
+        if (data.logo) document.getElementById("favicon").href = data.logo;
+        if (data.adminLogo) document.getElementById("admin-logo").src = data.adminLogo;
+    }
+
+    populateSocialForm(data) {
+        const formFields = {
+            'tiktok-link': data.tiktok || '',
+            'discord-link': data.discord || '',
+            'instagram-link': data.instagram || '',
+            'kick-link': data.kick || '',
+            'footer-instagram-link': data.footerInstagram || '',
+            'footer-tiktok-link': data.footerTiktok || '',
+            'footer-twitter-link': data.footerTwitter || '',
+            'header-logo-link': data.headerLogo || '',
+            'logo-link': data.logo || '',
+            'admin-logo-link': data.adminLogo || ''
+        };
+
+        Object.entries(formFields).forEach(([id, value]) => {
+            const element = document.getElementById(id);
+            if (element) element.value = value;
         });
-        selectedGenres = genres || [];
     }
 
-    // Funktion zum Entfernen eines Genres
-    async function removeGenre(gameId, genre) {
+    async saveSocialLinks() {
         try {
-            const gameRef = db.collection("games").doc(gameId);
-            const doc = await gameRef.get();
-            if (doc.exists) {
-                const game = doc.data();
-                const updatedGenres = (game.genres || []).filter(g => g !== genre);
-                await gameRef.update({ genres: updatedGenres });
-                renderGames();
-            }
-        } catch (error) {
-            console.error("Error removing genre:", error);
-            alert("Fehler beim Entfernen des Genres");
-        }
-    }
-
-    adminLoginBtn.addEventListener("click", () => {
-        const loginModal = document.getElementById('login-modal');
-        const passwordInput = document.getElementById('admin-password');
-        loginModal.style.display = 'block';
-        loginModal.classList.remove('hidden');
-        passwordInput.focus();
-    });
-
-    document.getElementById('login-submit').addEventListener('click', async () => {
-        const password = document.getElementById('admin-password').value;
-        
-        if (password.trim() === "") {
-            alert("Bitte geben Sie ein Passwort ein");
-            return;
-        }
-        
-        if (await checkAdminPassword(password)) {
-            adminPanel.classList.remove("hidden");
-            document.getElementById('login-modal').style.display = 'none';
-            document.getElementById('admin-password').value = '';
-            loadSocialLinks();
-        } else {
-            alert("Falsches Passwort!");
-        }
-    });
-
-    document.getElementById('login-cancel').addEventListener('click', () => {
-        const loginModal = document.getElementById('login-modal');
-        loginModal.style.display = 'none';
-        document.getElementById('admin-password').value = '';
-        adminPanel.classList.add("hidden");
-    });
-
-    document.getElementById('admin-password').addEventListener('keypress', async (e) => {
-        if (e.key === 'Enter') {
-            const password = e.target.value;
-            
-            if (password.trim() === "") {
-                alert("Bitte geben Sie ein Passwort ein");
-                return;
-            }
-            
-            if (await checkAdminPassword(password)) {
-                adminPanel.classList.remove("hidden");
-                document.getElementById('login-modal').style.display = 'none';
-                e.target.value = '';
-                loadSocialLinks();
-            } else {
-                alert("Falsches Passwort!");
-            }
-        }
-    });
-
-    addGameBtn.addEventListener("click", () => {
-        currentGameId = null;
-        isEditMode = false;
-        document.getElementById("steam-link").value = "";
-        document.getElementById("steam-fetch-status").style.display = "none";
-        document.getElementById("steam-preview").style.display = "none";
-        document.querySelector('#game-form h2').textContent = "Spiel hinzufügen";
-        gameForm.classList.remove("hidden");
-        gameForm.style.display = 'block';
-    });
-
-    editGamesBtn.addEventListener("click", () => {
-        isEditMode = !isEditMode;
-        renderGames();
-        editGamesBtn.textContent = isEditMode ? "Bearbeiten beenden" : "Spiele bearbeiten";
-    });
-
-    editSocialBtn.addEventListener("click", async () => {
-        try {
-            const doc = await db.collection("settings").doc("social").get();
-            if (doc.exists) {
-                const data = doc.data();
-                document.getElementById("tiktok-link").value = data.tiktok || "";
-                document.getElementById("discord-link").value = data.discord || "";
-                document.getElementById("instagram-link").value = data.instagram || "";
-                document.getElementById("kick-link").value = data.kick || "";
-                if (document.getElementById("logo-link")) {
-                    document.getElementById("logo-link").value = data.logo || "";
-                }
-            }
-            socialForm.classList.remove("hidden");
-            socialForm.style.display = 'block';
-        } catch (error) {
-            console.error("Error opening social modal:", error);
-            alert("Fehler beim Laden der Social Media Links");
-        }
-    });
-
-    saveSocialBtn.addEventListener("click", async () => {
-        try {
-            const socialData = {
+            const formData = {
                 tiktok: document.getElementById("tiktok-link").value || "#",
                 discord: document.getElementById("discord-link").value || "#",
                 instagram: document.getElementById("instagram-link").value || "#",
                 kick: document.getElementById("kick-link").value || "#",
-                logo: document.getElementById("logo-link").value || ""
+                footerInstagram: document.getElementById("footer-instagram-link").value || "#",
+                footerTiktok: document.getElementById("footer-tiktok-link").value || "#",
+                footerTwitter: document.getElementById("footer-twitter-link").value || "#",
+                logo: document.getElementById("logo-link").value || "#",
+                headerLogo: document.getElementById("header-logo-link").value || "#",
+                adminLogo: document.getElementById("admin-logo-link").value || "#"
             };
 
-            await db.collection("settings").doc("social").set(socialData);
-            await loadSocialLinks();
-            socialForm.classList.add("hidden");
-            socialForm.style.display = 'none';
-            alert("Social Media Links wurden gespeichert!");
-        } catch (error) {
-            console.error("Error saving social links:", error);
-            alert("Fehler beim Speichern der Social Media Links");
-        }
-    });
-
-    document.querySelectorAll('.close-modal').forEach(button => {
-        button.addEventListener('click', () => {
-            button.closest('.modal').classList.add("hidden");
-            button.closest('.modal').style.display = 'none';
-        });
-    });
-
-    window.addEventListener('click', (event) => {
-        if (event.target.classList.contains('modal')) {
-            event.target.classList.add("hidden");
-            event.target.style.display = 'none';
-        }
-    });
-
-    // --- Admin: Spiel speichern ---
-    saveGameBtn.addEventListener("click", async () => {
-        const steamGameRaw = gameForm.dataset.steamGame;
-        if (!steamGameRaw) {
-            alert('Bitte gib einen gültigen Steam-Link ein und warte auf die Vorschau!');
-            return;
-        }
-        const steamGame = JSON.parse(steamGameRaw);
-        try {
-            await db.collection("games").add({
-                name: steamGame.name,
-                link: steamGame.link,
-                image: steamGame.image,
-                genres: steamGame.genres,
-                description: steamGame.description || "",
-                isNew: true,
-                unreleased: steamGame.unreleased === true
-            });
-            gameForm.classList.add("hidden");
-            gameForm.style.display = 'none';
-            gameForm.dataset.steamGame = "";
-            await renderGames();
-        } catch (error) {
-            alert('Fehler beim Speichern des Spiels!');
-        }
-    });
-
-    // --- Admin: Steam-Link Verarbeitung ---
-    document.getElementById("steam-link").addEventListener("change", async function() {
-        const link = this.value.trim();
-        const status = document.getElementById("steam-fetch-status");
-        const preview = document.getElementById("steam-preview");
-        status.style.display = "block";
-        status.textContent = "Lade Spieldaten von Steam...";
-        preview.style.display = "none";
-        let appid = null;
-        try {
-            // Versuche die AppID aus dem Link zu extrahieren
-            const match = link.match(/store\.steampowered\.com\/app\/(\d+)/);
-            if (match) {
-                appid = match[1];
-            } else {
-                status.textContent = "Ungültiger Steam-Link!";
-                return;
-            }
-            // Hole Spieldaten
-            const res = await fetch(`https://corsproxy.io/?https://store.steampowered.com/api/appdetails?appids=${appid}&l=german`);
-            const data = await res.json();
-            if (!data[appid] || !data[appid].success) {
-                status.textContent = "Spiel nicht gefunden!";
-                return;
-            }
-            const game = data[appid].data;
-            // Zeige Vorschau
-            document.getElementById("steam-image").src = game.header_image;
-            document.getElementById("steam-name").textContent = game.name;
-            document.getElementById("steam-genres").textContent = (game.genres||[]).map(g=>g.description).join(", ");
-            preview.style.display = "block";
-            status.style.display = "none";
-            // Speichere für später
-            gameForm.dataset.steamGame = JSON.stringify({
-                name: game.name,
-                image: game.header_image,
-                genres: (game.genres||[]).map(g=>g.description),
-                link: link,
-                description: game.short_description || "",
-                unreleased: game.release_date && game.release_date.coming_soon === true
-            });
-        } catch (e) {
-            status.textContent = "Fehler beim Laden der Spieldaten!";
-        }
-    });
-
-    // --- Vorschlagsformular: Steam-Link Verarbeitung ---
-    const suggestSteamLinkInput = document.getElementById("suggest-steam-link");
-    if (suggestSteamLinkInput) {
-        suggestSteamLinkInput.addEventListener("change", async function() {
-            const link = this.value.trim();
-            const status = document.getElementById("suggest-steam-fetch-status");
-            const preview = document.getElementById("suggest-steam-preview");
-            status.style.display = "block";
-            status.textContent = "Lade Spieldaten von Steam...";
-            preview.style.display = "none";
-            let appid = null;
-            try {
-                // Versuche die AppID aus dem Link zu extrahieren
-                const match = link.match(/store\.steampowered\.com\/app\/(\d+)/);
-                if (match) {
-                    appid = match[1];
-                } else {
-                    status.textContent = "Ungültiger Steam-Link!";
-                    return;
-                }
-                // Hole Spieldaten (mit CORS-Proxy wie im Admin-Formular)
-                const res = await fetch(`https://corsproxy.io/?https://store.steampowered.com/api/appdetails?appids=${appid}&l=german`);
-                const data = await res.json();
-                if (!data[appid] || !data[appid].success) {
-                    status.textContent = "Spiel nicht gefunden!";
-                    return;
-                }
-                const game = data[appid].data;
-                // Zeige Vorschau
-                document.getElementById("suggest-steam-image").src = game.header_image;
-                document.getElementById("suggest-steam-name").textContent = game.name;
-                document.getElementById("suggest-steam-genres").textContent = (game.genres||[]).map(g=>g.description).join(", ");
-                preview.style.display = "block";
-                status.style.display = "none";
-                // Speichere Beschreibung für später
-                suggestSteamLinkInput.dataset.description = game.short_description || "";
-                suggestSteamLinkInput.dataset.unreleased = game.release_date && game.release_date.coming_soon === true;
-            } catch (e) {
-                status.textContent = "Fehler beim Laden der Spieldaten!";
-            }
-        });
-    }
-
-    // --- Vorschlagsformular: Spiel einreichen ---
-    document.getElementById('submit-suggestion').addEventListener('click', async () => {
-        try {
-            const steamLink = document.getElementById('suggest-steam-link').value.trim();
-            if (!steamLink) {
-                alert('Bitte einen Steam-Link eingeben!');
-                return;
-            }
-
-            // Hole Spieldaten von Steam API
-            let appid = null;
-            const match = steamLink.match(/store\.steampowered\.com\/app\/(\d+)/);
-            if (match) {
-                appid = match[1];
-            } else {
-                alert('Ungültiger Steam-Link!');
-                return;
-            }
-            let gameData = {};
-            try {
-                const res = await fetch(`https://corsproxy.io/?https://store.steampowered.com/api/appdetails?appids=${appid}&l=german`);
-                const data = await res.json();
-                if (data[appid] && data[appid].success) {
-                    const game = data[appid].data;
-                    gameData = {
-                        name: game.name,
-                        link: steamLink,
-                        image: game.header_image,
-                        genres: (game.genres||[]).map(g=>g.description),
-                        description: game.short_description || "",
-                        isPending: true,
-                        timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-                        unreleased: game.release_date && game.release_date.coming_soon === true
-                    };
-                } else {
-                    alert('Spiel nicht gefunden!');
-                    return;
-                }
-            } catch (e) {
-                alert('Fehler beim Laden der Spieldaten!');
-                return;
-            }
-
-            // Vorschlag zur games Collection hinzufügen
-            await db.collection('games').add(gameData);
-
-            // Formular zurücksetzen
-            document.getElementById('suggest-steam-link').value = '';
-            document.getElementById('suggest-steam-fetch-status').style.display = 'none';
-            document.getElementById('suggest-steam-preview').style.display = 'none';
-            document.getElementById('suggest-form').style.display = 'none';
-
-            // Erfolgsmeldung anzeigen
-            alert('Vielen Dank für deinen Vorschlag!');
-
-            // Vorschlagszähler aktualisieren
-            await updateSuggestionCount();
-        } catch (error) {
-            console.error('Error adding suggestion:', error);
-            alert('Fehler beim Speichern des Vorschlags. Bitte versuche es später erneut.');
-        }
-    });
-
-    function getGenreColor(genre) {
-        // Bekannte Farben (wie in style.css)
-        const genreColors = {
-            "Action": "#6a0dad",
-            "Adventure": "#4CAF50",
-            "Soulslike": "#00ff00",
-            "Shooter": "#ff9800",
-            "Sport": "#2196F3",
-            "Strategie": "#607D8B",
-            "Rätsel": "#E91E63",
-            "Roblox": "#FFC107",
-            "Horror": "#990000",
-            "Story": "#ff69b4"
-        };
-        if (genreColors[genre]) return genreColors[genre];
-        // Für unbekannte Genres: Hash zu Farbe
-        let hash = 0;
-        for (let i = 0; i < genre.length; i++) {
-            hash = genre.charCodeAt(i) + ((hash << 5) - hash);
-        }
-        const color = `hsl(${hash % 360}, 60%, 45%)`;
-        return color;
-    }
-
-    function createGenreTag(genre, container, isEditable = false) {
-        const tag = document.createElement('div');
-        tag.className = 'genre-tag';
-        tag.setAttribute('data-genre', genre);
-        tag.textContent = genre;
-
-        // Dynamische Farbe für unbekannte Genres
-        if (!document.querySelector(`style[data-genre-style="${genre}"]`)) {
-            const color = getGenreColor(genre);
-            const style = document.createElement('style');
-            style.setAttribute('data-genre-style', genre);
-            style.innerHTML = `
-                .genre-tag[data-genre="${genre}"] {
-                    background: ${color};
-                    border: 1px solid ${color};
-                }
-            `;
-            document.head.appendChild(style);
-        }
-
-        if (isEditable) {
-            const removeButton = document.createElement('span');
-            removeButton.className = 'remove-genre';
-            removeButton.innerHTML = '×';
-            removeButton.onclick = () => tag.remove();
-            tag.appendChild(removeButton);
-        }
-
-        container.appendChild(tag);
-        return tag;
-    }
-
-    // --- Anzeige: Beschreibung im Spiel-Listing ---
-    function displayGame(game, isEditable = false) {
-        const gameElement = document.createElement('div');
-        gameElement.className = 'game';
-        
-        const img = document.createElement('img');
-        img.src = game.image;
-        img.alt = game.name;
-        img.onclick = () => window.open(game.link, '_blank');
-        gameElement.appendChild(img);
-        
-        const content = document.createElement('div');
-        content.className = 'game-content';
-        
-        const h2 = document.createElement('h2');
-        h2.textContent = game.name;
-        content.appendChild(h2);
-        
-        if (game.description) {
-            const description = document.createElement('div');
-            description.className = 'game-description';
-            description.textContent = game.description;
-            content.appendChild(description);
-        }
-        
-        const divider = document.createElement('div');
-        divider.className = 'game-divider';
-        content.appendChild(divider);
-        
-        const genresContainer = document.createElement('div');
-        genresContainer.className = 'game-genres';
-        
-        if (game.genres && Array.isArray(game.genres)) {
-            game.genres.forEach(genre => {
-                createGenreTag(genre, genresContainer, isEditable);
-            });
-        }
-        
-        content.appendChild(genresContainer);
-        gameElement.appendChild(content);
-        
-        if (!adminPanel.classList.contains("hidden") && isEditMode) {
-            const buttonContainer = document.createElement("div");
-
-            const deleteBtn = document.createElement("button");
-            deleteBtn.classList.add("delete-game");
-            deleteBtn.innerText = "X";
-            deleteBtn.onclick = async (e) => {
-                e.stopPropagation();
-                if (confirm('Möchten Sie dieses Spiel wirklich löschen?')) {
-                    try {
-                        await db.collection("games").doc(game.id).delete();
-                        await renderGames();
+            await db.collection("settings").doc("social").set(formData);
+            await this.loadSocialLinks();
+            this.closeModal('social-form');
+            this.showNotification('Social Media Links gespeichert! 📱', 'success');
                     } catch (error) {
-                        console.error("Error deleting game:", error);
-                        alert("Fehler beim Löschen des Spiels");
-                    }
-                }
-            };
+            console.error("Error saving social links:", error);
+            this.showNotification('Fehler beim Speichern der Links', 'error');
+        }
+    }
 
-            const editBtn = document.createElement("button");
-            editBtn.classList.add("edit-game");
-            editBtn.innerText = "✎";
-            editBtn.onclick = (e) => {
-                e.stopPropagation();
-                currentGameId = game.id;
-                // Nur Felder befüllen, die im Formular existieren
-                if (document.getElementById('steam-link')) {
-                    document.getElementById('steam-link').value = game.link || '';
-                    // Optional: Vorschau und Status zurücksetzen
-                    document.getElementById('steam-fetch-status').style.display = 'none';
-                    document.getElementById('steam-preview').style.display = 'none';
+    // Filter and Tab Functions
+    handleGenreFilter(genre) {
+        if (genre === 'all') {
+            this.activeGenres.clear();
+            this.activeGenres.add('all');
+            document.querySelectorAll('.genre-filter-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector('.genre-filter-btn[data-genre="all"]').classList.add('active');
+        } else {
+            this.activeGenres.delete('all');
+            document.querySelector('.genre-filter-btn[data-genre="all"]').classList.remove('active');
+            
+            if (this.activeGenres.has(genre)) {
+                this.activeGenres.delete(genre);
+                document.querySelector(`.genre-filter-btn[data-genre="${genre}"]`).classList.remove('active');
+                
+                if (this.activeGenres.size === 0) {
+                    this.activeGenres.add('all');
+                    document.querySelector('.genre-filter-btn[data-genre="all"]').classList.add('active');
                 }
-                document.querySelector('#game-form h2').textContent = "Spiel bearbeiten";
-                gameForm.classList.remove("hidden");
-                gameForm.style.display = 'block';
-            };
-
-            // Umschalt-Button für unreleased/released
-            const toggleUnreleasedBtn = document.createElement("button");
-            toggleUnreleasedBtn.classList.add("toggle-unreleased-btn");
-            toggleUnreleasedBtn.innerText = game.unreleased === true ? "Als Released markieren" : "Als Unreleased markieren";
-            toggleUnreleasedBtn.style.marginLeft = '8px';
-            toggleUnreleasedBtn.onclick = async (e) => {
-                e.stopPropagation();
-                try {
-                    await db.collection("games").doc(game.id).update({ unreleased: !(game.unreleased === true) });
-                    await renderGames();
-                } catch (error) {
-                    alert("Fehler beim Umschalten des Release-Status!");
-                }
-            };
-
-            // Im Admin-Modus: Button zum Umschalten von "gespielt"/"nicht gespielt"
-            const togglePlayedBtn = document.createElement("button");
-            togglePlayedBtn.classList.add("toggle-played-btn");
-            togglePlayedBtn.innerText = game.played === true ? "Als nicht gespielt markieren" : "Als gespielt markieren";
-            togglePlayedBtn.style.marginLeft = '8px';
-            togglePlayedBtn.onclick = async (e) => {
-                e.stopPropagation();
-                try {
-                    await db.collection("games").doc(game.id).update({ played: !(game.played === true) });
-                    await renderGames();
-                } catch (error) {
-                    alert("Fehler beim Umschalten des Played-Status!");
-                }
-            };
-
-            buttonContainer.appendChild(deleteBtn);
-            buttonContainer.appendChild(editBtn);
-            buttonContainer.appendChild(toggleUnreleasedBtn);
-            buttonContainer.appendChild(togglePlayedBtn);
-            gameElement.appendChild(buttonContainer);
+            } else {
+                this.activeGenres.add(genre);
+                document.querySelector(`.genre-filter-btn[data-genre="${genre}"]`).classList.add('active');
+            }
         }
         
-        return gameElement;
+        this.renderGames();
     }
 
-    // Tab-Logik für Spieleliste
-    let currentTab = 'all'; // 'all', 'unreleased' oder 'played'
-    const tabAll = document.getElementById('tab-all-games');
-    const tabUnreleased = document.getElementById('tab-unreleased-games');
-    const tabPlayed = document.getElementById('tab-played-games');
-    if (tabAll && tabUnreleased && tabPlayed) {
-        tabAll.addEventListener('click', () => {
-            currentTab = 'all';
-            tabAll.classList.add('active');
-            tabUnreleased.classList.remove('active');
-            tabPlayed.classList.remove('active');
-            renderGames();
-        });
-        tabUnreleased.addEventListener('click', () => {
-            currentTab = 'unreleased';
-            tabUnreleased.classList.add('active');
-            tabAll.classList.remove('active');
-            tabPlayed.classList.remove('active');
-            renderGames();
-        });
-        tabPlayed.addEventListener('click', () => {
-            currentTab = 'played';
-            tabPlayed.classList.add('active');
-            tabAll.classList.remove('active');
-            tabUnreleased.classList.remove('active');
-            renderGames();
-        });
+    handleTabChange(tabId) {
+        this.currentTab = tabId.replace('tab-', '').replace('-games', '');
+        
+        document.querySelectorAll('.game-tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        
+        this.renderGames();
     }
 
-    // Einmalig die aktuelle Reihenfolge der Spiele speichern
-    async function saveInitialOrderIfNotExists(games) {
-        const orderDoc = await db.collection('settings').doc('order').get();
-        if (!orderDoc.exists || !orderDoc.data().order) {
-            const order = games.map(g => g.id);
-            await db.collection('settings').doc('order').set({ order });
-        }
-    }
-
-    let originalGamesOrder = [];
-
-    async function renderGames() {
+    // Game Rendering Functions
+    async renderGames() {
         try {
+            this.showLoading();
+            const gameList = document.getElementById("game-list");
             gameList.innerHTML = "";
+            
             const snapshot = await db.collection("games").get();
             let games = [];
+            
             snapshot.forEach(doc => {
                 const gameData = doc.data();
                 if (!gameData.isPending) {
-                    if (currentTab === 'unreleased') {
-                        if (gameData.unreleased === true) {
+                    if (this.shouldShowGame(gameData)) {
                             games.push({ id: doc.id, ...gameData });
                         }
-                    } else if (currentTab === 'played') {
-                        if (gameData.played === true) {
-                            games.push({ id: doc.id, ...gameData });
-                        }
-                    } else {
-                        // Im Tab 'all' nur Spiele, die NICHT unreleased und NICHT played sind
-                        if (!gameData.unreleased && !gameData.played) {
-                            games.push({ id: doc.id, ...gameData });
-                        }
-                    }
                 }
             });
-            // Einmalig Reihenfolge speichern
-            if (originalGamesOrder.length === 0 && currentTab === 'all' && activeGenres.has('all')) {
-                await saveInitialOrderIfNotExists(games);
-            }
-            // Reihenfolge aus DB holen, falls vorhanden
-            if (originalGamesOrder.length === 0) {
-                const orderDoc = await db.collection('settings').doc('order').get();
-                if (orderDoc.exists && orderDoc.data().order) {
-                    originalGamesOrder = orderDoc.data().order;
-                } else {
-                    originalGamesOrder = games.map(g => g.id);
-                }
-            }
-            // Wenn "Alle" gewählt ist, sortiere nach Originalreihenfolge
-            if (currentTab === 'all' && activeGenres.has('all') && originalGamesOrder.length > 0) {
-                games.sort((a, b) => originalGamesOrder.indexOf(a.id) - originalGamesOrder.indexOf(b.id));
-            }
-            games.forEach(game => {
-                const gameElement = displayGame(game, !adminPanel.classList.contains("hidden") && isEditMode);
+
+            // Sort games based on current tab and filters
+            this.sortGames(games);
+            
+            // Render games with animation
+            games.forEach((game, index) => {
+                const gameElement = this.createGameElement(game);
+                gameElement.style.animationDelay = `${index * 0.1}s`;
                 gameList.appendChild(gameElement);
             });
-            // Wende den aktuellen Filter an
-            // filterGames(); // ENTFERNT, da nicht mehr vorhanden
-        } catch (error) {
+
+            this.hideLoading();
+                    } catch (error) {
             console.error("Error rendering games:", error);
-            alert("Fehler beim Laden der Spiele");
+            this.showNotification('Fehler beim Laden der Spiele', 'error');
+            this.hideLoading();
         }
     }
 
-    // Globale Funktion für Genre-Entfernung
-    window.removeGenre = removeGenre;
+    shouldShowGame(gameData) {
+        // Check tab filter first
+        let showByTab = false;
+        if (this.currentTab === 'unreleased') {
+            showByTab = gameData.unreleased === true;
+        } else if (this.currentTab === 'played') {
+            showByTab = gameData.played === true;
+        } else {
+            showByTab = !gameData.unreleased && !gameData.played;
+        }
+        
+        if (!showByTab) return false;
+        
+        // Check genre filter
+        if (this.activeGenres.has('all')) {
+            return true;
+        }
+        
+        // Check if game has any of the selected genres
+        if (gameData.genres && Array.isArray(gameData.genres)) {
+            return gameData.genres.some(genre => this.activeGenres.has(genre));
+        }
+        
+        return false;
+    }
 
-    // Migration: Setze unreleased: false für alle Spiele, die das Feld noch nicht haben
-    async function migrateUnreleasedFlag() {
-        const snapshot = await db.collection('games').get();
-        const batch = db.batch();
-        let needsUpdate = false;
-        snapshot.forEach(doc => {
-            const data = doc.data();
-            if (typeof data.unreleased === 'undefined') {
-                batch.update(db.collection('games').doc(doc.id), { unreleased: false });
-                needsUpdate = true;
-            }
+    sortGames(games) {
+        if (this.currentTab === 'all' && this.activeGenres.has('all') && this.originalGamesOrder.length > 0) {
+            games.sort((a, b) => this.originalGamesOrder.indexOf(a.id) - this.originalGamesOrder.indexOf(b.id));
+        }
+    }
+
+    createGameElement(game) {
+        const gameElement = document.createElement('div');
+        gameElement.className = 'game';
+        gameElement.style.opacity = '0';
+        gameElement.style.transform = 'translateY(20px)';
+        
+        gameElement.innerHTML = `
+            <img src="${game.image}" alt="${game.name}" loading="lazy">
+            <div class="game-content">
+                <h2>${game.name}</h2>
+                ${game.description ? `<div class="game-description">${game.description}</div>` : ''}
+                <div class="game-divider"></div>
+                <div class="game-genres">
+                    ${this.createGenreTags(game.genres)}
+                </div>
+                ${this.createAdminButtons(game)}
+            </div>
+        `;
+
+        // Add click event to open game
+        gameElement.querySelector('img').addEventListener('click', () => {
+            window.open(game.link, '_blank');
         });
-        if (needsUpdate) {
-            await batch.commit();
+
+        // Animate in
+        setTimeout(() => {
+            gameElement.style.transition = 'all 0.5s ease';
+            gameElement.style.opacity = '1';
+            gameElement.style.transform = 'translateY(0)';
+        }, 100);
+
+        return gameElement;
+    }
+
+    createGenreTags(genres) {
+        if (!genres || !Array.isArray(genres)) return '';
+        
+        return genres.map(genre => `
+            <div class="genre-tag" data-genre="${genre}">
+                ${genre}
+            </div>
+        `).join('');
+    }
+
+    createAdminButtons(game) {
+        if (!this.discordSession || !this.isEditMode) {
+            return '';
+        }
+
+        return `
+            <div class="admin-buttons">
+                <button class="delete-game" onclick="gamingPlatform.deleteGame('${game.id}')" title="Spiel löschen">
+                    <i class="fas fa-trash"></i>
+                </button>
+                <button class="edit-game" onclick="gamingPlatform.editGame('${game.id}')" title="Spiel bearbeiten">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="toggle-unreleased-btn" onclick="gamingPlatform.toggleUnreleased('${game.id}', ${game.unreleased})" title="${game.unreleased ? 'Als Released markieren' : 'Als Unreleased markieren'}">
+                    <i class="fas fa-${game.unreleased ? 'check' : 'clock'}"></i>
+                </button>
+                <button class="toggle-played-btn" onclick="gamingPlatform.togglePlayed('${game.id}', ${game.played})" title="${game.played ? 'Als nicht gespielt markieren' : 'Als gespielt markieren'}">
+                    <i class="fas fa-${game.played ? 'undo' : 'check-circle'}"></i>
+                </button>
+            </div>
+        `;
+    }
+
+    // Admin Game Management
+    async deleteGame(gameId) {
+        if (!confirm('Möchten Sie dieses Spiel wirklich löschen?')) return;
+        
+        try {
+            await db.collection("games").doc(gameId).delete();
+            await this.renderGames();
+            this.showNotification('Spiel erfolgreich gelöscht! 🗑️', 'success');
+        } catch (error) {
+            console.error("Error deleting game:", error);
+            this.showNotification('Fehler beim Löschen des Spiels', 'error');
         }
     }
 
-    // Initialisierung beim Laden der Seite
-    migrateUnreleasedFlag();
-    renderGames();
-    loadSocialLinks();
-    updateGenreFilterButtons();
+    async editGame(gameId) {
+        try {
+            this.currentGameId = gameId;
+            const gameDoc = await db.collection("games").doc(gameId).get();
+            
+            if (!gameDoc.exists) {
+                this.showNotification('Spiel nicht gefunden!', 'error');
+                return;
+            }
+            
+            const gameData = gameDoc.data();
+            
+            // Populate form with existing data
+            document.getElementById('steam-link').value = gameData.steamLink || '';
+            document.getElementById('steam-name').textContent = gameData.name || '';
+            document.getElementById('steam-genres').textContent = (gameData.genres || []).map(g => g.description || g).join(", ");
+            
+            // Show preview if image exists
+            if (gameData.image) {
+                document.getElementById('steam-image').src = gameData.image;
+                document.getElementById('steam-preview').classList.remove('hidden');
+            }
+            
+            // Change form title and button
+            const formTitle = document.querySelector('#game-form h2');
+            const saveButton = document.getElementById('save-game');
+            
+            formTitle.innerHTML = '<i class="fas fa-edit"></i> Spiel bearbeiten';
+            saveButton.innerHTML = '<i class="fas fa-save"></i> Änderungen speichern';
+            
+            this.openModal('game-form');
+            
+        } catch (error) {
+            console.error('Error loading game for edit:', error);
+            this.showNotification('Fehler beim Laden des Spiels', 'error');
+        }
+    }
 
-    // Randomizer Funktionalität
-    document.getElementById('game-randomizer').addEventListener('click', async () => {
+    async toggleUnreleased(gameId, currentStatus) {
+        try {
+            await db.collection("games").doc(gameId).update({ unreleased: !currentStatus });
+            await this.renderGames();
+            this.showNotification(`Spiel als ${!currentStatus ? 'Unreleased' : 'Released'} markiert!`, 'success');
+        } catch (error) {
+            console.error("Error toggling unreleased:", error);
+            this.showNotification('Fehler beim Umschalten des Status', 'error');
+        }
+    }
+
+    async togglePlayed(gameId, currentStatus) {
+        try {
+            await db.collection("games").doc(gameId).update({ played: !currentStatus });
+            await this.renderGames();
+            this.showNotification(`Spiel als ${!currentStatus ? 'gespielt' : 'nicht gespielt'} markiert!`, 'success');
+        } catch (error) {
+            console.error("Error toggling played:", error);
+            this.showNotification('Fehler beim Umschalten des Status', 'error');
+        }
+    }
+
+    // Randomizer Functions
+    async startRandomizer() {
         try {
             const snapshot = await db.collection('games').get();
-            
             const games = [];
+            
             snapshot.forEach(doc => {
                 const game = doc.data();
-                if (!game.isPending) {
+                // Nur normale Spiele (nicht unreleased, nicht played, nicht pending)
+                if (!game.isPending && !game.unreleased && !game.played) {
                     games.push(game);
                 }
             });
 
             if (games.length === 0) {
-                alert('Keine verfügbaren Spiele für den Randomizer!');
+                this.showNotification('Keine verfügbaren Spiele für den Randomizer!', 'error');
                 return;
             }
 
-            const modal = document.querySelector('.randomizer-modal');
-            const overlay = document.querySelector('.modal-overlay');
-            const gameCard = document.querySelector('.game-card');
-            const gameImage = gameCard.querySelector('img');
-            const gameTitle = gameCard.querySelector('h3');
-            const previewContainer = document.querySelector('.preview-container');
-            
-            // Zufälliges Spiel auswählen
-            const selectedGame = games[Math.floor(Math.random() * games.length)];
-            
-            // Modal und Overlay anzeigen
-            modal.style.display = 'block';
-            overlay.style.display = 'none';
-            
-            // Karte initial verstecken
+            this.showRandomizerModal(games);
+        } catch (error) {
+            console.error('Randomizer error:', error);
+            this.showNotification('Fehler beim Laden der Spiele', 'error');
+        }
+    }
+
+    showRandomizerModal(games) {
+        this.openModal('randomizer-modal');
+        this.animateRandomizer(games);
+    }
+
+    async animateRandomizer(games) {
+        const previewContainer = document.querySelector('.preview-container');
+        const gameCard = document.querySelector('.game-card');
+        
+        // Clear previous content
+        previewContainer.innerHTML = '';
             gameCard.classList.remove('active');
             
-            // Preview Container aktivieren
+        // Select random game
+        const selectedGame = games[Math.floor(Math.random() * games.length)];
+        
+        // Show preview animation
             previewContainer.classList.add('active');
             
-            // Mische die Spiele für die Vorschau
-            const previewGames = [...games]
-                .sort(() => Math.random() - 0.5)
-                .slice(0, 25); // Reduziere auf 6 zufällige Spiele
-            
-            // Füge das ausgewählte Spiel am Ende hinzu
+        // Create preview sequence
+        const previewGames = [...games].sort(() => Math.random() - 0.5).slice(0, 15);
             previewGames.push(selectedGame);
-            
-            // Bilder vorladen
-            const preloadPromises = previewGames.map(game => {
-                return new Promise((resolve) => {
-                    const img = new Image();
-                    img.onload = () => resolve();
-                    img.src = game.image;
-                });
-            });
-
-            // Warte bis alle Bilder geladen sind
-            await Promise.all(preloadPromises);
 
             let currentIndex = 0;
             const showNextPreview = () => {
-                // Entferne vorheriges Vorschaubild
                 const prevPreview = previewContainer.querySelector('.preview-image.active');
                 if (prevPreview) {
                     prevPreview.classList.add('fade-out');
-                    setTimeout(() => prevPreview.remove(), 150); // Schnelleres Entfernen
+                setTimeout(() => prevPreview.remove(), 150);
                 }
 
-                // Erstelle neues Vorschaubild
                 const previewDiv = document.createElement('div');
                 previewDiv.className = 'preview-image';
-                const img = document.createElement('img');
-                img.src = previewGames[currentIndex].image;
-                previewDiv.appendChild(img);
+            previewDiv.innerHTML = `<img src="${previewGames[currentIndex].image}" alt="${previewGames[currentIndex].name}">`;
                 previewContainer.appendChild(previewDiv);
 
-                // Aktiviere das neue Vorschaubild
-                setTimeout(() => previewDiv.classList.add('active'), 0,5); // Schnelleres Einblenden
+            setTimeout(() => previewDiv.classList.add('active'), 50);
 
                 currentIndex++;
 
-                // Wenn noch nicht alle Bilder gezeigt wurden, zeige nächstes
                 if (currentIndex < previewGames.length) {
-                    setTimeout(showNextPreview, 100); // Schnellerer Bildwechsel
+                setTimeout(showNextPreview, 100);
                 } else {
-                    // Animation beenden und finale Karte zeigen
                     setTimeout(() => {
                         previewContainer.classList.remove('active');
-                        gameImage.src = selectedGame.image;
-                        gameTitle.textContent = selectedGame.name;
+                    gameCard.querySelector('img').src = selectedGame.image;
+                    gameCard.querySelector('h3').textContent = selectedGame.name;
                         gameCard.classList.add('active');
-                        overlay.style.display = 'block'; // Zeige Overlay erst am Ende
-                    }, 300); // Schnellerer Übergang zur finalen Karte
-                }
-            };
+                    
+                    // Store selected game for play button
+                    gameCard.dataset.gameLink = selectedGame.link;
+                }, 300);
+            }
+        };
 
-            // Starte die Vorschau-Animation
             showNextPreview();
+    }
 
-            // Event Listener für Buttons
-            document.getElementById('play-random-game').onclick = () => {
-                window.open(selectedGame.link, '_blank');
-            };
+    playRandomGame() {
+        const gameCard = document.querySelector('.game-card');
+        const gameLink = gameCard.dataset.gameLink;
+        if (gameLink) {
+            window.open(gameLink, '_blank');
+        }
+    }
 
-            function closeRandomizer() {
+    closeRandomizer() {
+        const previewContainer = document.querySelector('.preview-container');
+        const gameCard = document.querySelector('.game-card');
+        
                 gameCard.classList.remove('active');
                 previewContainer.classList.remove('active');
                 previewContainer.innerHTML = '';
-                setTimeout(() => {
-                    modal.style.display = 'none';
-                    overlay.style.display = 'none';
-                }, 300);
-            }
-
-            document.getElementById('close-random-game').onclick = closeRandomizer;
-            overlay.onclick = closeRandomizer;
-
-        } catch (error) {
-            console.error('Error in randomizer:', error);
-            alert('Fehler beim Laden der Spiele');
-        }
-    });
-
-    function showRandomGame() {
-        const modal = document.querySelector('.randomizer-modal');
-        const overlay = document.querySelector('.modal-overlay');
-        const gameCard = document.querySelector('.game-card');
-        const gameImage = gameCard.querySelector('img');
-        const gameTitle = gameCard.querySelector('h3');
-        const playButton = document.getElementById('play-random-game');
-        const closeButton = document.getElementById('close-random-game');
-
-        // Zufälliges Spiel auswählen
-        const randomGame = games[Math.floor(Math.random() * games.length)];
         
-        // Karte zurücksetzen
-        gameCard.style.transform = 'rotateY(90deg)';
-        
-        modal.style.display = 'block';
-        overlay.style.display = 'block';
-        
-        // Verzögerung für Animation
-        setTimeout(() => {
-            gameImage.src = randomGame.image;
-            gameTitle.textContent = randomGame.title;
-            gameCard.style.transform = 'rotateY(0deg)';
-        }, 500);
+        this.closeModal('randomizer-modal');
+    }
 
-        playButton.onclick = () => {
-            window.location.href = randomGame.link;
-        };
-
-        closeButton.onclick = () => {
-            modal.style.display = 'none';
-            overlay.style.display = 'none';
-        };
-
-        overlay.onclick = () => {
-            modal.style.display = 'none';
-            overlay.style.display = 'none';
+    // Utility Functions
+    debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
         };
     }
 
-    document.getElementById('random-game-button').addEventListener('click', showRandomGame);
+    openModal(modalId) {
+        const modal = document.getElementById(modalId);
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        
+        const firstInput = modal.querySelector('input');
+        if (firstInput) firstInput.focus();
+    }
+
+    closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        modal.classList.add('hidden');
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+
+    closeAllModals() {
+        document.querySelectorAll('.modal:not(.hidden)').forEach(modal => {
+            this.closeModal(modal.id);
+        });
+    }
+
+    resetGameForm() {
+        document.getElementById("steam-link").value = "";
+        document.getElementById("steam-fetch-status").classList.add('hidden');
+        document.getElementById("steam-preview").classList.add('hidden');
+        document.getElementById("steam-name").textContent = "";
+        document.getElementById("steam-genres").textContent = "";
+        document.getElementById("steam-image").src = "";
+        document.getElementById('game-form').dataset.steamGame = "";
+    }
+
+    resetSuggestForm() {
+        document.getElementById('suggest-steam-link').value = '';
+        document.getElementById('suggest-steam-fetch-status').classList.add('hidden');
+        document.getElementById('suggest-steam-preview').classList.add('hidden');
+    }
+
+    showLoading() {
+        this.isLoading = true;
+        document.getElementById('loading-indicator').classList.remove('hidden');
+    }
+
+    hideLoading() {
+        this.isLoading = false;
+        document.getElementById('loading-indicator').classList.add('hidden');
+    }
+
+    showNotification(message, type = 'info') {
+        const container = document.getElementById('notification-container');
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        
+        const icons = {
+            success: 'check-circle',
+            error: 'exclamation-circle',
+            warning: 'exclamation-triangle',
+            info: 'info-circle'
+        };
+        
+        notification.innerHTML = `
+            <i class="fas fa-${icons[type]}"></i>
+            <span>${message}</span>
+            <button class="notification-close">&times;</button>
+        `;
+        
+        container.appendChild(notification);
+        
+        // Auto remove after 5 seconds
+        setTimeout(() => {
+            notification.classList.add('fade-out');
+            setTimeout(() => notification.remove(), 300);
+        }, 5000);
+        
+        // Manual close
+        notification.querySelector('.notification-close').onclick = () => {
+            notification.classList.add('fade-out');
+            setTimeout(() => notification.remove(), 300);
+        };
+    }
+
+    async updateGenreFilterButtons() {
+        try {
+            const genreSet = new Set();
+            const snapshot = await db.collection("games").get();
+            
+            snapshot.forEach(doc => {
+                const game = doc.data();
+                if (Array.isArray(game.genres)) {
+                    game.genres.forEach(genre => genreSet.add(genre));
+                }
+            });
+
+            // Update existing buttons or create new ones
+            const container = document.querySelector('.genre-filter-buttons');
+            const existingButtons = container.querySelectorAll('.genre-filter-btn:not([data-genre="all"])');
+            
+            existingButtons.forEach(btn => {
+                if (!genreSet.has(btn.dataset.genre)) {
+                    btn.remove();
+                }
+            });
+
+            genreSet.forEach(genre => {
+                if (!container.querySelector(`[data-genre="${genre}"]`)) {
+                    const btn = document.createElement('button');
+                    btn.className = 'genre-filter-btn';
+                    btn.dataset.genre = genre;
+                    btn.innerHTML = `<i class="fas fa-${this.getGenreIcon(genre)}"></i> ${genre}`;
+                    btn.addEventListener('click', () => this.handleGenreFilter(genre));
+                    container.appendChild(btn);
+                }
+            });
+        } catch (error) {
+            console.error('Error updating genre filters:', error);
+        }
+    }
+
+    getGenreIcon(genre) {
+        const icons = {
+            'Action': 'fire',
+            'Adventure': 'compass',
+            'Soulslike': 'skull',
+            'Shooter': 'crosshairs',
+            'Sport': 'futbol',
+            'Strategie': 'chess',
+            'Rätsel': 'puzzle-piece',
+            'Roblox': 'cube',
+            'Horror': 'ghost',
+            'Story': 'book-open'
+        };
+        return icons[genre] || 'gamepad';
+    }
+
+    async updateSuggestionCount() {
+        try {
+            const snapshot = await db.collection('games').where('isPending', '==', true).get();
+            const count = snapshot.size;
+            const badge = document.getElementById('suggestion-count');
+            
+            if (count > 0) {
+                badge.textContent = count;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+        } catch (error) {
+            console.error('Error updating suggestion count:', error);
+        }
+    }
+
+    async migrateUnreleasedFlag() {
+        try {
+            const snapshot = await db.collection('games').get();
+            const batch = db.batch();
+            let needsUpdate = false;
+            
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                if (typeof data.unreleased === 'undefined') {
+                    batch.update(db.collection('games').doc(doc.id), { unreleased: false });
+                    needsUpdate = true;
+                }
+            });
+            
+            if (needsUpdate) {
+                await batch.commit();
+            }
+        } catch (error) {
+            console.error('Migration error:', error);
+        }
+    }
+
+    async viewSuggestions() {
+        try {
+            const snapshot = await db.collection('games').where('isPending', '==', true).get();
+            
+            if (snapshot.empty) {
+                this.showNotification('Keine Vorschläge vorhanden', 'info');
+                return;
+            }
+
+            let suggestionsHtml = '<div class="suggestions-list">';
+            
+            snapshot.forEach(doc => {
+                const suggestion = doc.data();
+                const genresHtml = suggestion.genres && suggestion.genres.length > 0 
+                    ? suggestion.genres.map(genre => 
+                        `<span class="genre-tag" data-genre="${genre}">${genre}</span>`
+                    ).join('') 
+                    : '';
+
+                suggestionsHtml += `
+                    <div class="suggestion-item">
+                        <img src="${suggestion.image}" alt="${suggestion.name}">
+                        <div class="suggestion-details">
+                            <h3>${suggestion.name}</h3>
+                            <div class="suggestion-genres">
+                                ${genresHtml}
+                            </div>
+                        </div>
+                        <div class="suggestion-actions">
+                            <button onclick="gamingPlatform.acceptSuggestion('${doc.id}')" class="accept-btn">
+                                <i class="fas fa-check"></i> Akzeptieren
+                            </button>
+                            <button onclick="gamingPlatform.deleteSuggestion('${doc.id}')" class="delete-btn">
+                                <i class="fas fa-times"></i> Ablehnen
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            suggestionsHtml += '</div>';
+
+            // Create modal for suggestions
+            const modal = document.createElement('div');
+            modal.className = 'modal';
+            modal.style.display = 'flex';
+            modal.innerHTML = `
+                <div class="modal-content suggest-content">
+                    <span class="close-modal">&times;</span>
+                    <h2><i class="fas fa-lightbulb"></i> Spielvorschläge</h2>
+                    ${suggestionsHtml}
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            modal.querySelector('.close-modal').onclick = () => {
+                modal.remove();
+            };
+            
+            modal.onclick = (e) => {
+                if (e.target === modal) {
+                    modal.remove();
+                }
+            };
+        } catch (error) {
+            console.error('Error loading suggestions:', error);
+            this.showNotification('Fehler beim Laden der Vorschläge', 'error');
+        }
+    }
+
+    async acceptSuggestion(id) {
+        try {
+            const suggestionDoc = await db.collection('games').doc(id).get();
+            const suggestionData = suggestionDoc.data();
+
+            const { isPending, ...gameData } = suggestionData;
+            
+            await db.collection('games').add({
+                ...gameData,
+                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            });
+
+            await db.collection('games').doc(id).delete();
+            await this.updateSuggestionCount();
+            
+            document.querySelector('.modal').remove();
+            this.showNotification('Vorschlag wurde akzeptiert! ✅', 'success');
+            await this.renderGames();
+        } catch (error) {
+            console.error('Error accepting suggestion:', error);
+            this.showNotification('Fehler beim Akzeptieren des Vorschlags', 'error');
+        }
+    }
+
+    async deleteSuggestion(id) {
+        if (!confirm('Möchten Sie diesen Vorschlag wirklich ablehnen?')) return;
+        
+        try {
+            await db.collection('games').doc(id).delete();
+            await this.updateSuggestionCount();
+            
+            document.querySelector('.modal').remove();
+            this.showNotification('Vorschlag wurde abgelehnt! ❌', 'success');
+        } catch (error) {
+            console.error('Error deleting suggestion:', error);
+            this.showNotification('Fehler beim Ablehnen des Vorschlags', 'error');
+        }
+    }
+}
+
+// Initialize the platform when DOM is loaded
+document.addEventListener('DOMContentLoaded', () => {
+    window.gamingPlatform = new GamingPlatform();
 });
+
+// Global functions for backward compatibility
+window.removeGenre = (gameId, genre) => {
+    gamingPlatform.removeGenre(gameId, genre);
+};
+
+window.acceptSuggestion = (id) => {
+    gamingPlatform.acceptSuggestion(id);
+};
+
+window.deleteSuggestion = (id) => {
+    gamingPlatform.deleteSuggestion(id);
+};

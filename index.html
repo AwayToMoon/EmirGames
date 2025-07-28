@@ -4,8 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
-    <title>HigherCellF Games</title>
+    <title>HigherCellF Games - Moderne Gaming Plattform</title>
     <link rel="icon" type="image/png" id="favicon" href="#">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
@@ -13,181 +16,366 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- Animated Background Particles -->
+    <div class="particles-container">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+
     <div class="content-container">
-        <div class="header">
+        <!-- Header Section -->
+        <header class="header">
                 <div class="logo-title-container">
-                    <img id="header-logo" src="#" alt="Logo" class="header-logo">
+                <img id="header-logo" src="#" alt="HigherCellF Games Logo" class="header-logo">
                     <h1 class="site-title">HigherCellF Games</h1>
                 </div>
                 
-                <div class="social-media">
-                    <a href="https://ko-fi.com/awayy" class="kofi-btn" target="_blank">
+            <nav class="social-media">
+                <a href="https://ko-fi.com/awayy" class="kofi-btn" target="_blank" rel="noopener">
                         <i class="fas fa-mug-hot"></i>
-                        <span>Support Mich Gern :D </span>
+                    <span>Support Mich Gern :D</span>
                     </a>
                     <div class="social-buttons">
-                        <a href="#" class="social-btn" id="tiktok-btn" title="TikTok" target="_blank">
+                    <a href="#" class="social-btn" id="tiktok-btn" title="TikTok" target="_blank" rel="noopener">
                             <i class="fab fa-tiktok"></i>
                         </a>
-                        <a href="#" class="social-btn" id="discord-btn" title="Discord" target="_blank">
+                    <a href="#" class="social-btn" id="discord-btn" title="Discord" target="_blank" rel="noopener">
                             <i class="fab fa-discord"></i>
                         </a>
-                        <a href="#" class="social-btn" id="instagram-btn" title="Instagram" target="_blank">
+                    <a href="#" class="social-btn" id="instagram-btn" title="Instagram" target="_blank" rel="noopener">
                             <i class="fab fa-instagram"></i>
                         </a>
-                        <a href="#" class="social-btn" id="kick-btn" title="Kick" target="_blank">
+                    <a href="#" class="social-btn" id="kick-btn" title="Kick" target="_blank" rel="noopener">
                             <i class="fas fa-k"></i>
                         </a>
-                    </div>
                 </div>
+            </nav>
 
                 <div class="admin-section">
                     <img id="admin-logo" src="#" alt="Admin Logo" class="admin-logo">
-                    <button id="admin-login-btn">Login Away亗</button>
-                </div>
+                <button id="admin-login-btn" class="admin-login-btn discord-login-btn">
+                    <i class="fab fa-discord"></i>
+                    <span id="login-text">Admin Login</span>
+                </button>
             </div>
+        </header>
             
             <div class="header-divider"></div>
 
-            <div id="admin-panel" class="hidden">
-                <button id="add-game-btn">Spiel hinzufügen</button>
-                <button id="edit-games-btn">Spiele bearbeiten</button>
-                <button id="edit-social-btn">Social Media Links bearbeiten</button>
-                <button id="view-suggestions-btn">Vorschläge ansehen <span id="suggestion-count" class="suggestion-badge hidden">0</span></button>
+        <!-- Admin Panel -->
+        <section id="admin-panel" class="admin-panel hidden">
+            <div class="admin-user-info">
+                <img id="admin-avatar" src="" alt="Admin Avatar" class="admin-avatar">
+                <div class="admin-user-details">
+                    <span id="admin-username" class="admin-username"></span>
+                    <button id="logout-btn" class="logout-btn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        Logout
+                    </button>
+                </div>
             </div>
+            <button id="add-game-btn" class="admin-btn">
+                <i class="fas fa-plus"></i>
+                Spiel hinzufügen
+            </button>
+            <button id="edit-games-btn" class="admin-btn">
+                <i class="fas fa-edit"></i>
+                Spiele bearbeiten
+            </button>
+            <button id="edit-social-btn" class="admin-btn">
+                <i class="fas fa-share-alt"></i>
+                Social Media Links bearbeiten
+            </button>
+            <button id="view-suggestions-btn" class="admin-btn">
+                <i class="fas fa-lightbulb"></i>
+                Vorschläge ansehen 
+                <span id="suggestion-count" class="suggestion-badge hidden">0</span>
+            </button>
+        </section>
 
-            <button id="game-randomizer">
+        <!-- Action Buttons -->
+        <section class="action-buttons">
+            <button id="game-randomizer" class="randomizer-btn">
                 <i class="fas fa-dice"></i>
                 Zufälliges Spiel
             </button>
-            <div class="action-buttons">
-                <button id="suggest-game-btn" class="suggest-button">Spiel vorschlagen</button>
-                <a href="https://minigames-emir.vercel.app/" class="minigames-button" target="_blank">
+            <button id="suggest-game-btn" class="suggest-button">
+                <i class="fas fa-plus-circle"></i>
+                Spiel vorschlagen
+            </button>
+            <a href="https://minigames-emir.vercel.app/" class="minigames-button" target="_blank" rel="noopener">
                     <i class="fas fa-chevron-right"></i>
                     MiniGames Emir
                     <i class="fas fa-chevron-left"></i>
                 </a>
-            </div>
-            
-            <div class="main-content-flex" style="display:flex; gap:120px; align-items:flex-start; justify-content:center; width:100%; max-width:1200px; margin:0 auto;">
-                <div class="genre-filter-container">
+        </section>
+        
+        <!-- Main Content -->
+        <main class="main-content-flex">
+            <!-- Genre Filter Sidebar -->
+            <aside class="genre-filter-container">
                     <h3>Nach Genre filtern</h3>
                     <div class="genre-filter-buttons">
-                        <button class="genre-filter-btn" data-genre="all">Alle</button>
-                        <button class="genre-filter-btn" data-genre="Action">Action</button>
-                        <button class="genre-filter-btn" data-genre="Adventure">Adventure</button>
-                        <button class="genre-filter-btn" data-genre="Soulslike">Soulslike</button>
-                        <button class="genre-filter-btn" data-genre="Shooter">Shooter</button>
-                        <button class="genre-filter-btn" data-genre="Sport">Sport</button>
-                        <button class="genre-filter-btn" data-genre="Strategie">Strategie</button>
-                        <button class="genre-filter-btn" data-genre="Rätsel">Rätsel</button>
-                        <button class="genre-filter-btn" data-genre="Roblox">Roblox</button>
-                        <button class="genre-filter-btn" data-genre="Horror">Horror</button>
-                        <button class="genre-filter-btn" data-genre="Story">Story</button>
-                    </div>
+                    <button class="genre-filter-btn active" data-genre="all">
+                        <i class="fas fa-th-large"></i>
+                        Alle
+                    </button>
+                    <button class="genre-filter-btn" data-genre="Action">
+                        <i class="fas fa-fire"></i>
+                        Action
+                    </button>
+                    <button class="genre-filter-btn" data-genre="Adventure">
+                        <i class="fas fa-compass"></i>
+                        Adventure
+                    </button>
+                    <button class="genre-filter-btn" data-genre="Soulslike">
+                        <i class="fas fa-skull"></i>
+                        Soulslike
+                    </button>
+                    <button class="genre-filter-btn" data-genre="Shooter">
+                        <i class="fas fa-crosshairs"></i>
+                        Shooter
+                    </button>
+                    <button class="genre-filter-btn" data-genre="Sport">
+                        <i class="fas fa-futbol"></i>
+                        Sport
+                    </button>
+                    <button class="genre-filter-btn" data-genre="Strategie">
+                        <i class="fas fa-chess"></i>
+                        Strategie
+                    </button>
+                    <button class="genre-filter-btn" data-genre="Rätsel">
+                        <i class="fas fa-puzzle-piece"></i>
+                        Rätsel
+                    </button>
+                    <button class="genre-filter-btn" data-genre="Roblox">
+                        <i class="fas fa-cube"></i>
+                        Roblox
+                    </button>
+                    <button class="genre-filter-btn" data-genre="Horror">
+                        <i class="fas fa-ghost"></i>
+                        Horror
+                    </button>
+                    <button class="genre-filter-btn" data-genre="Story">
+                        <i class="fas fa-book-open"></i>
+                        Story
+                    </button>
                 </div>
-                <div style="flex:1; min-width:0;">
-                    <div id="game-tabs" class="game-tabs-container" style="display:flex;justify-content:center;gap:50px;margin-top:20px;">
-                        <button id="tab-all-games" class="game-tab-btn active">Alle Spiele</button>
-                        <button id="tab-unreleased-games" class="game-tab-btn">Unreleased Spiele</button>
-                        <button id="tab-played-games" class="game-tab-btn">Played Games</button>
-                    </div>
-                    <div id="game-list"></div>
-                </div>
-            </div>
+            </aside>
 
+            <!-- Games Content -->
+            <div class="games-content">
+                <nav class="game-tabs-container">
+                    <button id="tab-all-games" class="game-tab-btn active">
+                        <i class="fas fa-th-large"></i>
+                        Alle Spiele
+                    </button>
+                    <button id="tab-unreleased-games" class="game-tab-btn">
+                        <i class="fas fa-clock"></i>
+                        Unreleased Spiele
+                    </button>
+                    <button id="tab-played-games" class="game-tab-btn">
+                        <i class="fas fa-check-circle"></i>
+                        Played Games
+                    </button>
+                </nav>
+                
+                <div id="game-list" class="game-list"></div>
+            </div>
+        </main>
+
+        <!-- Modals -->
+        <!-- Game Form Modal -->
             <div id="game-form" class="modal hidden">
                 <div class="modal-content">
                     <span class="close-modal">&times;</span>
-                    <h2>Spiel hinzufügen</h2>
+                <h2><i class="fas fa-plus-circle"></i> Spiel hinzufügen</h2>
+                <div class="form-group">
+                    <label for="steam-link">Steam-Link</label>
                     <input type="text" id="steam-link" placeholder="Steam-Link einfügen">
-                    <div id="steam-fetch-status" style="color:#ff00ff; margin:10px 0; display:none;"></div>
-                    <div id="steam-preview" style="display:none; margin-bottom:10px;">
-                        <img id="steam-image" src="" alt="Steam Bild" style="width:100px; height:60px; object-fit:cover; border-radius:6px; margin-bottom:5px;"><br>
-                        <span id="steam-name" style="font-weight:bold;"></span><br>
-                        <span id="steam-genres" style="font-size:12px; color:#aaa;"></span>
+                </div>
+                <div id="steam-fetch-status" class="fetch-status hidden"></div>
+                <div id="steam-preview" class="steam-preview hidden">
+                    <img id="steam-image" src="" alt="Steam Bild">
+                    <div class="preview-info">
+                        <h3 id="steam-name"></h3>
+                        <p id="steam-genres"></p>
                     </div>
-                    <button id="save-game">Speichern</button>
+                </div>
+                <button id="save-game" class="save-btn">
+                    <i class="fas fa-save"></i>
+                    Speichern
+                </button>
                 </div>
             </div>
 
+        <!-- Social Media Form Modal -->
             <div id="social-form" class="modal hidden">
                 <div class="modal-content">
                     <span class="close-modal">&times;</span>
-                    <h2>Social Media Links bearbeiten</h2>
+                <h2><i class="fas fa-share-alt"></i> Social Media Links bearbeiten</h2>
+                
+                <div class="form-section">
+                    <h3>Header Social Media</h3>
+                    <div class="form-group">
+                        <label for="tiktok-link">TikTok URL</label>
                     <input type="text" id="tiktok-link" placeholder="TikTok URL">
+                    </div>
+                    <div class="form-group">
+                        <label for="discord-link">Discord URL</label>
                     <input type="text" id="discord-link" placeholder="Discord URL">
+                    </div>
+                    <div class="form-group">
+                        <label for="instagram-link">Instagram URL</label>
                     <input type="text" id="instagram-link" placeholder="Instagram URL">
+                    </div>
+                    <div class="form-group">
+                        <label for="kick-link">Kick URL</label>
                     <input type="text" id="kick-link" placeholder="Kick URL">
-                    <h3>Footer Social Media Links</h3>
-                    <input type="text" id="footer-instagram-link" placeholder="Footer Instagram URL">
-                    <input type="text" id="footer-tiktok-link" placeholder="Footer TikTok URL">
-                    <input type="text" id="footer-twitter-link" placeholder="Footer Twitter URL">
-                    <h3>Logo URLs</h3>
-                    <input type="text" id="header-logo-link" placeholder="Header Logo URL (empfohlen: 40x40px)">
-                    <input type="text" id="logo-link" placeholder="Tab Icon URL (32x32px empfohlen)">
-                    <input type="text" id="admin-logo-link" placeholder="Admin Logo URL (empfohlen: 40x40px)">
-                    <button id="save-social">Speichern</button>
-                </div>
-            </div>
-
-            <div id="login-modal" class="modal hidden">
-                <div class="modal-content login-content">
-                    <h2>Admin Login</h2>
-                    <div class="login-form">
-                        <input type="password" id="admin-password" placeholder="Passwort eingeben">
-                        <div class="login-buttons">
-                            <button id="login-submit">Login</button>
-                            <button id="login-cancel">Abbrechen</button>
-                        </div>
                     </div>
                 </div>
+
+                <div class="form-section">
+                    <h3>Footer Social Media</h3>
+                    <div class="form-group">
+                        <label for="footer-instagram-link">Footer Instagram URL</label>
+                    <input type="text" id="footer-instagram-link" placeholder="Footer Instagram URL">
+                    </div>
+                    <div class="form-group">
+                        <label for="footer-tiktok-link">Footer TikTok URL</label>
+                    <input type="text" id="footer-tiktok-link" placeholder="Footer TikTok URL">
+                    </div>
+                    <div class="form-group">
+                        <label for="footer-twitter-link">Footer Twitter URL</label>
+                    <input type="text" id="footer-twitter-link" placeholder="Footer Twitter URL">
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3>Logo URLs</h3>
+                    <div class="form-group">
+                        <label for="header-logo-link">Header Logo URL</label>
+                    <input type="text" id="header-logo-link" placeholder="Header Logo URL (empfohlen: 40x40px)">
+                    </div>
+                    <div class="form-group">
+                        <label for="logo-link">Tab Icon URL</label>
+                    <input type="text" id="logo-link" placeholder="Tab Icon URL (32x32px empfohlen)">
+                    </div>
+                    <div class="form-group">
+                        <label for="admin-logo-link">Admin Logo URL</label>
+                    <input type="text" id="admin-logo-link" placeholder="Admin Logo URL (empfohlen: 40x40px)">
+                    </div>
+                </div>
+
+                <button id="save-social" class="save-btn">
+                    <i class="fas fa-save"></i>
+                    Speichern
+                </button>
+                </div>
             </div>
 
+        <!-- Suggest Form Modal -->
             <div id="suggest-form" class="modal hidden">
                 <div class="modal-content suggest-content">
                     <span class="close-modal">&times;</span>
-                    <h2>Spiel vorschlagen</h2>
+                <h2><i class="fas fa-lightbulb"></i> Spiel vorschlagen</h2>
+                <div class="form-group">
+                    <label for="suggest-steam-link">Steam-Link</label>
                     <input type="text" id="suggest-steam-link" placeholder="Steam-Link einfügen">
-                    <div id="suggest-steam-fetch-status" style="color:#ff00ff; margin:10px 0; display:none;"></div>
-                    <div id="suggest-steam-preview" style="display:none; margin-bottom:10px;">
-                        <img id="suggest-steam-image" src="" alt="Steam Bild" style="width:100px; height:60px; object-fit:cover; border-radius:6px; margin-bottom:5px;"><br>
-                        <span id="suggest-steam-name" style="font-weight:bold;"></span><br>
-                        <span id="suggest-steam-genres" style="font-size:12px; color:#aaa;"></span>
+                </div>
+                <div id="suggest-steam-fetch-status" class="fetch-status hidden"></div>
+                <div id="suggest-steam-preview" class="steam-preview hidden">
+                    <img id="suggest-steam-image" src="" alt="Steam Bild">
+                    <div class="preview-info">
+                        <h3 id="suggest-steam-name"></h3>
+                        <p id="suggest-steam-genres"></p>
                     </div>
-                    <button id="submit-suggestion">Vorschlag einreichen</button>
+                </div>
+                <button id="submit-suggestion" class="save-btn">
+                    <i class="fas fa-paper-plane"></i>
+                    Vorschlag einreichen
+                </button>
                 </div>
             </div>
 
-            <div class="footer-container">
+        <!-- Footer -->
+        <footer class="footer-container">
                 <div class="made-by-container">
                     <div class="made-by">
                         Made With <span class="heart">❤</span> from Away
                     </div>
                     <div class="footer-social">
-                        <a href="#" class="footer-social-btn" id="footer-instagram" title="Instagram" target="_blank">
+                    <a href="#" class="footer-social-btn" id="footer-instagram" title="Instagram" target="_blank" rel="noopener">
                             <i class="fab fa-instagram"></i>
                         </a>
-                        <a href="#" class="footer-social-btn" id="footer-tiktok" title="TikTok" target="_blank">
+                    <a href="#" class="footer-social-btn" id="footer-tiktok" title="TikTok" target="_blank" rel="noopener">
                             <i class="fab fa-tiktok"></i>
                         </a>
-                        <a href="#" class="footer-social-btn" id="footer-twitter" title="X (Twitter)" target="_blank">
+                    <a href="#" class="footer-social-btn" id="footer-twitter" title="X (Twitter)" target="_blank" rel="noopener">
                             <i class="fa-solid fa-x"></i>
                         </a>
                     </div>
 
+            </div>
+            <div class="copyright">
+                Copyright © 2025 Marvin Weiss. Alle Rechte vorbehalten.
+            </div>
+        </footer>
+    </div>
+    
+    <!-- Corner Image - Outside Footer -->
                     <div class="corner-image">
                         <img src="https://i.imgur.com/PQrHi8j.png" alt="Corner Image">
                     </div>
+    
+    <!-- Randomizer Modal -->
+    <div id="randomizer-modal" class="modal hidden">
+        <div class="modal-content randomizer-content">
+            <h2><i class="fas fa-dice"></i> Dein zufälliges Spiel ist...</h2>
+            <div class="game-showcase">
+                <div class="preview-container">
+                    <!-- Wird dynamisch mit JavaScript gefüllt -->
                 </div>
-                <div class="copyright">
-                    Copyright © 2025 Marvin Weiss. Alle Rechte vorbehalten.
+                <div class="game-card">
+                    <img src="" alt="">
+                    <h3></h3>
                 </div>
+            </div>
+            <div class="button-container">
+                <button class="play-button" id="play-random-game">
+                    <i class="fas fa-play"></i>
+                    Spielen
+                </button>
+                <button class="close-button" id="close-random-game">
+                    <i class="fas fa-times"></i>
+                    Schließen
+                </button>
             </div>
         </div>
     </div>
     
+    <!-- Loading Indicator -->
+    <div id="loading-indicator" class="loading-indicator hidden">
+        <div class="loading-spinner"></div>
+        <p>Lade Spiele...</p>
+    </div>
+
+    <!-- Notification System -->
+    <div id="notification-container" class="notification-container"></div>
+    
 <script>
+        // Discord OAuth Configuration
+        const DISCORD_CLIENT_ID = '1399190229214302208';
+        const DISCORD_REDIRECT_URI = 'https://emir-games.vercel.app/auth/callback';
+        const ADMIN_DISCORD_ID = '933524419882676254';
+        
+        // Firebase Configuration
     const encryptedConfig = "U2FsdGVkX1/2h2jz/okQRoolhPVQPafedlkbIfYoDr/bEIj6Qe4Gz4D+GJsaaQ5i7XVMwWJ+cqe94PGWRSvfQKwZHwpHdIr9YhzTEVGwzq0yCkU/7ZsA1fNW0THeJjRP5W+tborqv2W5F8pHhVoVtYy104eDojx6YeaaKd4zyAr36a1eAY82nlgIUMhzbl8s7LEWqoqk/w+4brkq8Gt7zZ2zkCij2mwXb8LEyZJBFSa0j62QdI8cKkSwBRw3MxO56KTu4tLFcbv7hhehDtKwM0PNJMkuDp+xldtmmvIOS56fR64kvsLXlkN/DSV+3MHLWFCHv/ry06NtgMy6aEz3mfFQUqP0uaTR+ohi3niWSNYJ+wMNgQsV6xiXj+VmKleN";
     
     function initFirebase() {
@@ -201,437 +389,234 @@
 
     initFirebase();
 
-    // Social Media Form öffnen
-    document.getElementById('edit-social-btn').addEventListener('click', function() {
-        document.getElementById('social-form').style.display = 'block';
-        loadSocialLinks();
-    });
-
-    // Modal schließen
-    document.querySelectorAll('.close-modal').forEach(button => {
-        button.addEventListener('click', function() {
-            this.closest('.modal').style.display = 'none';
-        });
-    });
-
-    // Links speichern
-    document.getElementById('save-social').addEventListener('click', async function() {
-        try {
-            const doc = await db.collection("settings").doc("social").get();
-            const existingData = doc.exists ? doc.data() : {};
-
-            const data = {
-                ...existingData,
-                tiktok: document.getElementById("tiktok-link").value || existingData.tiktok || "#",
-                discord: document.getElementById("discord-link").value || existingData.discord || "#",
-                instagram: document.getElementById("instagram-link").value || existingData.instagram || "#",
-                kick: document.getElementById("kick-link").value || existingData.kick || "#",
-                footerInstagram: document.getElementById("footer-instagram-link").value || "#",
-                footerTiktok: document.getElementById("footer-tiktok-link").value || "#",
-                footerTwitter: document.getElementById("footer-twitter-link").value || "#",
-                logo: document.getElementById("logo-link").value || existingData.logo || "#",
-                headerLogo: document.getElementById("header-logo-link").value || existingData.headerLogo || "#",
-                adminLogo: document.getElementById("admin-logo-link").value || existingData.adminLogo || "#"
-            };
-
-            await db.collection("settings").doc("social").set(data);
+        // Discord OAuth Functions
+        function initDiscordAuth() {
+            const loginBtn = document.getElementById('admin-login-btn');
+            const logoutBtn = document.getElementById('logout-btn');
             
-            // Aktualisiere die Links und Logos
-            if (data.headerLogo !== "#") {
-                document.getElementById("header-logo").src = data.headerLogo;
+            // Check if user is already logged in
+            const session = getDiscordSession();
+            if (session && session.access_token) {
+                updateUIForLoggedInUser(session);
+            } else {
+                updateUIForLoggedOutUser();
             }
-            if (data.logo !== "#") {
-                document.getElementById("favicon").href = data.logo;
-            }
-            if (data.adminLogo !== "#") {
-                document.getElementById("admin-logo").src = data.adminLogo;
-            }
-
-            document.getElementById('social-form').style.display = 'none';
-            alert("Links wurden erfolgreich gespeichert!");
             
-        } catch (error) {
-            console.error("Fehler beim Speichern:", error);
-            alert("Fehler beim Speichern!");
-        }
-    });
-
-    // Links laden
-    async function loadSocialLinks() {
-        try {
-            const doc = await db.collection("settings").doc("social").get();
-            if (doc.exists) {
-                const data = doc.data();
-                
-                // Header Links
-                document.getElementById("tiktok-btn").href = data.tiktok || "#";
-                document.getElementById("discord-btn").href = data.discord || "#";
-                document.getElementById("instagram-btn").href = data.instagram || "#";
-                document.getElementById("kick-btn").href = data.kick || "#";
-                
-                // Footer Links
-                document.getElementById("footer-instagram").href = data.footerInstagram || "#";
-                document.getElementById("footer-tiktok").href = data.footerTiktok || "#";
-                document.getElementById("footer-twitter").href = data.footerTwitter || "#";
-                
-                // Form Felder
-                document.getElementById("tiktok-link").value = data.tiktok || "";
-                document.getElementById("discord-link").value = data.discord || "";
-                document.getElementById("instagram-link").value = data.instagram || "";
-                document.getElementById("kick-link").value = data.kick || "";
-                document.getElementById("footer-instagram-link").value = data.footerInstagram || "";
-                document.getElementById("footer-tiktok-link").value = data.footerTiktok || "";
-                document.getElementById("footer-twitter-link").value = data.footerTwitter || "";
-                document.getElementById("header-logo-link").value = data.headerLogo || "";
-                document.getElementById("logo-link").value = data.logo || "";
-                document.getElementById("admin-logo-link").value = data.adminLogo || "";
-                
-                if (data.headerLogo && data.headerLogo !== "#") {
-                    document.getElementById("header-logo").src = data.headerLogo;
+            // Login button click
+            loginBtn.addEventListener('click', () => {
+                if (getDiscordSession()) {
+                    // Already logged in, show admin panel
+                    document.getElementById('admin-panel').classList.remove('hidden');
+                } else {
+                    // Start Discord OAuth flow
+                    startDiscordOAuth();
                 }
-                if (data.logo && data.logo !== "#") {
-                    document.getElementById("favicon").href = data.logo;
-                }
-                if (data.adminLogo && data.adminLogo !== "#") {
-                    document.getElementById("admin-logo").src = data.adminLogo;
-                }
+            });
+            
+            // Logout button click
+            if (logoutBtn) {
+                logoutBtn.addEventListener('click', () => {
+                    logoutDiscord();
+                });
             }
-        } catch (error) {
-            console.error("Fehler beim Laden:", error);
         }
-    }
-
-    // Ersetzen Sie den Event Listener für den Admin Login Button mit dieser Version
-    document.getElementById('admin-login-btn').addEventListener('click', function() {
-        const loginModal = document.getElementById('login-modal');
-        loginModal.style.display = 'block';
-
-        // Verhindere das Schließen beim Klicken außerhalb des Modals
-        loginModal.addEventListener('click', function(e) {
-            if (e.target === loginModal) {
-                e.stopPropagation();
-            }
-        });
-    });
-
-    // Aktualisieren Sie den Event Listener für den Cancel Button
-    document.getElementById('login-cancel').addEventListener('click', function() {
-        document.getElementById('login-modal').style.display = 'none';
-        document.getElementById('admin-panel').classList.add('hidden');
-        document.getElementById('admin-password').value = '';
-    });
-
-    // Aktualisieren Sie den Event Listener für den Login Submit Button
-    document.getElementById('login-submit').addEventListener('click', async function() {
-        // ... bestehender Login-Code ...
-        document.getElementById('login-modal').style.display = 'none';
-    });
-
-    // Links beim Laden der Seite laden
-    window.addEventListener('load', loadSocialLinks);
-
-    // Ersetzen Sie den Event Listener für den Spiel vorschlagen Button mit dieser Version
-    document.getElementById('suggest-game-btn').addEventListener('click', () => {
-        const suggestForm = document.getElementById('suggest-form');
-        suggestForm.classList.remove('hidden');
-        suggestForm.style.display = 'block';
         
-        // Formular zurücksetzen
-        document.getElementById('suggest-steam-link').value = '';
-        document.getElementById('suggest-steam-fetch-status').style.display = 'none';
-        document.getElementById('suggest-steam-preview').style.display = 'none';
-        
-        // Genre-Event-Listener neu hinzufügen
-        document.querySelectorAll('#suggest-form .genre-option').forEach(option => {
-            option.classList.remove('selected');
-            // Entferne alte Event Listener
-            option.replaceWith(option.cloneNode(true));
-        });
-
-        // Füge neue Event Listener hinzu
-        document.querySelectorAll('#suggest-form .genre-option').forEach(option => {
-            option.addEventListener('click', function() {
-                this.classList.toggle('selected');
+        function startDiscordOAuth() {
+            const params = new URLSearchParams({
+                client_id: DISCORD_CLIENT_ID,
+                redirect_uri: DISCORD_REDIRECT_URI,
+                response_type: 'code',
+                scope: 'identify'
             });
-        });
-    });
-
-    // Fügen Sie diesen Event Listener für das Einreichen eines Vorschlags hinzu
-    document.getElementById('submit-suggestion').addEventListener('click', async () => {
-        try {
-            const steamLink = document.getElementById('suggest-steam-link').value.trim();
-            const selectedGenres = Array.from(document.querySelectorAll('#suggest-form .genre-option.selected'))
-                .map(el => el.getAttribute('data-genre'));
-
-            if (!steamLink || selectedGenres.length === 0) {
-                alert('Bitte einen Steam-Link eingeben und mindestens ein Genre auswählen!');
-                return;
-            }
-
-            // Vorschlag zur games Collection hinzufügen
-            await db.collection('games').add({
-                steamLink: steamLink,
-                genres: selectedGenres,
-                isPending: true,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            });
-
-            // Formular zurücksetzen
-            document.getElementById('suggest-steam-link').value = '';
-            document.querySelectorAll('#suggest-form .genre-option').forEach(option => {
-                option.classList.remove('selected');
-            });
-
-            // Modal schließen
-            document.getElementById('suggest-form').style.display = 'none';
             
-            // Erfolgsmeldung anzeigen
-            alert('Vielen Dank für deinen Vorschlag!');
-            
-            // Vorschlagszähler aktualisieren
-            await updateSuggestionCount();
-            
-        } catch (error) {
-            console.error('Error adding suggestion:', error);
-            alert('Fehler beim Speichern des Vorschlags. Bitte versuche es später erneut.');
+            window.location.href = `https://discord.com/api/oauth2/authorize?${params}`;
         }
-    });
-
-    // Ersetzen Sie den Event Listener für view-suggestions-btn mit dieser Version
-    document.getElementById('view-suggestions-btn').addEventListener('click', async () => {
-        try {
-            const snapshot = await db.collection('games').where('isPending', '==', true).get();
+        
+        function handleDiscordCallback() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const code = urlParams.get('code');
             
-            if (snapshot.empty) {
-                alert('Keine Vorschläge vorhanden');
-                return;
+            if (code) {
+                // Exchange code for token
+                exchangeCodeForToken(code);
             }
-
-            let suggestionsHtml = '<div class="suggestions-list">';
-            
-            snapshot.forEach(doc => {
-                const suggestion = doc.data();
-                const genresHtml = suggestion.genres && suggestion.genres.length > 0 
-                    ? suggestion.genres.map(genre => 
-                        `<span class="genre-tag" data-genre="${genre}">${genre}</span>`
-                    ).join('') 
-                    : '';
-
-                suggestionsHtml += `
-                    <div class="suggestion-item">
-                        <img src="${suggestion.image}" alt="${suggestion.name}">
-                        <div class="suggestion-details">
-                            <h3>${suggestion.name}</h3>
-                            <div class="suggestion-genres">
-                                ${genresHtml}
-                            </div>
-                        </div>
-                        <div class="suggestion-actions">
-                            <button onclick="acceptSuggestion('${doc.id}')">Akzeptieren</button>
-                            <button onclick="deleteSuggestion('${doc.id}')">Ablehnen</button>
-                        </div>
-                    </div>
-                `;
-            });
-            
-            suggestionsHtml += '</div>';
-
-            // Entferne vorhandenes Modal falls vorhanden
-            const existingModal = document.querySelector('.modal');
-            if (existingModal) {
-                existingModal.remove();
+        }
+        
+        async function exchangeCodeForToken(code) {
+            try {
+                // In a real app, you'd exchange the code server-side
+                // For now, we'll simulate the process
+                const response = await fetch('/api/discord/callback', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ code })
+                });
+                
+                if (response.ok) {
+                    const session = await response.json();
+                    saveDiscordSession(session);
+                    updateUIForLoggedInUser(session);
+                    window.history.replaceState({}, document.title, window.location.pathname);
+                }
+            } catch (error) {
+                console.error('Discord OAuth error:', error);
+                showNotification('Fehler bei der Discord-Anmeldung', 'error');
             }
+        }
+        
+        function saveDiscordSession(session) {
+            localStorage.setItem('discord_session', JSON.stringify(session));
+        }
+        
+        function getDiscordSession() {
+            const session = localStorage.getItem('discord_session');
+            return session ? JSON.parse(session) : null;
+        }
+        
+        function updateUIForLoggedInUser(session) {
+            const loginBtn = document.getElementById('admin-login-btn');
+            const loginText = document.getElementById('login-text');
+            const adminPanel = document.getElementById('admin-panel');
+            const adminAvatar = document.getElementById('admin-avatar');
+            const adminUsername = document.getElementById('admin-username');
+            
+            loginBtn.classList.add('logged-in');
+            loginText.textContent = 'Admin';
+            adminPanel.classList.remove('hidden');
+            
+            if (adminAvatar && session.avatar) {
+                adminAvatar.src = `https://cdn.discordapp.com/avatars/${session.id}/${session.avatar}.png`;
+            }
+            
+            if (adminUsername) {
+                adminUsername.textContent = session.username;
+            }
+        }
+        
+        function updateUIForLoggedOutUser() {
+            const loginBtn = document.getElementById('admin-login-btn');
+            const loginText = document.getElementById('login-text');
+            const adminPanel = document.getElementById('admin-panel');
+            
+            loginBtn.classList.remove('logged-in');
+            loginText.textContent = 'Admin Login';
+            adminPanel.classList.add('hidden');
+        }
+        
+        function logoutDiscord() {
+            localStorage.removeItem('discord_session');
+            updateUIForLoggedOutUser();
+            showNotification('Erfolgreich abgemeldet! 👋', 'success');
+        }
 
-            const modal = document.createElement('div');
-            modal.className = 'modal';
-            modal.style.display = 'block';
-            modal.innerHTML = `
-                <div class="modal-content suggest-content">
-                    <span class="close-modal">&times;</span>
-                    <h2>Spielvorschläge</h2>
-                    ${suggestionsHtml}
-                </div>
+        // Notification System
+        function showNotification(message, type = 'info') {
+            const container = document.getElementById('notification-container');
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+                <span>${message}</span>
+                <button class="notification-close">&times;</button>
             `;
             
-            document.body.appendChild(modal);
+            container.appendChild(notification);
             
-            modal.querySelector('.close-modal').onclick = () => {
-                modal.remove();
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                notification.classList.add('fade-out');
+                setTimeout(() => notification.remove(), 300);
+            }, 5000);
+            
+            // Manual close
+            notification.querySelector('.notification-close').onclick = () => {
+                notification.classList.add('fade-out');
+                setTimeout(() => notification.remove(), 300);
             };
-        } catch (error) {
-            console.error('Error loading suggestions:', error);
-            alert('Fehler beim Laden der Vorschläge');
         }
-    });
 
-    // Ersetzen Sie die acceptSuggestion Funktion mit dieser Version
-    async function acceptSuggestion(id) {
-        try {
-            // Hole den Vorschlag aus der Datenbank
-            const suggestionDoc = await db.collection('games').doc(id).get();
-            const suggestionData = suggestionDoc.data();
+        // Loading Indicator
+        function showLoading() {
+            document.getElementById('loading-indicator').classList.remove('hidden');
+        }
 
-            // Erstelle ein neues Spiel-Dokument ohne isPending
-            const { isPending, ...gameData } = suggestionData;
+        function hideLoading() {
+            document.getElementById('loading-indicator').classList.add('hidden');
+        }
+
+        // Enhanced Modal Management
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.remove('hidden');
+            modal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
             
-            // Füge das Spiel als neues Dokument hinzu
-            await db.collection('games').add({
-                ...gameData,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
+            // Focus first input if exists
+            const firstInput = modal.querySelector('input');
+            if (firstInput) firstInput.focus();
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            modal.classList.add('hidden');
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        // Close modals when clicking outside
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('modal')) {
+                e.target.classList.add('hidden');
+                e.target.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        });
+
+        // Close modals with escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                const openModals = document.querySelectorAll('.modal:not(.hidden)');
+                openModals.forEach(modal => {
+                    modal.classList.add('hidden');
+                    modal.style.display = 'none';
+                });
+                document.body.style.overflow = 'auto';
+            }
+        });
+
+        // Initialize tooltips
+        function initTooltips() {
+            const elements = document.querySelectorAll('[title]');
+            elements.forEach(element => {
+                element.addEventListener('mouseenter', (e) => {
+                    const tooltip = document.createElement('div');
+                    tooltip.className = 'tooltip';
+                    tooltip.textContent = e.target.title;
+                    document.body.appendChild(tooltip);
+                    
+                    const rect = e.target.getBoundingClientRect();
+                    tooltip.style.left = rect.left + (rect.width / 2) - (tooltip.offsetWidth / 2) + 'px';
+                    tooltip.style.top = rect.top - tooltip.offsetHeight - 10 + 'px';
+                });
+                
+                element.addEventListener('mouseleave', () => {
+                    const tooltip = document.querySelector('.tooltip');
+                    if (tooltip) tooltip.remove();
+                });
             });
-
-            // Lösche den alten Vorschlag
-            await db.collection('games').doc(id).delete();
-
-            // Aktualisiere den Vorschlagszähler
-            await updateSuggestionCount();
-            
-            // Schließe das Modal
-            const modal = document.querySelector('.modal');
-            if (modal) {
-                modal.remove();
-            }
-
-            // Zeige Erfolgsmeldung
-            alert('Vorschlag wurde akzeptiert!');
-            
-            // Lade die Spiele neu
-            location.reload();
-            
-        } catch (error) {
-            console.error('Error accepting suggestion:', error);
         }
-    }
 
-    // Funktion zum Löschen eines Vorschlags
-    async function deleteSuggestion(id) {
-        if (confirm('Möchten Sie diesen Vorschlag wirklich ablehnen?')) {
-            try {
-                await db.collection('games').doc(id).delete();
-                
-                // Modal schließen und neu laden
-                const modal = document.querySelector('.modal');
-                if (modal) {
-                    modal.remove();
-                }
-                
-                // Vorschlagszähler aktualisieren
-                await updateSuggestionCount();
-                
-                alert('Vorschlag wurde abgelehnt');
-                
-            } catch (error) {
-                console.error('Error deleting suggestion:', error);
-                alert('Fehler beim Ablehnen des Vorschlags');
-            }
-        }
-    }
-
-    // Funktion zum Aktualisieren des Zählers
-    async function updateSuggestionCount() {
-        try {
-            const snapshot = await db.collection('games').where('isPending', '==', true).get();
-            const count = snapshot.size;
-            const badge = document.getElementById('suggestion-count');
-            
-            if (count > 0) {
-                badge.textContent = count;
-                badge.classList.remove('hidden');
-            } else {
-                badge.classList.add('hidden');
-            }
-        } catch (error) {
-            console.error('Error updating suggestion count:', error);
-        }
-    }
-
-    // Initialisiere den Zähler beim Laden der Seite
-    updateSuggestionCount();
-
-    // Randomizer Funktionalität
-    document.getElementById('game-randomizer').addEventListener('click', async () => {
-        try {
-            const snapshot = await db.collection('games').get();
-            
-            const games = [];
-            snapshot.forEach(doc => {
-                const game = doc.data();
-                if (!game.isPending) {
-                    games.push(game);
-                }
-            });
-
-            if (games.length === 0) {
-                alert('Keine Spiele verfügbar!');
-                return;
-            }
-
-            const overlay = document.querySelector('.modal-overlay');
-            const modal = document.querySelector('.randomizer-modal');
-            overlay.style.display = 'block';
-            modal.style.display = 'block';
-
-            // Animation der Spielauswahl
-            let cycles = 0;
-            const maxCycles = 20;
-            const interval = setInterval(() => {
-                const randomIndex = Math.floor(Math.random() * games.length);
-                const game = games[randomIndex];
-                
-                document.getElementById('randomizer-content').innerHTML = `
-                    <img src="${game.image}" alt="${game.name}">
-                    <h3>${game.name}</h3>
-                    <button class="play-button" onclick="window.open('${game.link}', '_blank')">
-                        Spielen
-                    </button>
-                    <button class="play-button" onclick="closeRandomizer()" style="background: #666; margin-left: 10px;">
-                        Schließen
-                    </button>
-                `;
-
-                cycles++;
-                if (cycles >= maxCycles) {
-                    clearInterval(interval);
-                }
-            }, 100);
-
-        } catch (error) {
-            console.error('Error in randomizer:', error);
-            alert('Fehler beim Laden der Spiele');
-        }
-    });
-
-    // Füge diese neue Funktion hinzu
-    function closeRandomizer() {
-        document.querySelector('.modal-overlay').style.display = 'none';
-        document.querySelector('.randomizer-modal').style.display = 'none';
-    }
-
-    // Aktualisiere den Event Listener für das Overlay
-    document.querySelector('.modal-overlay').addEventListener('click', closeRandomizer);
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            initTooltips();
+            initDiscordAuth();
+            handleDiscordCallback();
+            showNotification('Willkommen bei HigherCellF Games! 🎮', 'success');
+        });
 </script>
     
 <script src="script.js"></script>
-<div class="modal-overlay"></div>
-<div class="randomizer-modal">
-    <h2>Dein zufälliges Spiel ist...</h2>
-    <div class="game-showcase">
-        <div class="preview-container">
-            <!-- Wird dynamisch mit JavaScript gefüllt -->
-        </div>
-        <div class="game-card">
-            <div class="game-card-inner">
-                <img src="" alt="">
-                <div class="game-card-content">
-                    <h3></h3>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="button-container">
-        <button class="play-button" id="play-random-game">Spielen</button>
-        <button class="play-button" id="close-random-game" style="background: #666;">Schließen</button>
-    </div>
-</div>
 </body>
 </html>

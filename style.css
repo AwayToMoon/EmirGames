@@ -315,8 +315,8 @@ body::before {
 #admin-panel button {
     background: linear-gradient(45deg, #667eea, #764ba2);
     border: none;
-    padding: 8px 20px;
-    border-radius: 25px;
+    padding: 6px 12px;
+    border-radius: 20px;
     color: white;
     font-weight: 600;
     cursor: pointer;
@@ -324,13 +324,13 @@ body::before {
     box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
     position: relative;
     overflow: hidden;
-    font-size: 0.9rem;
-    margin: 5px;
-    min-width: 140px;
+    font-size: 0.8rem;
+    margin: 3px;
+    min-width: 120px;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 8px;
+    gap: 6px;
     border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
@@ -1859,7 +1859,7 @@ body::before {
     background: linear-gradient(45deg, #ff6b6b, #ee5a24);
     border: none;
     padding: 6px 12px;
-    border-radius: 15px;
+    border-radius: 20px;
     color: white;
     font-weight: 600;
     cursor: pointer;
@@ -1867,8 +1867,9 @@ body::before {
     font-size: 0.8rem;
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 6px;
     box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .logout-btn:hover {

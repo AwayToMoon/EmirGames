@@ -315,7 +315,7 @@ body::before {
 #admin-panel button {
     background: linear-gradient(45deg, #667eea, #764ba2);
     border: none;
-    padding: 10px 16px;
+    padding: 6px 16px;
     border-radius: 20px;
     color: white;
     font-weight: 600;

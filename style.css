@@ -315,8 +315,8 @@ body::before {
 #admin-panel button {
     background: linear-gradient(45deg, #667eea, #764ba2);
     border: none;
-    padding: 8px 12px;
-    border-radius: 15px;
+    padding: 10px 16px;
+    border-radius: 20px;
     color: white;
     font-weight: 600;
     cursor: pointer;
@@ -324,9 +324,13 @@ body::before {
     box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
     position: relative;
     overflow: hidden;
-    font-size: 0.8rem;
-    margin: 3px;
-    min-width: 120px;
+    font-size: 0.9rem;
+    margin: 5px;
+    min-width: 140px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
 }
 
 #admin-panel button::before {
@@ -336,8 +340,8 @@ body::before {
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-    transition: left 0.5s ease;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.6s ease;
 }
 
 #admin-panel button:hover::before {
@@ -345,8 +349,9 @@ body::before {
 }
 
 #admin-panel button:hover {
-    transform: translateY(-2px);
+    transform: translateY(-3px) scale(1.02);
     box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+    background: linear-gradient(45deg, #5a6fd8, #6a4190);
 }
 
 /* Action Buttons */

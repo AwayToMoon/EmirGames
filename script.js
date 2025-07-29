@@ -148,25 +148,37 @@ class GamingPlatform {
     }
 
     updateUIForLoggedInUser(session) {
+        const ADMIN_DISCORD_ID = '933524419882676254'; // Deine Discord-ID
         const loginBtn = document.getElementById('admin-login-btn');
         const loginText = document.getElementById('login-text');
         const adminPanel = document.getElementById('admin-panel');
         const adminAvatar = document.getElementById('admin-avatar');
         const adminUsername = document.getElementById('admin-username');
-        
+
+        if (session.id !== ADMIN_DISCORD_ID) {
+            // Kein Admin! Panel verstecken und Hinweis anzeigen
+            loginBtn.classList.remove('logged-in');
+            loginText.textContent = 'Kein Admin';
+            adminPanel.classList.add('hidden');
+            if (adminAvatar) adminAvatar.src = 'https://cdn.discordapp.com/embed/avatars/1.png';
+            if (adminUsername) adminUsername.textContent = session.username || 'User';
+            this.showNotification('Du bist nicht als Admin berechtigt!', 'error');
+            return;
+        }
+
         loginBtn.classList.add('logged-in');
         loginText.textContent = 'Admin';
         adminPanel.classList.remove('hidden');
-        
+
         if (adminAvatar) {
             if (session.avatar && session.avatar !== 'default') {
                 adminAvatar.src = `https://cdn.discordapp.com/avatars/${session.id}/${session.avatar}.png`;
             } else {
-                // Fallback to default Discord avatar
+                // Fallback zu Default-Avatar
                 adminAvatar.src = `https://cdn.discordapp.com/embed/avatars/${session.id % 5}.png`;
             }
         }
-        
+
         if (adminUsername) {
             adminUsername.textContent = session.username || 'Admin';
         }

@@ -315,8 +315,8 @@ body::before {
 #admin-panel button {
     background: linear-gradient(45deg, #667eea, #764ba2);
     border: none;
-    padding: 6px 12px;
-    border-radius: 20px;
+    padding: 12px 20px;
+    border-radius: 25px;
     color: white;
     font-weight: 600;
     cursor: pointer;
@@ -324,14 +324,6 @@ body::before {
     box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
     position: relative;
     overflow: hidden;
-    font-size: 0.8rem;
-    margin: 3px;
-    min-width: 120px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 6px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 #admin-panel button::before {
@@ -341,8 +333,8 @@ body::before {
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-    transition: left 0.6s ease;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s ease;
 }
 
 #admin-panel button:hover::before {
@@ -351,9 +343,7 @@ body::before {
 
 #admin-panel button:hover {
     transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-    background: linear-gradient(45deg, #5a6fd8, #6a4190);
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
 }
 
 /* Action Buttons */
@@ -944,7 +934,7 @@ body::before {
     transition: all 0.3s ease;
     margin: 15px;
     display: inline-flex;
-    align-items: center;
+        align-items: center;
     gap: 10px;
     box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
     position: relative;
@@ -1006,10 +996,10 @@ body::before {
     position: absolute;
     top: 0;
     left: 0;
-    width: 100%;
+        width: 100%;
     height: 100%;
     display: flex;
-    justify-content: center;
+        justify-content: center;
     align-items: center;
     opacity: 0;
     transition: opacity 0.5s ease;
@@ -1033,7 +1023,7 @@ body::before {
 }
 
 .preview-image img {
-    width: 100%;
+        width: 100%;
     height: 100%;
     object-fit: cover;
 }
@@ -1066,9 +1056,9 @@ body::before {
     width: 100%;
     height: 100%;
     display: flex;
-    flex-direction: column;
+        flex-direction: column;
     justify-content: center;
-    align-items: center;
+        align-items: center;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
 }
 
@@ -1106,7 +1096,7 @@ body::before {
     font-weight: 800;
     margin-bottom: 25px;
     color: white;
-    text-align: center;
+        text-align: center;
     background: linear-gradient(45deg, #ffffff, #feca57);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -1115,9 +1105,9 @@ body::before {
 }
 
 .button-container {
-    display: flex;
+        display: flex;
     gap: 15px;
-        justify-content: center;
+    justify-content: center;
     margin-top: 30px;
     position: relative;
     z-index: 10;
@@ -1193,7 +1183,7 @@ body::before {
     border: 1px solid rgba(255, 255, 255, 0.2);
     color: #ffffff;
     display: flex;
-        align-items: center;
+    align-items: center;
     justify-content: center;
     text-decoration: none;
     font-size: 1.2rem;
@@ -1205,9 +1195,9 @@ body::before {
     transform: translateY(-3px) scale(1.1);
     box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
     border-color: rgba(255, 255, 255, 0.4);
-    }
+}
 
-    .corner-image {
+.corner-image {
     position: fixed;
     bottom: 0;
     right: 20px;
@@ -1245,7 +1235,7 @@ body::before {
     width: 20px;
     height: 20px;
     display: inline-flex;
-        align-items: center;
+    align-items: center;
     justify-content: center;
     font-size: 0.8rem;
     font-weight: 700;
@@ -1300,7 +1290,7 @@ body::before {
     
     .action-buttons {
         flex-direction: column;
-        align-items: center;
+    align-items: center;
     }
     
     #game-list {
@@ -1310,9 +1300,9 @@ body::before {
     
     .game-tabs-container {
         flex-direction: column;
-    align-items: center;
-}
-
+        align-items: center;
+    }
+    
     .modal-content {
         padding: 25px;
         margin: 20px;
@@ -1325,7 +1315,7 @@ body::before {
     }
     
     .corner-image {
-        position: fixed;
+    position: fixed;
         bottom: 0;
         right: 15px;
         width: 100px;
@@ -1502,22 +1492,22 @@ body::before {
 @keyframes notificationSlideIn {
     from {
         transform: translateX(100%);
-    opacity: 0;
-}
+        opacity: 0;
+    }
     to {
         transform: translateX(0);
-    opacity: 1;
+        opacity: 1;
     }
 }
 
 @keyframes notificationSlideOut {
     from {
         transform: translateX(0);
-    opacity: 1;
-}
+        opacity: 1;
+    }
     to {
         transform: translateX(100%);
-    opacity: 0;
+        opacity: 0;
     }
 }
 
@@ -1643,7 +1633,7 @@ body::before {
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
-    gap: 8px;
+        gap: 8px;
     box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
 }
 
@@ -1738,7 +1728,7 @@ body::before {
     position: absolute;
     background: rgba(0, 0, 0, 0.9);
     color: #ffffff;
-        padding: 8px 12px;
+    padding: 8px 12px;
     border-radius: 6px;
     font-size: 12px;
     font-weight: 500;
@@ -1794,109 +1784,5 @@ body::before {
         flex-shrink: 0;
         min-width: 80px;
         min-height: 60px;
-    }
-}
-
-/* Discord OAuth Styles */
-.discord-login-btn {
-    background: linear-gradient(45deg, #5865f2, #7289da) !important;
-    border: none !important;
-    color: white !important;
-    transition: all 0.3s ease !important;
-}
-
-.discord-login-btn:hover {
-    background: linear-gradient(45deg, #4752c4, #5865f2) !important;
-    transform: translateY(-2px) !important;
-    box-shadow: 0 8px 25px rgba(88, 101, 242, 0.4) !important;
-}
-
-.discord-login-btn.logged-in {
-    background: linear-gradient(45deg, #4ade80, #22c55e) !important;
-}
-
-.discord-login-btn.logged-in:hover {
-    background: linear-gradient(45deg, #22c55e, #16a34a) !important;
-}
-
-/* Admin User Info Styles */
-.admin-user-info {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    padding: 12px;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 12px;
-    margin-bottom: 15px;
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.admin-avatar {
-    width: 35px;
-    height: 35px;
-    border-radius: 50%;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    object-fit: cover;
-}
-
-.admin-user-details {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    flex: 1;
-}
-
-.admin-username {
-    color: #ffffff;
-    font-size: 1rem;
-    font-weight: 600;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
-}
-
-.logout-btn {
-    background: linear-gradient(45deg, #ff6b6b, #ee5a24);
-    border: none;
-    padding: 6px 12px;
-    border-radius: 20px;
-    color: white;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    font-size: 0.8rem;
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    box-shadow: 0 4px 15px rgba(255, 107, 107, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.logout-btn:hover {
-    background: linear-gradient(45deg, #ee5a24, #d63031);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 20px rgba(255, 107, 107, 0.4);
-}
-
-/* Responsive Admin User Info */
-@media (max-width: 768px) {
-    .admin-user-info {
-        flex-direction: column;
-        text-align: center;
-        padding: 15px;
-    }
-    
-    .admin-avatar {
-        width: 60px;
-        height: 60px;
-    }
-    
-    .admin-username {
-        font-size: 1.2rem;
-    }
-    
-    .logout-btn {
-        padding: 10px 20px;
-        font-size: 1rem;
     }
 }

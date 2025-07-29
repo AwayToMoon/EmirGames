@@ -59,11 +59,14 @@
 
                 <div class="admin-section">
                     <img id="admin-logo" src="#" alt="Admin Logo" class="admin-logo">
-                <button id="admin-login-btn" class="admin-login-btn discord-login-btn">
-                    <i class="fab fa-discord"></i>
-                    <span id="login-text">Admin Login</span>
-                </button>
-            </div>
+                    <button id="open-admin-modal" style="padding: 6px 12px; border-radius: 8px; background: linear-gradient(45deg, #667eea, #764ba2); color: white; border: none; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                        <i class="fas fa-lock"></i> Admin-Bereich öffnen
+                    </button>
+                    <button id="admin-login-btn" class="admin-login-btn discord-login-btn" style="display:none;">
+                        <i class="fab fa-discord"></i>
+                        <span id="login-text">Admin Login</span>
+                    </button>
+                </div>
         </header>
             
             <div class="header-divider"></div>
@@ -618,5 +621,14 @@
 </script>
     
 <script src="script.js"></script>
+<!-- Admin Passwort Modal: GANZ ANS ENDE DES BODY -->
+<div id="admin-password-modal" class="modal hidden" style="display:none; align-items: center; justify-content: center;">
+    <div class="modal-content" style="min-width: 300px; padding: 24px; border-radius: 16px; background: rgba(30,30,60,0.98); box-shadow: 0 8px 32px rgba(0,0,0,0.3); display: flex; flex-direction: column; align-items: center;">
+        <span class="close-modal" id="close-admin-modal" style="align-self: flex-end; cursor: pointer; font-size: 1.5rem;">&times;</span>
+        <h2 style="margin-bottom: 16px;"><i class="fas fa-lock"></i> Admin Passwort</h2>
+        <input type="password" id="admin-password" placeholder="Admin Passwort" style="padding: 8px 12px; border-radius: 8px; border: 1px solid #ccc; margin-bottom: 16px; width: 100%;">
+        <button id="check-admin-password" style="padding: 8px 16px; border-radius: 8px; background: linear-gradient(45deg, #667eea, #764ba2); color: white; border: none; font-weight: 600; cursor: pointer; width: 100%;">Bestätigen</button>
+    </div>
+</div>
 </body>
 </html>

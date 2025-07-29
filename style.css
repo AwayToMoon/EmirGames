@@ -5,17 +5,17 @@
     box-sizing: border-box;
 }
 
+/* --- DARK PURPLE THEME --- */
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-    background: linear-gradient(135deg, #0f0f23 0%, #1a1a2e 25%, #16213e 50%, #0f3460 75%, #533483 100%);
+    background: linear-gradient(135deg, #1a102e 0%, #2d1850 25%, #2a1a40 50%, #3a2060 75%, #5a2d83 100%);
     background-attachment: fixed;
-    color: #ffffff;
+    color: #f3eaff;
     overflow-x: hidden;
     min-height: 100vh;
     position: relative;
 }
 
-/* Animated Background Particles */
 body::before {
     content: '';
     position: fixed;
@@ -24,9 +24,9 @@ body::before {
     width: 100%;
     height: 100%;
     background-image: 
-        radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
-        radial-gradient(circle at 40% 40%, rgba(120, 219, 255, 0.2) 0%, transparent 50%);
+        radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(180, 119, 255, 0.18) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(120, 119, 198, 0.10) 0%, transparent 50%);
     animation: backgroundFloat 20s ease-in-out infinite;
     z-index: -1;
 }
@@ -48,13 +48,13 @@ body::before {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: linear-gradient(45deg, #667eea, #764ba2);
+    background: linear-gradient(45deg, #5a2d83, #764ba2);
     border-radius: 10px;
     transition: all 0.3s ease;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(45deg, #764ba2, #667eea);
+    background: linear-gradient(45deg, #764ba2, #5a2d83);
 }
 
 /* Container */
@@ -121,7 +121,7 @@ body::before {
     .site-title {
     font-size: 2.5rem;
     font-weight: 800;
-    background: linear-gradient(45deg, #667eea, #764ba2, #f093fb);
+    background: linear-gradient(45deg, #a084ca, #764ba2, #5a2d83);
     background-size: 200% 200%;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -269,7 +269,7 @@ body::before {
 /* Header Divider */
 .header-divider {
     height: 2px;
-    background: linear-gradient(90deg, transparent, #667eea, #764ba2, transparent);
+    background: linear-gradient(90deg, transparent, #764ba2, #5a2d83, transparent);
     margin: 20px 0;
     border-radius: 1px;
     position: relative;
@@ -678,8 +678,8 @@ body::before {
 }
 
 .genre-tag {
-    background: linear-gradient(45deg, #667eea, #764ba2);
-    color: white;
+    background: linear-gradient(45deg, #764ba2, #a084ca);
+    color: #fff;
     padding: 6px 12px;
     border-radius: 15px;
     font-size: 0.8rem;
@@ -1161,13 +1161,19 @@ body::before {
 }
 
 .made-by .heart {
-    color: #ff6b6b;
-    animation: heartbeat 1.5s ease-in-out infinite;
+    color: #ff5fa2;
+    display: inline-block;
+    animation: heartbeat 1.2s infinite cubic-bezier(0.4, 0, 0.6, 1);
+    filter: drop-shadow(0 0 6px #ff5fa2aa);
 }
 
 @keyframes heartbeat {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.2); }
+    0% { transform: scale(1); filter: drop-shadow(0 0 6px #ff5fa2aa); }
+    10% { transform: scale(1.15); filter: drop-shadow(0 0 12px #ff5fa2cc); }
+    20% { transform: scale(1); filter: drop-shadow(0 0 6px #ff5fa2aa); }
+    30% { transform: scale(1.15); filter: drop-shadow(0 0 12px #ff5fa2cc); }
+    40% { transform: scale(1); filter: drop-shadow(0 0 6px #ff5fa2aa); }
+    100% { transform: scale(1); filter: drop-shadow(0 0 6px #ff5fa2aa); }
 }
 
 .footer-social {
@@ -1221,7 +1227,7 @@ body::before {
 }
 
 .copyright {
-    color: rgba(255, 255, 255, 0.7);
+    color: #a084ca;
     font-size: 0.9rem;
     position: relative;
     z-index: 2;
@@ -1229,8 +1235,8 @@ body::before {
 
 /* Suggestion Badge */
 .suggestion-badge {
-    background: linear-gradient(45deg, #ff6b6b, #ee5a24);
-    color: white;
+    background: linear-gradient(45deg, #a084ca, #764ba2);
+    color: #fff;
     border-radius: 50%;
     width: 20px;
     height: 20px;
@@ -1380,10 +1386,10 @@ body::before {
     background-clip: text;
 }
 
+/* --- DARK PURPLE THEME --- */
 .glass-effect {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(50, 20, 70, 0.85) !important;
+    border: 1px solid rgba(120, 80, 180, 0.25) !important;
 }
 
 .shadow-glow {
@@ -1427,18 +1433,18 @@ body::before {
 }
 
 .notification-success {
-    border-left: 4px solid #4ade80;
-    background: rgba(74, 222, 128, 0.1);
+    border-left: 4px solid #a084ca !important;
+    background: rgba(120, 80, 180, 0.15) !important;
 }
 
 .notification-error {
-    border-left: 4px solid #f87171;
-    background: rgba(248, 113, 113, 0.1);
+    border-left: 4px solid #d72660 !important;
+    background: rgba(215, 38, 96, 0.10) !important;
 }
 
 .notification-info {
-    border-left: 4px solid #60a5fa;
-    background: rgba(96, 165, 250, 0.1);
+    border-left: 4px solid #5a2d83 !important;
+    background: rgba(90, 45, 131, 0.10) !important;
 }
 
 .notification i {
@@ -1537,7 +1543,7 @@ body::before {
     width: 60px;
     height: 60px;
     border: 4px solid rgba(255, 255, 255, 0.1);
-    border-top: 4px solid #667eea;
+    border-top: 4px solid #a084ca !important;
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin-bottom: 20px;
@@ -1725,19 +1731,9 @@ body::before {
 
 /* Tooltip Enhancement */
 .tooltip {
-    position: absolute;
-    background: rgba(0, 0, 0, 0.9);
-    color: #ffffff;
-    padding: 8px 12px;
-    border-radius: 6px;
-    font-size: 12px;
-    font-weight: 500;
-    z-index: 10002;
-    pointer-events: none;
-    white-space: nowrap;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-    backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(60, 30, 80, 0.95) !important;
+    border: 1px solid #764ba2 !important;
+    color: #f3eaff !important;
 }
 
 .tooltip::before {
@@ -1785,4 +1781,38 @@ body::before {
         min-width: 80px;
         min-height: 60px;
     }
+}
+
+.genre-tag[data-genre="Action"] {
+    background: linear-gradient(45deg, #a259ff, #5a2d83) !important;
+}
+.genre-tag[data-genre="Adventure"] {
+    background: linear-gradient(45deg, #43e97b, #38f9d7) !important;
+    color: #222 !important;
+}
+.genre-tag[data-genre="Soulslike"] {
+    background: linear-gradient(45deg, #ff5858, #f09819) !important;
+}
+.genre-tag[data-genre="Shooter"] {
+    background: linear-gradient(45deg, #43cea2, #185a9d) !important;
+}
+.genre-tag[data-genre="Sport"] {
+    background: linear-gradient(45deg, #f7971e, #ffd200) !important;
+    color: #222 !important;
+}
+.genre-tag[data-genre="Strategie"] {
+    background: linear-gradient(45deg, #667eea, #764ba2) !important;
+}
+.genre-tag[data-genre="Rätsel"] {
+    background: linear-gradient(45deg, #f797a2, #fad0c4) !important;
+    color: #222 !important;
+}
+.genre-tag[data-genre="Roblox"] {
+    background: linear-gradient(45deg, #00c6ff, #0072ff) !important;
+}
+.genre-tag[data-genre="Horror"] {
+    background: linear-gradient(45deg, #232526, #ff5fa2) !important;
+}
+.genre-tag[data-genre="Story"] {
+    background: linear-gradient(45deg, #f953c6, #b91d73) !important;
 }

@@ -1,7 +1,6 @@
 // Modern Gaming Platform - Enhanced JavaScript
 class GamingPlatform {
     constructor() {
-        this.ADMIN_DISCORD_ID = '933524419882676254'; // HIER deine Admin-ID eintragen
         this.currentGameId = null;
         this.isEditMode = false;
         this.selectedGenres = [];
@@ -9,15 +8,11 @@ class GamingPlatform {
         this.currentTab = 'all';
         this.originalGamesOrder = [];
         this.isLoading = false;
-        this.discordSession = null;
         
         this.init();
     }
 
     async init() {
-        // Panel immer initial verstecken
-        const adminPanel = document.getElementById('admin-panel');
-        if (adminPanel) adminPanel.classList.add('hidden');
         try {
             this.showLoading();
             await this.setupEventListeners();
@@ -54,24 +49,18 @@ class GamingPlatform {
     }
 
     setupAdminEvents() {
-        // Discord OAuth Login
+        // Admin Login
         document.getElementById('admin-login-btn').addEventListener('click', () => {
-            if (this.discordSession) {
-                // Already logged in, show admin panel
-                document.getElementById('admin-panel').classList.remove('hidden');
-                } else {
-                // Start Discord OAuth flow
-                this.startDiscordOAuth();
-            }
+            this.openModal('login-modal');
         });
 
-        // Logout button
-        const logoutBtn = document.getElementById('logout-btn');
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', () => {
-                this.logoutDiscord();
-            });
-        }
+        document.getElementById('login-submit').addEventListener('click', async () => {
+            await this.handleAdminLogin();
+        });
+
+        document.getElementById('login-cancel').addEventListener('click', () => {
+            this.closeModal('login-modal');
+        });
 
         // Admin Panel Buttons
         document.getElementById('add-game-btn').addEventListener('click', () => {
@@ -89,132 +78,6 @@ class GamingPlatform {
         document.getElementById('view-suggestions-btn').addEventListener('click', () => {
             this.viewSuggestions();
         });
-    }
-
-    // Discord OAuth Functions
-    startDiscordOAuth() {
-        const DISCORD_CLIENT_ID = '1399190229214302208';
-        const DISCORD_REDIRECT_URI = 'https://emir-games.vercel.app/';
-        
-        const params = new URLSearchParams({
-            client_id: DISCORD_CLIENT_ID,
-            redirect_uri: DISCORD_REDIRECT_URI,
-            response_type: 'code',
-            scope: 'identify'
-        });
-        
-        window.location.href = `https://discord.com/api/oauth2/authorize?${params}`;
-    }
-
-    async handleDiscordCallback() {
-        const urlParams = new URLSearchParams(window.location.search);
-        const code = urlParams.get('code');
-        
-        if (code) {
-            await this.exchangeCodeForToken(code);
-        }
-    }
-
-    async exchangeCodeForToken(code) {
-        try {
-            // In a real implementation, you'd exchange the code server-side
-            // For now, we'll simulate a successful login
-            const mockSession = {
-                id: '933524419882676254',
-                username: 'Away',
-                avatar: null, // Will use default Discord avatar
-                access_token: 'mock_token'
-            };
-            
-            this.saveDiscordSession(mockSession);
-            this.updateUIForLoggedInUser(mockSession);
-            window.history.replaceState({}, document.title, window.location.pathname);
-            this.showNotification('Erfolgreich mit Discord angemeldet! 🎉', 'success');
-        } catch (error) {
-            console.error('Discord OAuth error:', error);
-            this.showNotification('Fehler bei der Discord-Anmeldung', 'error');
-        }
-    }
-
-    saveDiscordSession(session) {
-        this.discordSession = session;
-        localStorage.setItem('discord_session', JSON.stringify(session));
-    }
-
-    loadDiscordSession() {
-        const adminPanel = document.getElementById('admin-panel');
-        if (adminPanel) adminPanel.classList.add('hidden'); // Panel immer verstecken
-        const session = localStorage.getItem('discord_session');
-        if (session) {
-            this.discordSession = JSON.parse(session);
-            // Admin-Panel nur für Admin anzeigen
-            if (this.discordSession.id === this.ADMIN_DISCORD_ID) {
-                this.updateUIForLoggedInUser(this.discordSession);
-            } else {
-                this.updateUIForLoggedOutUser();
-            }
-            return true;
-        }
-        return false;
-    }
-
-    updateUIForLoggedInUser(session) {
-        const loginBtn = document.getElementById('admin-login-btn');
-        const loginText = document.getElementById('login-text');
-        const adminPanel = document.getElementById('admin-panel');
-        const adminAvatar = document.getElementById('admin-avatar');
-        const adminUsername = document.getElementById('admin-username');
-
-        if (session.id !== this.ADMIN_DISCORD_ID) {
-            // Kein Admin! Panel verstecken und Hinweis anzeigen
-            loginBtn.classList.remove('logged-in');
-            loginText.textContent = 'Kein Admin';
-            if (adminPanel) adminPanel.classList.add('hidden');
-            if (adminAvatar) adminAvatar.src = 'https://cdn.discordapp.com/embed/avatars/1.png';
-            if (adminUsername) adminUsername.textContent = session.username || 'User';
-            this.showNotification('Du bist nicht als Admin berechtigt!', 'error');
-            return;
-        }
-
-        loginBtn.classList.add('logged-in');
-        loginText.textContent = 'Admin';
-        if (adminPanel) adminPanel.classList.remove('hidden');
-
-        if (adminAvatar) {
-            if (session.avatar && session.avatar !== 'default') {
-                adminAvatar.src = `https://cdn.discordapp.com/avatars/${session.id}/${session.avatar}.png`;
-            } else {
-                // Fallback zu Default-Avatar
-                adminAvatar.src = `https://cdn.discordapp.com/embed/avatars/${session.id % 5}.png`;
-            }
-        }
-
-        if (adminUsername) {
-            adminUsername.textContent = session.username || 'Admin';
-        }
-    }
-
-    updateUIForLoggedOutUser() {
-        const loginBtn = document.getElementById('admin-login-btn');
-        const loginText = document.getElementById('login-text');
-        const adminPanel = document.getElementById('admin-panel');
-        
-        loginBtn.classList.remove('logged-in');
-        loginText.textContent = 'Admin Login';
-        if (adminPanel) adminPanel.classList.add('hidden');
-    }
-
-    logoutDiscord() {
-        this.discordSession = null;
-        localStorage.removeItem('discord_session');
-        this.updateUIForLoggedOutUser();
-        this.showNotification('Erfolgreich abgemeldet! 👋', 'success');
-    }
-
-    // Check if user is admin
-    isAdmin() {
-        if (!this.discordSession) return false;
-        return this.discordSession.id === this.ADMIN_DISCORD_ID;
     }
 
     setupGameEvents() {
@@ -297,6 +160,13 @@ class GamingPlatform {
     }
 
     setupKeyboardEvents() {
+        // Enter key for login
+        document.getElementById('admin-password').addEventListener('keypress', async (e) => {
+            if (e.key === 'Enter') {
+                await this.handleAdminLogin();
+            }
+        });
+
         // Escape key for modals
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
@@ -306,12 +176,6 @@ class GamingPlatform {
     }
 
     async loadInitialData() {
-        // Load Discord session first
-        this.loadDiscordSession();
-        
-        // Handle Discord callback if present
-        await this.handleDiscordCallback();
-        
         await Promise.all([
             this.loadSocialLinks(),
             this.renderGames(),
@@ -321,13 +185,44 @@ class GamingPlatform {
         ]);
     }
 
-    // Discord OAuth Admin Functions
-    async handleDiscordLogin() {
-        if (this.discordSession) {
-            document.getElementById('admin-panel').classList.remove('hidden');
-            this.showNotification('Willkommen zurück! 🎉', 'success');
+    // Admin Functions
+    async handleAdminLogin() {
+        const password = document.getElementById('admin-password').value;
+        
+        if (!password.trim()) {
+            this.showNotification('Bitte geben Sie ein Passwort ein', 'error');
+            return;
+        }
+        
+        try {
+            const isValid = await this.checkAdminPassword(password);
+            if (isValid) {
+                document.getElementById('admin-panel').classList.remove('hidden');
+                this.closeModal('login-modal');
+                document.getElementById('admin-password').value = '';
+                await this.loadSocialLinks();
+                this.showNotification('Admin-Login erfolgreich! 🔐', 'success');
             } else {
-            this.startDiscordOAuth();
+                this.showNotification('Falsches Passwort!', 'error');
+            }
+        } catch (error) {
+            console.error('Login error:', error);
+            this.showNotification('Fehler beim Login', 'error');
+        }
+    }
+
+    async checkAdminPassword(inputPassword) {
+        try {
+            const doc = await db.collection("settings").doc("admin").get();
+            if (doc.exists) {
+                const data = doc.data();
+                const hashedInput = CryptoJS.SHA256(inputPassword).toString();
+                return hashedInput === data.passwordHash;
+            }
+            return false;
+        } catch (error) {
+            console.error("Error checking password:", error);
+            return false;
         }
     }
 
@@ -409,8 +304,8 @@ class GamingPlatform {
             const appid = this.extractSteamAppId(link);
             if (!appid) {
                 status.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Ungültiger Steam-Link!';
-            return;
-        }
+                return;
+            }
             
             const gameData = await this.fetchSteamGameData(appid);
             this.displaySteamPreview(gameData, 'suggest-steam');
@@ -422,7 +317,7 @@ class GamingPlatform {
     }
 
     extractSteamAppId(link) {
-            const match = link.match(/store\.steampowered\.com\/app\/(\d+)/);
+        const match = link.match(/store\.steampowered\.com\/app\/(\d+)/);
         return match ? match[1] : null;
     }
 
@@ -430,7 +325,7 @@ class GamingPlatform {
         const response = await fetch(`https://corsproxy.io/?https://store.steampowered.com/api/appdetails?appids=${appid}&l=german`);
         const data = await response.json();
         
-            if (!data[appid] || !data[appid].success) {
+        if (!data[appid] || !data[appid].success) {
             throw new Error('Spiel nicht gefunden');
         }
         
@@ -453,15 +348,15 @@ class GamingPlatform {
         const steamLink = document.getElementById('steam-link').value.trim();
         if (!steamLink) {
             this.showNotification('Bitte gib einen Steam-Link ein!', 'error');
-                    return;
-                }
-
+                return;
+            }
+            
         try {
             const appid = this.extractSteamAppId(steamLink);
             if (!appid) {
                 this.showNotification('Ungültiger Steam-Link!', 'error');
-                    return;
-                }
+                return;
+            }
 
             const gameData = await this.fetchSteamGameData(appid);
             const gameToSave = {
@@ -609,7 +504,7 @@ class GamingPlatform {
             await this.loadSocialLinks();
             this.closeModal('social-form');
             this.showNotification('Social Media Links gespeichert! 📱', 'success');
-                    } catch (error) {
+        } catch (error) {
             console.error("Error saving social links:", error);
             this.showNotification('Fehler beim Speichern der Links', 'error');
         }
@@ -682,7 +577,7 @@ class GamingPlatform {
             });
 
             this.hideLoading();
-                    } catch (error) {
+        } catch (error) {
             console.error("Error rendering games:", error);
             this.showNotification('Fehler beim Laden der Spiele', 'error');
             this.hideLoading();
@@ -693,7 +588,7 @@ class GamingPlatform {
         // Check tab filter first
         let showByTab = false;
         if (this.currentTab === 'unreleased') {
-            showByTab = gameData.unreleased === true && gameData.played !== true;
+            showByTab = gameData.unreleased === true;
         } else if (this.currentTab === 'played') {
             showByTab = gameData.played === true;
         } else {
@@ -766,7 +661,7 @@ class GamingPlatform {
     }
 
     createAdminButtons(game) {
-        if (!this.discordSession || !this.isEditMode) {
+        if (document.getElementById('admin-panel').classList.contains('hidden') || !this.isEditMode) {
             return '';
         }
 
@@ -796,8 +691,8 @@ class GamingPlatform {
             await db.collection("games").doc(gameId).delete();
             await this.renderGames();
             this.showNotification('Spiel erfolgreich gelöscht! 🗑️', 'success');
-        } catch (error) {
-            console.error("Error deleting game:", error);
+                    } catch (error) {
+                        console.error("Error deleting game:", error);
             this.showNotification('Fehler beim Löschen des Spiels', 'error');
         }
     }
@@ -1263,76 +1158,9 @@ class GamingPlatform {
     }
 }
 
-// Hilfsfunktion für SHA-256 Hash
-async function sha256(str) {
-    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
-    return Array.from(new Uint8Array(buf)).map(x => x.toString(16).padStart(2, '0')).join('');
-}
-
 // Initialize the platform when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    const openAdminModalBtn = document.getElementById('open-admin-modal');
-    const adminPasswordModal = document.getElementById('admin-password-modal');
-    const closeAdminModalBtn = document.getElementById('close-admin-modal');
-    const adminPasswordInput = document.getElementById('admin-password');
-    const checkAdminPasswordBtn = document.getElementById('check-admin-password');
-    const adminLoginBtn = document.getElementById('admin-login-btn');
-
-    if (adminLoginBtn) adminLoginBtn.style.display = 'none';
-
-    // Modal öffnen
-    if (openAdminModalBtn && adminPasswordModal) {
-        openAdminModalBtn.addEventListener('click', () => {
-            adminPasswordModal.style.display = 'flex';
-            adminPasswordModal.classList.remove('hidden');
-            adminPasswordInput.value = '';
-            adminPasswordInput.focus();
-        });
-    }
-
-    // Modal schließen
-    if (closeAdminModalBtn && adminPasswordModal) {
-        closeAdminModalBtn.addEventListener('click', () => {
-            adminPasswordModal.style.display = 'none';
-            adminPasswordModal.classList.add('hidden');
-        });
-    }
-    // Schließen bei Klick außerhalb
-    if (adminPasswordModal) {
-        adminPasswordModal.addEventListener('click', (e) => {
-            if (e.target === adminPasswordModal) {
-                adminPasswordModal.style.display = 'none';
-                adminPasswordModal.classList.add('hidden');
-            }
-        });
-    }
-
-    // Passwort prüfen
-    if (checkAdminPasswordBtn) {
-        checkAdminPasswordBtn.addEventListener('click', async () => {
-            const enteredPassword = adminPasswordInput.value;
-            if (!enteredPassword) return;
-            const enteredHash = await sha256(enteredPassword);
-            try {
-                const doc = await firebase.firestore().collection('settings').doc('admin').get();
-                if (doc.exists) {
-                    const data = doc.data();
-                    if (enteredHash === data.passwordHash) {
-                        adminLoginBtn.style.display = 'inline-block';
-                        adminPasswordModal.style.display = 'none';
-                        adminPasswordModal.classList.add('hidden');
-                    } else {
-                        alert('Falsches Passwort!');
-                    }
-                } else {
-                    alert('Admin-Passwort nicht gefunden!');
-                }
-            } catch (err) {
-                alert('Fehler beim Prüfen des Passworts!');
-                console.error(err);
-            }
-        });
-    }
+    window.gamingPlatform = new GamingPlatform();
 });
 
 // Global functions for backward compatibility

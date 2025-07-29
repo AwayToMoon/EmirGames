@@ -1179,6 +1179,25 @@ class GamingPlatform {
 
 // Initialize the platform when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
+    // Willkommens-Modal: Zeige immer, außer für heute ausgeblendet
+    const today = new Date().toISOString().slice(0, 10);
+    const hideDate = localStorage.getItem('welcome_hide_date');
+    if (hideDate !== today) {
+        const modal = document.getElementById('welcome-modal');
+        modal.classList.remove('hidden');
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+        document.getElementById('welcome-ok-btn').onclick = () => {
+            if (document.getElementById('welcome-hide-today').checked) {
+                localStorage.setItem('welcome_hide_date', today);
+            } else {
+                localStorage.removeItem('welcome_hide_date');
+            }
+            modal.classList.add('hidden');
+            modal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        };
+    }
     window.gamingPlatform = new GamingPlatform();
 });
 

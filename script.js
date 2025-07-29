@@ -1263,9 +1263,76 @@ class GamingPlatform {
     }
 }
 
+// Hilfsfunktion für SHA-256 Hash
+async function sha256(str) {
+    const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+    return Array.from(new Uint8Array(buf)).map(x => x.toString(16).padStart(2, '0')).join('');
+}
+
 // Initialize the platform when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    window.gamingPlatform = new GamingPlatform();
+    const openAdminModalBtn = document.getElementById('open-admin-modal');
+    const adminPasswordModal = document.getElementById('admin-password-modal');
+    const closeAdminModalBtn = document.getElementById('close-admin-modal');
+    const adminPasswordInput = document.getElementById('admin-password');
+    const checkAdminPasswordBtn = document.getElementById('check-admin-password');
+    const adminLoginBtn = document.getElementById('admin-login-btn');
+
+    if (adminLoginBtn) adminLoginBtn.style.display = 'none';
+
+    // Modal öffnen
+    if (openAdminModalBtn && adminPasswordModal) {
+        openAdminModalBtn.addEventListener('click', () => {
+            adminPasswordModal.style.display = 'flex';
+            adminPasswordModal.classList.remove('hidden');
+            adminPasswordInput.value = '';
+            adminPasswordInput.focus();
+        });
+    }
+
+    // Modal schließen
+    if (closeAdminModalBtn && adminPasswordModal) {
+        closeAdminModalBtn.addEventListener('click', () => {
+            adminPasswordModal.style.display = 'none';
+            adminPasswordModal.classList.add('hidden');
+        });
+    }
+    // Schließen bei Klick außerhalb
+    if (adminPasswordModal) {
+        adminPasswordModal.addEventListener('click', (e) => {
+            if (e.target === adminPasswordModal) {
+                adminPasswordModal.style.display = 'none';
+                adminPasswordModal.classList.add('hidden');
+            }
+        });
+    }
+
+    // Passwort prüfen
+    if (checkAdminPasswordBtn) {
+        checkAdminPasswordBtn.addEventListener('click', async () => {
+            const enteredPassword = adminPasswordInput.value;
+            if (!enteredPassword) return;
+            const enteredHash = await sha256(enteredPassword);
+            try {
+                const doc = await firebase.firestore().collection('settings').doc('admin').get();
+                if (doc.exists) {
+                    const data = doc.data();
+                    if (enteredHash === data.passwordHash) {
+                        adminLoginBtn.style.display = 'inline-block';
+                        adminPasswordModal.style.display = 'none';
+                        adminPasswordModal.classList.add('hidden');
+                    } else {
+                        alert('Falsches Passwort!');
+                    }
+                } else {
+                    alert('Admin-Passwort nicht gefunden!');
+                }
+            } catch (err) {
+                alert('Fehler beim Prüfen des Passworts!');
+                console.error(err);
+            }
+        });
+    }
 });
 
 // Global functions for backward compatibility

@@ -382,6 +382,30 @@
     <!-- Notification System -->
     <div id="notification-container" class="notification-container"></div>
     
+    <!-- Willkommens-Modal -->
+    <div id="welcome-modal" class="modal">
+        <div class="modal-content welcome-content">
+            <h2>Willkommen bei HigherCellF Games!</h2>
+            <p>
+                Hier findest du eine kuratierte Sammlung von Spielen, die du nach Genre filtern, als gespielt markieren oder Vorschläge einreichen kannst.<br><br>
+                <b>So funktioniert's:</b><br>
+                <ul style="text-align:left; margin: 1em 0 1em 1.5em;">
+                    <li>Nutze die <b>Genre-Filter</b> links, um Spiele nach deinem Geschmack zu finden.</li>
+                    <li>Mit den <b>Tabs</b> oben kannst du zwischen allen, unreleased und gespielten Spielen wechseln.</li>
+                    <li>Über <b>Zufälliges Spiel</b> bekommst du einen Spieletipp.</li>
+                    <li>Du kannst <b>eigene Vorschläge</b> einreichen – einfach auf "Spiel vorschlagen" klicken!</li>
+                </ul>
+                Viel Spaß beim Stöbern und Entdecken! 🎮
+            </p>
+            <button id="welcome-ok-btn" class="save-btn" style="margin-top: 1.5em; min-width: 180px;">Okay, Verstanden</button>
+            <div style="margin-top: 1.2em; text-align:center;">
+                <label style="cursor:pointer; font-size:1em;">
+                    <input type="checkbox" id="welcome-hide-today" style="margin-right:8px; vertical-align:middle;">Heute nicht mehr anzeigen
+                </label>
+            </div>
+        </div>
+    </div>
+
 <script>
         // Firebase Configuration
     const encryptedConfig = "U2FsdGVkX1/2h2jz/okQRoolhPVQPafedlkbIfYoDr/bEIj6Qe4Gz4D+GJsaaQ5i7XVMwWJ+cqe94PGWRSvfQKwZHwpHdIr9YhzTEVGwzq0yCkU/7ZsA1fNW0THeJjRP5W+tborqv2W5F8pHhVoVtYy104eDojx6YeaaKd4zyAr36a1eAY82nlgIUMhzbl8s7LEWqoqk/w+4brkq8Gt7zZ2zkCij2mwXb8LEyZJBFSa0j62QdI8cKkSwBRw3MxO56KTu4tLFcbv7hhehDtKwM0PNJMkuDp+xldtmmvIOS56fR64kvsLXlkN/DSV+3MHLWFCHv/ry06NtgMy6aEz3mfFQUqP0uaTR+ohi3niWSNYJ+wMNgQsV6xiXj+VmKleN";

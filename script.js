@@ -15,6 +15,9 @@ class GamingPlatform {
     }
 
     async init() {
+        // Panel immer initial verstecken
+        const adminPanel = document.getElementById('admin-panel');
+        if (adminPanel) adminPanel.classList.add('hidden');
         try {
             this.showLoading();
             await this.setupEventListeners();
@@ -139,6 +142,8 @@ class GamingPlatform {
     }
 
     loadDiscordSession() {
+        const adminPanel = document.getElementById('admin-panel');
+        if (adminPanel) adminPanel.classList.add('hidden'); // Panel immer verstecken
         const session = localStorage.getItem('discord_session');
         if (session) {
             this.discordSession = JSON.parse(session);
@@ -164,7 +169,7 @@ class GamingPlatform {
             // Kein Admin! Panel verstecken und Hinweis anzeigen
             loginBtn.classList.remove('logged-in');
             loginText.textContent = 'Kein Admin';
-            adminPanel.classList.add('hidden');
+            if (adminPanel) adminPanel.classList.add('hidden');
             if (adminAvatar) adminAvatar.src = 'https://cdn.discordapp.com/embed/avatars/1.png';
             if (adminUsername) adminUsername.textContent = session.username || 'User';
             this.showNotification('Du bist nicht als Admin berechtigt!', 'error');
@@ -173,7 +178,7 @@ class GamingPlatform {
 
         loginBtn.classList.add('logged-in');
         loginText.textContent = 'Admin';
-        adminPanel.classList.remove('hidden');
+        if (adminPanel) adminPanel.classList.remove('hidden');
 
         if (adminAvatar) {
             if (session.avatar && session.avatar !== 'default') {
@@ -196,7 +201,7 @@ class GamingPlatform {
         
         loginBtn.classList.remove('logged-in');
         loginText.textContent = 'Admin Login';
-        adminPanel.classList.add('hidden');
+        if (adminPanel) adminPanel.classList.add('hidden');
     }
 
     logoutDiscord() {

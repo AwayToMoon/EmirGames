@@ -1,6 +1,7 @@
 // Modern Gaming Platform - Enhanced JavaScript
 class GamingPlatform {
     constructor() {
+        this.ADMIN_DISCORD_ID = '933524419882676254'; // HIER deine Admin-ID eintragen
         this.currentGameId = null;
         this.isEditMode = false;
         this.selectedGenres = [];
@@ -141,21 +142,25 @@ class GamingPlatform {
         const session = localStorage.getItem('discord_session');
         if (session) {
             this.discordSession = JSON.parse(session);
-            this.updateUIForLoggedInUser(this.discordSession);
+            // Admin-Panel nur für Admin anzeigen
+            if (this.discordSession.id === this.ADMIN_DISCORD_ID) {
+                this.updateUIForLoggedInUser(this.discordSession);
+            } else {
+                this.updateUIForLoggedOutUser();
+            }
             return true;
         }
         return false;
     }
 
     updateUIForLoggedInUser(session) {
-        const ADMIN_DISCORD_ID = '933524419882676254'; // Deine Discord-ID
         const loginBtn = document.getElementById('admin-login-btn');
         const loginText = document.getElementById('login-text');
         const adminPanel = document.getElementById('admin-panel');
         const adminAvatar = document.getElementById('admin-avatar');
         const adminUsername = document.getElementById('admin-username');
 
-        if (session.id !== ADMIN_DISCORD_ID) {
+        if (session.id !== this.ADMIN_DISCORD_ID) {
             // Kein Admin! Panel verstecken und Hinweis anzeigen
             loginBtn.classList.remove('logged-in');
             loginText.textContent = 'Kein Admin';
@@ -204,7 +209,7 @@ class GamingPlatform {
     // Check if user is admin
     isAdmin() {
         if (!this.discordSession) return false;
-        return this.discordSession.id === '933524419882676254'; // Replace with your Discord User ID
+        return this.discordSession.id === this.ADMIN_DISCORD_ID;
     }
 
     setupGameEvents() {

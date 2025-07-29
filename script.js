@@ -652,12 +652,31 @@ class GamingPlatform {
 
     createGenreTags(genres) {
         if (!genres || !Array.isArray(genres)) return '';
-        
-        return genres.map(genre => `
-            <div class="genre-tag" data-genre="${genre}">
-                ${genre}
-            </div>
-        `).join('');
+
+        // Bekannte Genres mit festen Farben (wie im CSS)
+        const knownGenres = [
+            'Action', 'Adventure', 'Soulslike', 'Shooter', 'Sport',
+            'Strategie', 'Rätsel', 'Roblox', 'Horror', 'Story'
+        ];
+
+        // Map für bereits generierte Farben (damit gleiche Genres immer gleich aussehen)
+        if (!this._genreColorMap) this._genreColorMap = {};
+
+        return genres.map(genre => {
+            let style = '';
+            if (!knownGenres.includes(genre)) {
+                // Wenn noch keine Farbe generiert wurde, erstelle eine
+                if (!this._genreColorMap[genre]) {
+                    // Zufälliger, aber harmonischer Farbton (Lila-Bereich bevorzugt, aber bunt)
+                    const hue = Math.floor(Math.random() * 360);
+                    const color1 = `hsl(${hue}, 70%, 60%)`;
+                    const color2 = `hsl(${(hue+30)%360}, 70%, 45%)`;
+                    this._genreColorMap[genre] = `background: linear-gradient(45deg, ${color1}, ${color2}); color: #fff;`;
+                }
+                style = `style=\"${this._genreColorMap[genre]}\"`;
+            }
+            return `<div class=\"genre-tag\" data-genre=\"${genre}\" ${style}>${genre}</div>`;
+        }).join('');
     }
 
     createAdminButtons(game) {

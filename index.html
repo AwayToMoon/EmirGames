@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
-    <title>HigherCellF Games - Moderne Gaming Plattform</title>
+    <title>HigherCellF Games</title>
     <link rel="icon" type="image/png" id="favicon" href="#">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -59,30 +59,17 @@
 
                 <div class="admin-section">
                     <img id="admin-logo" src="#" alt="Admin Logo" class="admin-logo">
-                    <button id="open-admin-modal" style="padding: 6px 12px; border-radius: 8px; background: linear-gradient(45deg, #667eea, #764ba2); color: white; border: none; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;">
-                        <i class="fas fa-lock"></i> Admin-Bereich öffnen
-                    </button>
-                    <button id="admin-login-btn" class="admin-login-btn discord-login-btn" style="display:none;">
-                        <i class="fab fa-discord"></i>
-                        <span id="login-text">Admin Login</span>
-                    </button>
-                </div>
+                <button id="admin-login-btn" class="admin-login-btn">
+                    <i class="fas fa-user-shield"></i>
+                    Login Away亗
+                </button>
+            </div>
         </header>
             
             <div class="header-divider"></div>
 
         <!-- Admin Panel -->
         <section id="admin-panel" class="admin-panel hidden">
-            <div class="admin-user-info">
-                <img id="admin-avatar" src="" alt="Admin Avatar" class="admin-avatar">
-                <div class="admin-user-details">
-                    <span id="admin-username" class="admin-username"></span>
-                    <button id="logout-btn" class="logout-btn">
-                        <i class="fas fa-sign-out-alt"></i>
-                        Logout
-                    </button>
-                </div>
-            </div>
             <button id="add-game-btn" class="admin-btn">
                 <i class="fas fa-plus"></i>
                 Spiel hinzufügen
@@ -118,7 +105,7 @@
                     <i class="fas fa-chevron-left"></i>
                 </a>
         </section>
-        
+            
         <!-- Main Content -->
         <main class="main-content-flex">
             <!-- Genre Filter Sidebar -->
@@ -283,6 +270,29 @@
                 </div>
             </div>
 
+        <!-- Login Modal -->
+            <div id="login-modal" class="modal hidden">
+                <div class="modal-content login-content">
+                <h2><i class="fas fa-user-shield"></i> Admin Login</h2>
+                    <div class="login-form">
+                    <div class="form-group">
+                        <label for="admin-password">Passwort</label>
+                        <input type="password" id="admin-password" placeholder="Passwort eingeben">
+                    </div>
+                        <div class="login-buttons">
+                        <button id="login-submit" class="login-btn">
+                            <i class="fas fa-sign-in-alt"></i>
+                            Login
+                        </button>
+                        <button id="login-cancel" class="cancel-btn">
+                            <i class="fas fa-times"></i>
+                            Abbrechen
+                        </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         <!-- Suggest Form Modal -->
             <div id="suggest-form" class="modal hidden">
                 <div class="modal-content suggest-content">
@@ -373,11 +383,6 @@
     <div id="notification-container" class="notification-container"></div>
     
 <script>
-        // Discord OAuth Configuration
-        const DISCORD_CLIENT_ID = '1399190229214302208';
-        const DISCORD_REDIRECT_URI = 'https://emir-games.vercel.app/';
-        const ADMIN_DISCORD_ID = '933524419882676254';
-        
         // Firebase Configuration
     const encryptedConfig = "U2FsdGVkX1/2h2jz/okQRoolhPVQPafedlkbIfYoDr/bEIj6Qe4Gz4D+GJsaaQ5i7XVMwWJ+cqe94PGWRSvfQKwZHwpHdIr9YhzTEVGwzq0yCkU/7ZsA1fNW0THeJjRP5W+tborqv2W5F8pHhVoVtYy104eDojx6YeaaKd4zyAr36a1eAY82nlgIUMhzbl8s7LEWqoqk/w+4brkq8Gt7zZ2zkCij2mwXb8LEyZJBFSa0j62QdI8cKkSwBRw3MxO56KTu4tLFcbv7hhehDtKwM0PNJMkuDp+xldtmmvIOS56fR64kvsLXlkN/DSV+3MHLWFCHv/ry06NtgMy6aEz3mfFQUqP0uaTR+ohi3niWSNYJ+wMNgQsV6xiXj+VmKleN";
     
@@ -392,128 +397,6 @@
 
     initFirebase();
 
-        // Discord OAuth Functions
-        function initDiscordAuth() {
-            const loginBtn = document.getElementById('admin-login-btn');
-            const logoutBtn = document.getElementById('logout-btn');
-            
-            // Check if user is already logged in
-            const session = getDiscordSession();
-            if (session && session.access_token) {
-                updateUIForLoggedInUser(session);
-            } else {
-                updateUIForLoggedOutUser();
-            }
-            
-            // Login button click
-            loginBtn.addEventListener('click', () => {
-                if (getDiscordSession()) {
-                    // Already logged in, show admin panel
-                    document.getElementById('admin-panel').classList.remove('hidden');
-                } else {
-                    // Start Discord OAuth flow
-                    startDiscordOAuth();
-                }
-            });
-            
-            // Logout button click
-            if (logoutBtn) {
-                logoutBtn.addEventListener('click', () => {
-                    logoutDiscord();
-                });
-            }
-        }
-        
-        function startDiscordOAuth() {
-            const params = new URLSearchParams({
-                client_id: DISCORD_CLIENT_ID,
-                redirect_uri: DISCORD_REDIRECT_URI,
-                response_type: 'code',
-                scope: 'identify'
-            });
-            
-            window.location.href = `https://discord.com/api/oauth2/authorize?${params}`;
-        }
-        
-        function handleDiscordCallback() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const code = urlParams.get('code');
-            
-            if (code) {
-                // Exchange code for token
-                exchangeCodeForToken(code);
-            }
-        }
-        
-        async function exchangeCodeForToken(code) {
-            try {
-                // In a real app, you'd exchange the code server-side
-                // For now, we'll simulate the process
-                const response = await fetch('/api/discord/callback', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ code })
-                });
-                
-                if (response.ok) {
-                    const session = await response.json();
-                    saveDiscordSession(session);
-                    updateUIForLoggedInUser(session);
-                    window.history.replaceState({}, document.title, window.location.pathname);
-                }
-            } catch (error) {
-                console.error('Discord OAuth error:', error);
-                showNotification('Fehler bei der Discord-Anmeldung', 'error');
-            }
-        }
-        
-        function saveDiscordSession(session) {
-            localStorage.setItem('discord_session', JSON.stringify(session));
-        }
-        
-        function getDiscordSession() {
-            const session = localStorage.getItem('discord_session');
-            return session ? JSON.parse(session) : null;
-        }
-        
-        function updateUIForLoggedInUser(session) {
-            const loginBtn = document.getElementById('admin-login-btn');
-            const loginText = document.getElementById('login-text');
-            const adminPanel = document.getElementById('admin-panel');
-            const adminAvatar = document.getElementById('admin-avatar');
-            const adminUsername = document.getElementById('admin-username');
-            
-            loginBtn.classList.add('logged-in');
-            loginText.textContent = 'Admin';
-            adminPanel.classList.remove('hidden');
-            
-            if (adminAvatar && session.avatar) {
-                adminAvatar.src = `https://cdn.discordapp.com/avatars/${session.id}/${session.avatar}.png`;
-            }
-            
-            if (adminUsername) {
-                adminUsername.textContent = session.username;
-            }
-        }
-        
-        function updateUIForLoggedOutUser() {
-            const loginBtn = document.getElementById('admin-login-btn');
-            const loginText = document.getElementById('login-text');
-            const adminPanel = document.getElementById('admin-panel');
-            
-            loginBtn.classList.remove('logged-in');
-            loginText.textContent = 'Admin Login';
-            adminPanel.classList.add('hidden');
-        }
-        
-        function logoutDiscord() {
-            localStorage.removeItem('discord_session');
-            updateUIForLoggedOutUser();
-            showNotification('Erfolgreich abgemeldet! 👋', 'success');
-        }
-
         // Notification System
         function showNotification(message, type = 'info') {
             const container = document.getElementById('notification-container');
@@ -526,7 +409,7 @@
             `;
             
             container.appendChild(notification);
-            
+                
             // Auto remove after 5 seconds
             setTimeout(() => {
                 notification.classList.add('fade-out');
@@ -555,7 +438,7 @@
             modal.classList.remove('hidden');
             modal.style.display = 'flex';
             document.body.style.overflow = 'hidden';
-            
+
             // Focus first input if exists
             const firstInput = modal.querySelector('input');
             if (firstInput) firstInput.focus();
@@ -586,8 +469,8 @@
                     modal.style.display = 'none';
                 });
                 document.body.style.overflow = 'auto';
-            }
-        });
+        }
+    });
 
         // Initialize tooltips
         function initTooltips() {
@@ -614,21 +497,10 @@
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', () => {
             initTooltips();
-            initDiscordAuth();
-            handleDiscordCallback();
             showNotification('Willkommen bei HigherCellF Games! 🎮', 'success');
         });
 </script>
     
 <script src="script.js"></script>
-<!-- Admin Passwort Modal: GANZ ANS ENDE DES BODY -->
-<div id="admin-password-modal" class="modal hidden" style="display:none; align-items: center; justify-content: center;">
-    <div class="modal-content" style="min-width: 300px; padding: 24px; border-radius: 16px; background: rgba(30,30,60,0.98); box-shadow: 0 8px 32px rgba(0,0,0,0.3); display: flex; flex-direction: column; align-items: center;">
-        <span class="close-modal" id="close-admin-modal" style="align-self: flex-end; cursor: pointer; font-size: 1.5rem;">&times;</span>
-        <h2 style="margin-bottom: 16px;"><i class="fas fa-lock"></i> Admin Passwort</h2>
-        <input type="password" id="admin-password" placeholder="Admin Passwort" style="padding: 8px 12px; border-radius: 8px; border: 1px solid #ccc; margin-bottom: 16px; width: 100%;">
-        <button id="check-admin-password" style="padding: 8px 16px; border-radius: 8px; background: linear-gradient(45deg, #667eea, #764ba2); color: white; border: none; font-weight: 600; cursor: pointer; width: 100%;">Bestätigen</button>
-    </div>
-</div>
 </body>
 </html>

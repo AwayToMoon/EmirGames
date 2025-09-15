@@ -12,6 +12,29 @@ class GamingPlatform {
         this.init();
     }
 
+    translateGenreToEnglish(genre) {
+        const mapping = {
+            'Sport': 'Sports',
+            'Strategie': 'Strategy',
+            'Rätsel': 'Puzzle',
+            'Abenteuer': 'Adventure',
+            'Simulation': 'Simulation',
+            'Simulationen': 'Simulation',
+            'Gelegenheitsspiele': 'Casual',
+            'Gelegenheitsspiel': 'Casual',
+            'Rollenspiel': 'RPG',
+            'Überleben': 'Survival',
+            'Kostenlos': 'Free To Play',
+            'Kostenlos spielen': 'Free To Play',
+            'Einzelspieler': 'Singleplayer',
+            'Mehrspieler': 'Multiplayer',
+            'Rennen': 'Racing',
+            'Plattform': 'Platformer',
+            'Plattformer': 'Platformer'
+        };
+        return mapping[genre] || genre;
+    }
+
     async init() {
         try {
             this.showLoading();
@@ -185,12 +208,16 @@ class GamingPlatform {
     }
 
     async loadInitialData() {
+        // Erst Migrationen ausführen
+        await this.migrateUnreleasedFlag();
+        await this.migrateGenresToEnglish();
+        
+        // Dann alles andere parallel laden
         await Promise.all([
             this.loadSocialLinks(),
             this.renderGames(),
             this.updateGenreFilterButtons(),
-            this.updateSuggestionCount(),
-            this.migrateUnreleasedFlag()
+            this.updateSuggestionCount()
         ]);
     }
 
@@ -331,7 +358,7 @@ class GamingPlatform {
     }
 
     async fetchSteamGameData(appid) {
-        const response = await fetch(`https://corsproxy.io/?https://store.steampowered.com/api/appdetails?appids=${appid}&l=german`);
+        const response = await fetch(`https://corsproxy.io/?https://store.steampowered.com/api/appdetails?appids=${appid}&l=english`);
         const data = await response.json();
         
         if (!data[appid] || !data[appid].success) {
@@ -664,14 +691,17 @@ class GamingPlatform {
 
         // Bekannte Genres mit festen Farben (wie im CSS)
         const knownGenres = [
-            'Action', 'Adventure', 'Soulslike', 'Shooter', 'Sport',
-            'Strategie', 'Rätsel', 'Roblox', 'Horror', 'Story'
+            'Action', 'Adventure', 'Soulslike', 'Shooter', 'Sports',
+            'Strategy', 'Puzzle', 'Roblox', 'Horror', 'Story',
+            'Survival', 'Indie', 'Simulation', 'RPG', 'Casual',
+            'Free To Play', 'Multiplayer', 'Singleplayer', 'Racing', 'Platformer'
         ];
 
         // Map für bereits generierte Farben (damit gleiche Genres immer gleich aussehen)
         if (!this._genreColorMap) this._genreColorMap = {};
 
-        return genres.map(genre => {
+        return genres.map(originalGenre => {
+            const genre = this.translateGenreToEnglish(originalGenre);
             let style = '';
             if (!knownGenres.includes(genre)) {
                 // Wenn noch keine Farbe generiert wurde, erstelle eine
@@ -1026,12 +1056,22 @@ class GamingPlatform {
             'Adventure': 'compass',
             'Soulslike': 'skull',
             'Shooter': 'crosshairs',
-            'Sport': 'futbol',
-            'Strategie': 'chess',
-            'Rätsel': 'puzzle-piece',
+            'Sports': 'futbol',
+            'Strategy': 'chess',
+            'Puzzle': 'puzzle-piece',
             'Roblox': 'cube',
             'Horror': 'ghost',
-            'Story': 'book-open'
+            'Story': 'book-open',
+            'Survival': 'shield-alt',
+            'Indie': 'record-vinyl',
+            'Simulation': 'vials',
+            'RPG': 'hat-wizard',
+            'Casual': 'gamepad',
+            'Free To Play': 'ticket-alt',
+            'Multiplayer': 'users',
+            'Singleplayer': 'user',
+            'Racing': 'flag-checkered',
+            'Platformer': 'grip-lines'
         };
         return icons[genre] || 'gamepad';
     }
@@ -1072,6 +1112,59 @@ class GamingPlatform {
             }
         } catch (error) {
             console.error('Migration error:', error);
+        }
+    }
+
+    async migrateGenresToEnglish() {
+        try {
+            const snapshot = await db.collection('games').get();
+            const batch = db.batch();
+            let needsUpdate = false;
+            
+            // Mapping von deutschen zu englischen Genres
+            const genreMapping = {
+                'Sport': 'Sports',
+                'Sports': 'Sports',
+                'Strategie': 'Strategy',
+                'Rätsel': 'Puzzle',
+                'Abenteuer': 'Adventure',
+                'Simulation': 'Simulation',
+                'Simulationen': 'Simulation',
+                'Gelegenheitsspiele': 'Casual',
+                'Gelegenheitsspiel': 'Casual',
+                'Rollenspiel': 'RPG',
+                'Überleben': 'Survival',
+                'Kostenlos': 'Free To Play',
+                'Kostenlos spielen': 'Free To Play',
+                'Einzelspieler': 'Singleplayer',
+                'Mehrspieler': 'Multiplayer',
+                'Rennen': 'Racing',
+                'Plattform': 'Platformer',
+                'Plattformer': 'Platformer'
+            };
+            
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                if (data.genres && Array.isArray(data.genres)) {
+                    const updatedGenres = data.genres.map(genre => {
+                        const key = typeof genre === 'string' ? genre.trim() : genre;
+                        return genreMapping[key] || key;
+                    });
+                    
+                    // Prüfen ob sich etwas geändert hat
+                    if (JSON.stringify(updatedGenres) !== JSON.stringify(data.genres)) {
+                        batch.update(db.collection('games').doc(doc.id), { genres: updatedGenres });
+                        needsUpdate = true;
+                    }
+                }
+            });
+            
+            if (needsUpdate) {
+                await batch.commit();
+                console.log('Genre migration completed');
+            }
+        } catch (error) {
+            console.error('Genre migration error:', error);
         }
     }
 

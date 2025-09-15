@@ -1807,14 +1807,14 @@ body::before {
 .genre-tag[data-genre="Shooter"] {
     background: linear-gradient(45deg, #43cea2, #185a9d) !important;
 }
-.genre-tag[data-genre="Sport"] {
+.genre-tag[data-genre="Sports"] {
     background: linear-gradient(45deg, #f7971e, #ffd200) !important;
     color: #222 !important;
 }
-.genre-tag[data-genre="Strategie"] {
+.genre-tag[data-genre="Strategy"] {
     background: linear-gradient(45deg, #667eea, #764ba2) !important;
 }
-.genre-tag[data-genre="Rätsel"] {
+.genre-tag[data-genre="Puzzle"] {
     background: linear-gradient(45deg, #f797a2, #fad0c4) !important;
     color: #222 !important;
 }

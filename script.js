@@ -142,6 +142,15 @@ class GamingPlatform {
                 }
             });
         });
+
+        // Impressum link
+        const imprintLink = document.getElementById('impressum-link');
+        if (imprintLink) {
+            imprintLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.openModal('imprint-modal');
+            });
+        }
     }
 
     setupRandomizerEvents() {

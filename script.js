@@ -101,6 +101,14 @@ class GamingPlatform {
         document.getElementById('view-suggestions-btn').addEventListener('click', () => {
             this.viewSuggestions();
         });
+
+        // Bulk-Update Genres
+        const updateBtn = document.getElementById('update-genres-btn');
+        if (updateBtn) {
+            updateBtn.addEventListener('click', async () => {
+                await this.bulkUpdateGenres();
+            });
+        }
     }
 
     setupGameEvents() {
@@ -366,6 +374,44 @@ class GamingPlatform {
         }
         
         return data[appid].data;
+    }
+
+    async bulkUpdateGenres() {
+        try {
+            this.showNotification('Starte Genre-Aktualisierung…', 'info');
+            const snapshot = await db.collection('games').get();
+            const docs = snapshot.docs;
+            let updated = 0;
+            let skipped = 0;
+
+            for (const doc of docs) {
+                const game = doc.data();
+                const link = game.steamLink || game.link;
+                if (!link) { skipped++; continue; }
+                const appid = this.extractSteamAppId(link);
+                if (!appid) { skipped++; continue; }
+                try {
+                    const data = await this.fetchSteamGameData(appid);
+                    const newGenres = (data.genres || []).map(g => g.description);
+                    if (newGenres && newGenres.length) {
+                        await db.collection('games').doc(doc.id).update({ genres: newGenres });
+                        updated++;
+                    } else {
+                        skipped++;
+                    }
+                } catch (e) {
+                    console.error('Bulk update error for', doc.id, e);
+                    skipped++;
+                }
+            }
+
+            await this.renderGames();
+            await this.updateGenreFilterButtons();
+            this.showNotification(`Genres aktualisiert: ${updated}, übersprungen: ${skipped}`, 'success');
+        } catch (error) {
+            console.error('Bulk update failed:', error);
+            this.showNotification('Fehler bei der Genre-Aktualisierung', 'error');
+        }
     }
 
     displaySteamPreview(gameData, prefix) {

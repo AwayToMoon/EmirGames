@@ -581,6 +581,7 @@ class GamingPlatform {
         document.getElementById(tabId).classList.add('active');
         
         this.renderGames();
+        this.updateGenreFilterButtons();
     }
 
     // Game Rendering Functions
@@ -689,33 +690,39 @@ class GamingPlatform {
     createGenreTags(genres) {
         if (!genres || !Array.isArray(genres)) return '';
 
-        // Bekannte Genres mit festen Farben (wie im CSS)
-        const knownGenres = [
-            'Action', 'Adventure', 'Soulslike', 'Shooter', 'Sports',
-            'Strategy', 'Puzzle', 'Roblox', 'Horror', 'Story',
-            'Survival', 'Indie', 'Simulation', 'RPG', 'Casual',
-            'Free To Play', 'Multiplayer', 'Singleplayer', 'Racing', 'Platformer'
-        ];
-
-        // Map für bereits generierte Farben (damit gleiche Genres immer gleich aussehen)
         if (!this._genreColorMap) this._genreColorMap = {};
 
         return genres.map(originalGenre => {
             const genre = this.translateGenreToEnglish(originalGenre);
-            let style = '';
-            if (!knownGenres.includes(genre)) {
-                // Wenn noch keine Farbe generiert wurde, erstelle eine
-                if (!this._genreColorMap[genre]) {
-                    // Zufälliger, aber harmonischer Farbton (Lila-Bereich bevorzugt, aber bunt)
-                    const hue = Math.floor(Math.random() * 360);
-                    const color1 = `hsl(${hue}, 70%, 60%)`;
-                    const color2 = `hsl(${(hue+30)%360}, 70%, 45%)`;
-                    this._genreColorMap[genre] = `background: linear-gradient(45deg, ${color1}, ${color2}); color: #fff;`;
-                }
-                style = `style=\"${this._genreColorMap[genre]}\"`;
+            if (!this._genreColorMap[genre]) {
+                const style = this.generateDeterministicGenreStyle(genre);
+                this._genreColorMap[genre] = style;
             }
-            return `<div class=\"genre-tag\" data-genre=\"${genre}\" ${style}>${genre}</div>`;
+            const styleAttr = `style=\"${this._genreColorMap[genre]}\"`;
+            return `<div class=\"genre-tag\" data-genre=\"${genre}\" ${styleAttr}>${genre}</div>`;
         }).join('');
+    }
+
+    // Erzeugt eine deterministische Farb-Gradient-Style-String pro Genre
+    generateDeterministicGenreStyle(genre) {
+        const hue = this.hashStringToHue(genre);
+        const color1 = `hsl(${hue}, 72%, 56%)`;
+        const color2 = `hsl(${(hue + 28) % 360}, 72%, 42%)`;
+        // Textfarbe fix auf weiß, damit gute Lesbarkeit – mit !important um CSS-Overrides zu schlagen
+        return `background: linear-gradient(45deg, ${color1}, ${color2}) !important; color: #fff !important;`;
+    }
+
+    // Wandelt String deterministisch in einen Hue-Wert [0,360)
+    hashStringToHue(str) {
+        let hash = 0;
+        for (let i = 0; i < str.length; i++) {
+            hash = (hash << 5) - hash + str.charCodeAt(i);
+            hash |= 0; // 32-bit
+        }
+        // Golden angle offset für bessere Verteilung verschiedener Genres
+        const golden = 137.508;
+        const base = Math.abs(hash % 360);
+        return Math.floor((base + golden) % 360);
     }
 
     createAdminButtons(game) {
@@ -1017,25 +1024,34 @@ class GamingPlatform {
         try {
             const genreSet = new Set();
             const snapshot = await db.collection("games").get();
-            
+
             snapshot.forEach(doc => {
                 const game = doc.data();
+                let includeByTab = false;
+                if (this.currentTab === 'unreleased') {
+                    includeByTab = game.unreleased === true && game.played !== true && !game.isPending;
+                } else if (this.currentTab === 'played') {
+                    includeByTab = game.played === true && !game.isPending;
+                } else {
+                    includeByTab = !game.unreleased && !game.played && !game.isPending;
+                }
+                if (!includeByTab) return;
+
                 if (Array.isArray(game.genres)) {
-                    game.genres.forEach(genre => genreSet.add(genre));
+                    game.genres.forEach(g => genreSet.add(this.translateGenreToEnglish(g)));
                 }
             });
 
-            // Update existing buttons or create new ones
             const container = document.querySelector('.genre-filter-buttons');
             const existingButtons = container.querySelectorAll('.genre-filter-btn:not([data-genre="all"])');
-            
+
             existingButtons.forEach(btn => {
                 if (!genreSet.has(btn.dataset.genre)) {
                     btn.remove();
                 }
             });
 
-            genreSet.forEach(genre => {
+            Array.from(genreSet).sort().forEach(genre => {
                 if (!container.querySelector(`[data-genre="${genre}"]`)) {
                     const btn = document.createElement('button');
                     btn.className = 'genre-filter-btn';

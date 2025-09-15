@@ -1233,6 +1233,17 @@ body::before {
     z-index: 2;
 }
 
+.impressum-link {
+    color: #e6d7ff;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.impressum-link:hover {
+    color: #ffffff;
+    text-decoration: none;
+}
+
 /* Suggestion Badge */
 .suggestion-badge {
     background: linear-gradient(45deg, #a084ca, #764ba2);

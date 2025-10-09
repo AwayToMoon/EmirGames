@@ -424,14 +424,28 @@ class GamingPlatform {
         name.textContent = gameData.name;
         genres.textContent = (gameData.genres || []).map(g => g.description).join(", ");
         preview.classList.remove('hidden');
+        
+        // Auto-fill manual fields if they exist
+        if (prefix === 'steam') {
+            document.getElementById('game-name').value = gameData.name;
+            document.getElementById('game-description').value = gameData.short_description || '';
+        }
     }
 
     async saveGame() {
         const steamLink = document.getElementById('steam-link').value.trim();
+        const manualName = document.getElementById('game-name').value.trim();
+        const manualDescription = document.getElementById('game-description').value.trim();
+        
         if (!steamLink) {
             this.showNotification('Bitte gib einen Steam-Link ein!', 'error');
-                return;
-            }
+            return;
+        }
+        
+        if (!manualName) {
+            this.showNotification('Bitte gib einen Spielnamen ein!', 'error');
+            return;
+        }
             
         try {
             const appid = this.extractSteamAppId(steamLink);
@@ -442,11 +456,11 @@ class GamingPlatform {
 
             const gameData = await this.fetchSteamGameData(appid);
             const gameToSave = {
-                name: gameData.name,
+                name: manualName, // Use manual input instead of Steam data
                 steamLink: steamLink,
                 image: gameData.header_image,
                 genres: (gameData.genres || []).map(g => g.description),
-                description: gameData.short_description || "",
+                description: manualDescription || gameData.short_description || "", // Use manual input, fallback to Steam
                 unreleased: gameData.release_date && gameData.release_date.coming_soon === true,
                 timestamp: firebase.firestore.FieldValue.serverTimestamp()
             };
@@ -825,6 +839,10 @@ class GamingPlatform {
             document.getElementById('steam-name').textContent = gameData.name || '';
             document.getElementById('steam-genres').textContent = (gameData.genres || []).map(g => g.description || g).join(", ");
             
+            // Populate manual fields
+            document.getElementById('game-name').value = gameData.name || '';
+            document.getElementById('game-description').value = gameData.description || '';
+            
             // Show preview if image exists
             if (gameData.image) {
                 document.getElementById('steam-image').src = gameData.image;
@@ -1015,6 +1033,10 @@ class GamingPlatform {
         document.getElementById("steam-genres").textContent = "";
         document.getElementById("steam-image").src = "";
         document.getElementById('game-form').dataset.steamGame = "";
+        
+        // Reset manual fields
+        document.getElementById("game-name").value = "";
+        document.getElementById("game-description").value = "";
     }
 
     resetSuggestForm() {

@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-    <meta name="description" content="HigherCellF Games – Spiele Für den TikTok Streamer HigherCellF" />
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
@@ -60,11 +59,17 @@
 
                 <div class="admin-section">
                     <img id="admin-logo" src="#" alt="Admin Logo" class="admin-logo">
-                <button id="admin-login-btn" class="admin-login-btn">
-                    <i class="fas fa-user-shield"></i>
-                    Login Away亗
-                </button>
-            </div>
+                    <div class="login-buttons-container">
+                        <button id="admin-login-btn" class="admin-login-btn">
+                            <i class="fas fa-user-shield"></i>
+                            Login Away亗
+                        </button>
+                        <button id="streamer-login-btn" class="streamer-login-btn">
+                            <i class="fas fa-gamepad"></i>
+                            Streamer Login
+                        </button>
+                    </div>
+                </div>
         </header>
             
             <div class="header-divider"></div>
@@ -92,6 +97,14 @@
                 <i class="fas fa-sync"></i>
                 Genres aktualisieren
             </button>
+        </section>
+
+        <!-- Streamer Panel -->
+        <section id="streamer-panel" class="streamer-panel hidden">
+            <div class="streamer-info">
+                <h3><i class="fas fa-gamepad"></i> HigherCellF Streamer Panel</h3>
+                <p>Markiere Spiele als gespielt, die du im Stream gespielt hast</p>
+            </div>
         </section>
 
         <!-- Action Buttons -->
@@ -297,6 +310,29 @@
                             Login
                         </button>
                         <button id="login-cancel" class="cancel-btn">
+                            <i class="fas fa-times"></i>
+                            Abbrechen
+                        </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        <!-- Streamer Login Modal -->
+            <div id="streamer-login-modal" class="modal hidden">
+                <div class="modal-content login-content">
+                <h2><i class="fas fa-gamepad"></i> Streamer Login</h2>
+                    <div class="login-form">
+                    <div class="form-group">
+                        <label for="streamer-password">Streamer Passwort</label>
+                        <input type="password" id="streamer-password" placeholder="Streamer Passwort eingeben">
+                    </div>
+                        <div class="login-buttons">
+                        <button id="streamer-login-submit" class="login-btn">
+                            <i class="fas fa-sign-in-alt"></i>
+                            Streamer Login
+                        </button>
+                        <button id="streamer-login-cancel" class="cancel-btn">
                             <i class="fas fa-times"></i>
                             Abbrechen
                         </button>

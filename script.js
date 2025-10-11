@@ -8,6 +8,7 @@ class GamingPlatform {
         this.currentTab = 'all';
         this.originalGamesOrder = [];
         this.isLoading = false;
+        this.isStreamerLoggedIn = false;
         
         this.init();
     }
@@ -51,6 +52,9 @@ class GamingPlatform {
     async setupEventListeners() {
         // Admin Panel Events
         this.setupAdminEvents();
+        
+        // Streamer Panel Events
+        this.setupStreamerEvents();
         
         // Game Management Events
         this.setupGameEvents();
@@ -109,6 +113,28 @@ class GamingPlatform {
                 await this.bulkUpdateGenres();
             });
         }
+    }
+
+    setupStreamerEvents() {
+        // Streamer Login
+        document.getElementById('streamer-login-btn').addEventListener('click', () => {
+            this.openModal('streamer-login-modal');
+        });
+
+        document.getElementById('streamer-login-submit').addEventListener('click', async () => {
+            await this.handleStreamerLogin();
+        });
+
+        document.getElementById('streamer-login-cancel').addEventListener('click', () => {
+            this.closeModal('streamer-login-modal');
+        });
+
+        // Enter key for streamer login
+        document.getElementById('streamer-password').addEventListener('keypress', async (e) => {
+            if (e.key === 'Enter') {
+                await this.handleStreamerLogin();
+            }
+        });
     }
 
     setupGameEvents() {
@@ -266,6 +292,48 @@ class GamingPlatform {
             return false;
         } catch (error) {
             console.error("Error checking password:", error);
+            return false;
+        }
+    }
+
+    // Streamer Login Functions
+    async handleStreamerLogin() {
+        const password = document.getElementById('streamer-password').value;
+        
+        if (!password.trim()) {
+            this.showNotification('Bitte geben Sie ein Streamer-Passwort ein', 'error');
+            return;
+        }
+        
+        try {
+            const isValid = await this.checkStreamerPassword(password);
+            if (isValid) {
+                this.isStreamerLoggedIn = true;
+                document.getElementById('streamer-panel').classList.remove('hidden');
+                this.closeModal('streamer-login-modal');
+                document.getElementById('streamer-password').value = '';
+                this.showNotification('Streamer-Login erfolgreich! 🎮', 'success');
+                await this.renderGames(); // Re-render to show streamer buttons
+            } else {
+                this.showNotification('Falsches Streamer-Passwort!', 'error');
+            }
+        } catch (error) {
+            console.error('Streamer login error:', error);
+            this.showNotification('Fehler beim Streamer-Login', 'error');
+        }
+    }
+
+    async checkStreamerPassword(inputPassword) {
+        try {
+            const doc = await db.collection("settings").doc("streamer").get();
+            if (doc.exists) {
+                const data = doc.data();
+                const hashedInput = CryptoJS.SHA256(inputPassword).toString();
+                return hashedInput === data.passwordHash;
+            }
+            return false;
+        } catch (error) {
+            console.error("Error checking streamer password:", error);
             return false;
         }
     }
@@ -729,6 +797,7 @@ class GamingPlatform {
                     ${this.createGenreTags(game.genres)}
                 </div>
                 ${this.createAdminButtons(game)}
+                ${this.createStreamerButtons(game)}
             </div>
         `;
 
@@ -803,6 +872,21 @@ class GamingPlatform {
                 </button>
                 <button class="toggle-played-btn" onclick="gamingPlatform.togglePlayed('${game.id}', ${game.played})" title="${game.played ? 'Als nicht gespielt markieren' : 'Als gespielt markieren'}">
                     <i class="fas fa-${game.played ? 'undo' : 'check-circle'}"></i>
+                </button>
+            </div>
+        `;
+    }
+
+    createStreamerButtons(game) {
+        if (!this.isStreamerLoggedIn) {
+            return '';
+        }
+
+        return `
+            <div class="streamer-buttons">
+                <button class="streamer-played-btn" onclick="gamingPlatform.toggleStreamerPlayed('${game.id}', ${game.played})" title="${game.played ? 'Als nicht im Stream gespielt markieren' : 'Als im Stream gespielt markieren'}">
+                    <i class="fas fa-${game.played ? 'undo' : 'check-circle'}"></i>
+                    ${game.played ? 'Nicht gespielt' : 'Gespielt'}
                 </button>
             </div>
         `;
@@ -883,6 +967,18 @@ class GamingPlatform {
         } catch (error) {
             console.error("Error toggling played:", error);
             this.showNotification('Fehler beim Umschalten des Status', 'error');
+        }
+    }
+
+    // Streamer Game Management
+    async toggleStreamerPlayed(gameId, currentStatus) {
+        try {
+            await db.collection("games").doc(gameId).update({ played: !currentStatus });
+            await this.renderGames();
+            this.showNotification(`Spiel als ${!currentStatus ? 'im Stream gespielt' : 'nicht im Stream gespielt'} markiert!`, 'success');
+        } catch (error) {
+            console.error("Error toggling streamer played:", error);
+            this.showNotification('Fehler beim Umschalten des Streamer-Status', 'error');
         }
     }
 

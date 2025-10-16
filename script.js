@@ -120,7 +120,14 @@ class GamingPlatform {
         const mainLoginBtn = document.getElementById('main-login-btn');
         if (mainLoginBtn) {
             mainLoginBtn.addEventListener('click', () => {
-                this.showLoginOptions();
+                // Check if admin is logged in
+                if (this.isAdminLoggedIn()) {
+                    this.logoutAdmin();
+                } else if (this.isStreamerLoggedIn) {
+                    this.logoutStreamer();
+                } else {
+                    this.showLoginOptions();
+                }
             });
         }
 
@@ -673,6 +680,9 @@ class GamingPlatform {
                 this.updateGenreFilterButtons(),
                 this.updateSuggestionCount()
             ]);
+            
+            // Update login button state
+            this.updateLoginButton();
         } catch (error) {
             console.error('Error in loadInitialData:', error);
             // Continue even if some data fails to load
@@ -695,6 +705,7 @@ class GamingPlatform {
                 this.closeModal('login-modal');
                 document.getElementById('admin-password').value = '';
                 await this.loadSocialLinks();
+                this.updateLoginButton();
                 this.showNotification('Admin-Login erfolgreich! 🔐', 'success');
             } else {
                 this.showNotification('Falsches Passwort!', 'error');
@@ -702,6 +713,49 @@ class GamingPlatform {
         } catch (error) {
             console.error('Login error:', error);
             this.showNotification('Fehler beim Login', 'error');
+        }
+    }
+
+    isAdminLoggedIn() {
+        return !document.getElementById('admin-panel').classList.contains('hidden');
+    }
+
+    logoutAdmin() {
+        // Hide admin panel
+        document.getElementById('admin-panel').classList.add('hidden');
+        
+        // Reset edit mode
+        this.isEditMode = false;
+        const editBtn = document.getElementById('edit-games-btn');
+        if (editBtn) {
+            editBtn.innerHTML = '<i class="fas fa-edit"></i> Spiele bearbeiten';
+        }
+        
+        // Re-render games to hide admin buttons
+        this.renderGames();
+        
+        // Update login button
+        this.updateLoginButton();
+        
+        this.showNotification('Admin-Logout erfolgreich! 👋', 'success');
+    }
+
+    updateLoginButton() {
+        const loginBtn = document.getElementById('main-login-btn');
+        if (!loginBtn) return;
+        
+        if (this.isAdminLoggedIn()) {
+            loginBtn.innerHTML = '<i class="fas fa-sign-out-alt"></i> Admin Logout';
+            loginBtn.style.background = 'linear-gradient(45deg, #dc2626, #b91c1c)';
+            loginBtn.title = 'Als Admin ausloggen';
+        } else if (this.isStreamerLoggedIn) {
+            loginBtn.innerHTML = '<i class="fas fa-sign-out-alt"></i> Streamer Logout';
+            loginBtn.style.background = 'linear-gradient(45deg, #059669, #047857)';
+            loginBtn.title = 'Als Streamer ausloggen';
+        } else {
+            loginBtn.innerHTML = '<i class="fas fa-user"></i> Login';
+            loginBtn.style.background = '';
+            loginBtn.title = 'Als Admin oder Streamer einloggen';
         }
     }
 
@@ -736,6 +790,7 @@ class GamingPlatform {
                 document.getElementById('streamer-panel').classList.remove('hidden');
                 this.closeModal('streamer-login-modal');
                 document.getElementById('streamer-password').value = '';
+                this.updateLoginButton();
                 this.showNotification('Streamer-Login erfolgreich! 🎮', 'success');
                 await this.renderGames(); // Re-render to show streamer buttons
             } else {
@@ -745,6 +800,24 @@ class GamingPlatform {
             console.error('Streamer login error:', error);
             this.showNotification('Fehler beim Streamer-Login', 'error');
         }
+    }
+
+    isStreamerLoggedIn() {
+        return this.isStreamerLoggedIn;
+    }
+
+    logoutStreamer() {
+        // Hide streamer panel
+        this.isStreamerLoggedIn = false;
+        document.getElementById('streamer-panel').classList.add('hidden');
+        
+        // Re-render games to hide streamer buttons
+        this.renderGames();
+        
+        // Update login button
+        this.updateLoginButton();
+        
+        this.showNotification('Streamer-Logout erfolgreich! 👋', 'success');
     }
 
     async checkStreamerPassword(inputPassword) {

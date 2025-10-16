@@ -40,6 +40,9 @@ class GamingPlatform {
         try {
             this.showLoading();
             
+            // Ensure page is at top during initialization
+            window.scrollTo(0, 0);
+            
             // Set a timeout to hide loading indicator after 10 seconds as fallback
             const loadingTimeout = setTimeout(() => {
                 this.hideLoading();
@@ -52,6 +55,12 @@ class GamingPlatform {
             // Clear timeout and hide loading
             clearTimeout(loadingTimeout);
             this.hideLoading();
+            
+            // Final scroll to top after everything is loaded
+            setTimeout(() => {
+                window.scrollTo(0, 0);
+            }, 100);
+            
             this.showNotification('Plattform erfolgreich geladen! 🎮', 'success');
         } catch (error) {
             console.error('Initialization error:', error);
@@ -151,6 +160,9 @@ class GamingPlatform {
 
         // Ensure loading indicator is hidden when switching pages
         this.hideLoading();
+
+        // Scroll to top when switching pages
+        window.scrollTo({ top: 0, behavior: 'smooth' });
 
         // Load content based on page
         if (page === 'games') {
@@ -2286,7 +2298,28 @@ class GamingPlatform {
 
 // Initialize the platform when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
+    // Ensure page starts at the top
+    window.scrollTo(0, 0);
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
+    
     window.gamingPlatform = new GamingPlatform();
+});
+
+// Ensure page stays at top on window load
+window.addEventListener('load', () => {
+    window.scrollTo(0, 0);
+    document.body.scrollTop = 0;
+    document.documentElement.scrollTop = 0;
+});
+
+// Ensure page stays at top when navigating back/forward
+window.addEventListener('pageshow', (event) => {
+    if (event.persisted) {
+        window.scrollTo(0, 0);
+        document.body.scrollTop = 0;
+        document.documentElement.scrollTop = 0;
+    }
 });
 
 // Global functions for backward compatibility

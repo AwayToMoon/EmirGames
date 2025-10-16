@@ -14,14 +14,17 @@
     <link rel="icon" type="image/x-icon" href="https://cdn.discordapp.com/avatars/1022776761454440539/a38a1d044ac1e9fbcf24ab25bbf4afbb?size=16">
     <link rel="apple-touch-icon" href="https://cdn.discordapp.com/avatars/1022776761454440539/a38a1d044ac1e9fbcf24ab25bbf4afbb?size=180">
     
+    <!-- JSON-LD Schema für bessere SEO -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
       "@type": "WebSite",
       "name": "HigherCellF Games",
-      "description": "Hier findest du eine kuratierte Sammlung von Spielen, die du nach Genre filtern, und Vorschläge einreichen kannst.",
       "url": "https://soulstate.store",
-      "logo": "https://cdn.discordapp.com/avatars/1022776761454440539/a38a1d044ac1e9fbcf24ab25bbf4afbb?size=512",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://cdn.discordapp.com/avatars/1022776761454440539/a38a1d044ac1e9fbcf24ab25bbf4afbb?size=512"
+      },
       "sameAs": [
         "https://www.instagram.com/highercellffx/",
         "https://www.tiktok.com/@creator_emir999",
@@ -53,50 +56,54 @@
     </div>
 
     <div class="content-container">
-        <!-- Header Section -->
-        <header class="header">
-                <div class="logo-title-container">
-                <img id="header-logo" src="https://cdn.discordapp.com/avatars/1022776761454440539/a38a1d044ac1e9fbcf24ab25bbf4afbb?size=1024" alt="HigherCellF Games Logo" class="header-logo">
-                    <h1 class="site-title">HigherCellF Games</h1>
-                </div>
-                
-            <nav class="social-media">
-                <a href="https://streamelements.com/away2moon/tip" class="kofi-btn" target="_blank" rel="noopener">
-                        <i class="fas fa-mug-hot"></i>
-                    <span>Support Mich Gern :D</span>
-                    </a>
-                    <div class="social-buttons">
-                    <a href="#" class="social-btn" id="tiktok-btn" title="TikTok" target="_blank" rel="noopener">
-                            <i class="fab fa-tiktok"></i>
-                        </a>
-                    <a href="#" class="social-btn" id="discord-btn" title="Discord" target="_blank" rel="noopener">
-                            <i class="fab fa-discord"></i>
-                        </a>
-                    <a href="#" class="social-btn" id="instagram-btn" title="Instagram" target="_blank" rel="noopener">
-                            <i class="fab fa-instagram"></i>
-                        </a>
-                    <a href="#" class="social-btn" id="kick-btn" title="Kick" target="_blank" rel="noopener">
-                            <i class="fas fa-k"></i>
-                        </a>
-                </div>
-            </nav>
-
-                <div class="admin-section">
-                    <img id="admin-logo" src="#" alt="Admin Logo" class="admin-logo">
-                    <div class="login-buttons-container">
-                        <button id="admin-login-btn" class="admin-login-btn">
-                            <i class="fas fa-user-shield"></i>
-                            Login Away亗
-                        </button>
-                        <button id="streamer-login-btn" class="streamer-login-btn">
-                            <i class="fas fa-gamepad"></i>
-                            Streamer Login
-                        </button>
+        <!-- Modern Navigation Header -->
+        <header class="modern-header">
+            <div class="nav-container">
+                <!-- Logo/Brand Section -->
+                <div class="brand-section">
+                    <div class="logo-icon">
+                        <img src="https://cdn.discordapp.com/avatars/1022776761454440539/a38a1d044ac1e9fbcf24ab25bbf4afbb?size=512" alt="HigherCellF Avatar" class="brand-avatar">
+                    </div>
+                    <div class="brand-text">
+                        <span class="brand-primary">HigherCellF</span>
+                        <span class="brand-secondary">Games</span>
                     </div>
                 </div>
+
+                <!-- Navigation Links -->
+                <nav class="main-navigation">
+                    <a href="#start" class="nav-link active" data-page="start">
+                        <i class="fas fa-home"></i>
+                        Start
+                    </a>
+                    <a href="#games" class="nav-link" data-page="games">
+                        <i class="fas fa-th-large"></i>
+                        Spiele
+                    </a>
+                    <a href="#about" class="nav-link" data-page="about">
+                        <i class="fas fa-info-circle"></i>
+                        Über uns
+                    </a>
+                    <a href="#contact" class="nav-link" data-page="contact">
+                        <i class="fas fa-envelope"></i>
+                        Kontakt
+                    </a>
+                </nav>
+
+                <!-- Right Section -->
+                <div class="nav-right">
+                    <button id="support-btn" class="support-btn">
+                        <i class="fas fa-heart"></i>
+                        Supportet mich
+                    </button>
+                    <button id="main-login-btn" class="login-btn">
+                        <i class="fas fa-user"></i>
+                        Login
+                    </button>
+                </div>
+            </div>
         </header>
             
-            <div class="header-divider"></div>
 
         <!-- Admin Panel -->
         <section id="admin-panel" class="admin-panel hidden">
@@ -131,90 +138,254 @@
             </div>
         </section>
 
-        <!-- Action Buttons -->
-        <section class="action-buttons">
-            <button id="game-randomizer" class="randomizer-btn">
-                <i class="fas fa-dice"></i>
-                Zufälliges Spiel
-            </button>
-            <button id="suggest-game-btn" class="suggest-button">
-                <i class="fas fa-plus-circle"></i>
-                Spiel vorschlagen
-            </button>
-        </section>
             
-        <!-- Main Content -->
-        <main class="main-content-flex">
-            <!-- Genre Filter Sidebar -->
-            <aside class="genre-filter-container">
-                    <h3>Filter by Genre</h3>
-                    <div class="genre-filter-buttons">
-                    <button class="genre-filter-btn active" data-genre="all">
-                        <i class="fas fa-th-large"></i>
-                        All
-                    </button>
-                    <button class="genre-filter-btn" data-genre="Action">
-                        <i class="fas fa-fire"></i>
-                        Action
-                    </button>
-                    <button class="genre-filter-btn" data-genre="Adventure">
-                        <i class="fas fa-compass"></i>
-                        Adventure
-                    </button>
-                    <button class="genre-filter-btn" data-genre="Soulslike">
-                        <i class="fas fa-skull"></i>
-                        Soulslike
-                    </button>
-                    <button class="genre-filter-btn" data-genre="Shooter">
-                        <i class="fas fa-crosshairs"></i>
-                        Shooter
-                    </button>
-                    <button class="genre-filter-btn" data-genre="Sports">
-                        <i class="fas fa-futbol"></i>
-                        Sports
-                    </button>
-                    <button class="genre-filter-btn" data-genre="Strategy">
-                        <i class="fas fa-chess"></i>
-                        Strategy
-                    </button>
-                    <button class="genre-filter-btn" data-genre="Puzzle">
-                        <i class="fas fa-puzzle-piece"></i>
-                        Puzzle
-                    </button>
-                    <button class="genre-filter-btn" data-genre="Roblox">
-                        <i class="fas fa-cube"></i>
-                        Roblox
-                    </button>
-                    <button class="genre-filter-btn" data-genre="Horror">
-                        <i class="fas fa-ghost"></i>
-                        Horror
-                    </button>
-                    <button class="genre-filter-btn" data-genre="Story">
-                        <i class="fas fa-book-open"></i>
-                        Story
-                    </button>
+        <!-- Main Content Pages -->
+        <main class="main-content">
+            <!-- Start Page -->
+            <section id="start-page" class="page-content active">
+                <div class="start-hero">
+                    <h1>Willkommen bei <span class="brand-name">HigherCellF Games</span>!</h1>
+                    <div class="important-notice">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>WICHTIG: DIESE SEITE IST KEIN STORE/SHOP!</strong>
+                    </div>
+                    <p>
+                        Hier findest du eine Sammlung von Spielen, die du nach Genre filtern, und Vorschläge einreichen kannst.<br><br>
+                        <b>So funktioniert's:</b><br>
+                        <ul>
+                            <li><b>Genre-Filter:</b> Wähle dein Lieblingsgenre aus, um passende Spiele zu finden.</li>
+                            <li><b>Spiel-Tabs:</b> Wechsle zwischen "Alle Spiele", "Unreleased" und "Gespielt".</li>
+                            <li><b>Zufälliges Spiel:</b> Lass dich von einem zufälligen Spiel überraschen!</li>
+                            <li><b>Spiel vorschlagen:</b> Hast du ein cooles Spiel entdeckt? Teile es mit uns!</li>
+                        </ul>
+                        Viel Spaß beim Stöbern und Entdecken! 🎮
+                    </p>
                 </div>
-            </aside>
 
-            <!-- Games Content -->
-            <div class="games-content">
-                <nav class="game-tabs-container">
-                    <button id="tab-all-games" class="game-tab-btn active">
-                        <i class="fas fa-th-large"></i>
-                        Alle Spiele
-                    </button>
-                    <button id="tab-unreleased-games" class="game-tab-btn">
-                        <i class="fas fa-clock"></i>
-                        Unreleased Spiele
-                    </button>
-                    <button id="tab-played-games" class="game-tab-btn">
-                        <i class="fas fa-check-circle"></i>
-                        Played Games
-                    </button>
-                </nav>
+                <!-- Social Media Section -->
+                <div class="social-media-section">
+                    <div class="social-media-container">
+                        <h3>Folge HigherCellF auf Social Media</h3>
+                        <div class="social-media-buttons">
+                            <a href="#" id="social-tiktok" class="social-media-btn" title="TikTok" target="_blank" rel="noopener">
+                                <i class="fab fa-tiktok"></i>
+                                TikTok
+                            </a>
+                            <a href="#" id="social-instagram" class="social-media-btn" title="Instagram" target="_blank" rel="noopener">
+                                <i class="fab fa-instagram"></i>
+                                Instagram
+                            </a>
+                            <a href="#" id="social-discord" class="social-media-btn" title="Discord" target="_blank" rel="noopener">
+                                <i class="fab fa-discord"></i>
+                                Discord
+                            </a>
+                            <a href="#" id="social-youtube" class="social-media-btn" title="YouTube" target="_blank" rel="noopener">
+                                <i class="fab fa-youtube"></i>
+                                YouTube
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+
+            <!-- Games Page -->
+            <section id="games-page" class="page-content">
+                <div class="games-header">
+                    <h1>Alle Spiele</h1>
+                    
+                    <!-- Action Buttons -->
+                    <div class="action-buttons">
+                        <button id="random-game-btn" class="action-btn">
+                            <i class="fas fa-dice"></i>
+                            Zufälliges Spiel
+                        </button>
+                        <button id="suggest-game-btn" class="action-btn">
+                            <i class="fas fa-lightbulb"></i>
+                            Spiel vorschlagen
+                        </button>
+                    </div>
+                    
+                    <div class="games-controls">
+                        <div class="genre-filter-container">
+                            <h3>Filter by Genre</h3>
+                            <div class="genre-filter-buttons">
+                                <button class="genre-filter-btn active" data-genre="all">
+                                    <i class="fas fa-th-large"></i>
+                                    All
+                                </button>
+                                <button class="genre-filter-btn" data-genre="Action">
+                                    <i class="fas fa-fire"></i>
+                                    Action
+                                </button>
+                                <button class="genre-filter-btn" data-genre="Adventure">
+                                    <i class="fas fa-compass"></i>
+                                    Adventure
+                                </button>
+                                <button class="genre-filter-btn" data-genre="Soulslike">
+                                    <i class="fas fa-skull"></i>
+                                    Soulslike
+                                </button>
+                                <button class="genre-filter-btn" data-genre="Shooter">
+                                    <i class="fas fa-crosshairs"></i>
+                                    Shooter
+                                </button>
+                                <button class="genre-filter-btn" data-genre="Sports">
+                                    <i class="fas fa-futbol"></i>
+                                    Sports
+                                </button>
+                                <button class="genre-filter-btn" data-genre="Strategy">
+                                    <i class="fas fa-chess"></i>
+                                    Strategy
+                                </button>
+                                <button class="genre-filter-btn" data-genre="Puzzle">
+                                    <i class="fas fa-puzzle-piece"></i>
+                                    Puzzle
+                                </button>
+                                <button class="genre-filter-btn" data-genre="Roblox">
+                                    <i class="fas fa-cube"></i>
+                                    Roblox
+                                </button>
+                                <button class="genre-filter-btn" data-genre="Horror">
+                                    <i class="fas fa-ghost"></i>
+                                    Horror
+                                </button>
+                                <button class="genre-filter-btn" data-genre="Story">
+                                    <i class="fas fa-book-open"></i>
+                                    Story
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <nav class="game-tabs-container">
+                            <button id="tab-all-games" class="game-tab-btn active">
+                                <i class="fas fa-th-large"></i>
+                                Alle Spiele
+                            </button>
+                            <button id="tab-unreleased-games" class="game-tab-btn">
+                                <i class="fas fa-clock"></i>
+                                Unreleased Spiele
+                            </button>
+                            <button id="tab-played-games" class="game-tab-btn">
+                                <i class="fas fa-check-circle"></i>
+                                Played Games
+                            </button>
+                        </nav>
+                    </div>
+                </div>
                 
                 <div id="game-list" class="game-list"></div>
-            </div>
+            </section>
+
+            <!-- About Page -->
+            <section id="about-page" class="page-content">
+                <div class="about-hero">
+                    <h1>Über <span class="brand-name">HigherCellF Games</span></h1>
+                    <p class="about-subtitle">Die Gaming-Plattform für Streamer und Community</p>
+                    
+                    <div class="about-content-grid">
+                        <div class="about-column">
+                            <h3>Was ist HigherCellF Games?</h3>
+                            <p>HigherCellF Games ist eine speziell für den Streamer HigherCellF entwickelte Plattform, die seine Spiele-Sammlung organisiert und präsentiert. Hier können Zuschauer sehen, welche Spiele HigherCellF im Stream spielt, welche noch geplant sind und sogar eigene Vorschläge einreichen.</p>
+                            <p>Die Plattform verbindet HigherCellF mit seiner Community und macht das Gaming-Erlebnis interaktiver und transparenter! 🎮</p>
+                        </div>
+                        
+                        <div class="about-column">
+                            <h3>Wie ist HigherCellF Games entstanden?</h3>
+                            <p>Die Idee entstand aus dem Wunsch, HigherCellFs Gaming-Content besser zu organisieren und mit der Community zu teilen. Als Streamer wollte HigherCellF eine zentrale Plattform, wo Zuschauer seine Spiele entdecken und eigene Vorschläge machen können.</p>
+                            <p>So entstand eine einzigartige Verbindung zwischen Streamer und Community - eine Plattform, die Gaming transparenter und interaktiver macht! 🎮</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-section">
+                        <h3>Häufige Fragen</h3>
+                        
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                <span>Wie kann ich ein Spiel vorschlagen?</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                            <div class="faq-answer">
+                                <p>Klicke einfach auf den "Spiel vorschlagen" Button im Spiele Tab und fülle das Formular aus. Gib den Steam-Link des Spiels an und eine kurze Beschreibung, warum du es empfehlst. HigherCellF schaut sich alle Vorschläge an!</p>
+                            </div>
+                        </div>
+                        
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                <span>Was bedeuten die verschiedenen Tabs?</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                            <div class="faq-answer">
+                                <p><strong>Alle Spiele:</strong> Komplette Sammlung aller Spiele<br>
+                                <strong>Unreleased:</strong> Spiele, die noch nicht erschienen sind<br>
+                                <strong>Gespielt:</strong> Spiele, die HigherCellF bereits im Stream gespielt hat</p>
+                            </div>
+                        </div>
+                        
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                <span>Wie funktioniert der Zufalls-Button?</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                            <div class="faq-answer">
+                                <p>Der "Zufälliges Spiel" Button wählt ein zufälliges Spiel aus der aktuellen Ansicht aus und scrollt automatisch dorthin. Perfekt, wenn du dich überraschen lassen möchtest!</p>
+                            </div>
+                        </div>
+                        
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                <span>Kann ich HigherCellF direkt kontaktieren?</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                            <div class="faq-answer">
+                                <p>Ja! Du findest alle Kontaktmöglichkeiten im Kontakt Tab. Dort sind Discord, Instagram, TikTok und YouTube verlinkt. Oder nutze den "Supportet mich" Button für direkte Unterstützung!</p>
+                            </div>
+                        </div>
+                        
+                        <div class="faq-item">
+                            <div class="faq-question">
+                                <span>Werden alle Spielvorschläge berücksichtigt?</span>
+                                <i class="fas fa-chevron-down"></i>
+                            </div>
+                            <div class="faq-answer">
+                                <p>HigherCellF schaut sich alle Vorschläge an, aber nicht jedes Spiel passt zum Stream-Format. Spiele mit guter Story, interessantem Gameplay oder Community-Interesse haben die besten Chancen!</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Contact Page -->
+            <section id="contact-page" class="page-content">
+                <div class="contact-hero">
+                    <h1>Kontakt <span class="contact-action">aufnehmen</span></h1>
+                    <p class="contact-subtitle">Fragen, Vorschläge oder Hilfe nötig? Wir sind da!</p>
+                    
+                    <div class="contact-info-section">
+                        <h2>Kontaktinformationen</h2>
+                        <p>Wir helfen dir gern bei Fragen oder Problemen.</p>
+                    </div>
+                    
+                    <div class="contact-cards">
+                        <div class="contact-card">
+                            <div class="contact-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <h3>Schreib uns</h3>
+                            <a href="mailto:marvinweiss28@gmail.com" class="contact-link">marvinweiss28@gmail.com</a>
+                        </div>
+                        
+                        <div class="contact-card">
+                            <div class="contact-icon">
+                                <i class="fab fa-discord"></i>
+                            </div>
+                            <h3>Tritt unserem Discord bei</h3>
+                            <a href="https://discord.com/invite/32HKVGXePw" class="contact-link">https://discord.gg/highercellf</a>
+                        </div>
+                        
+                    </div>
+                </div>
+            </section>
         </main>
 
         <!-- Modals -->
@@ -391,26 +562,25 @@
 
         <!-- Footer -->
         <footer class="footer-container">
-                <div class="made-by-container">
-                    <div class="made-by">
-                        Made With <span class="heart">❤</span> from Away
-                    </div>
-                    <div class="footer-social">
+            <div class="footer-content">
+                <div class="made-by">
+                    Made With <span class="heart">❤</span> from Away
+                </div>
+                <div class="copyright">
+                    Copyright © 2025 Marvin Weiss. Alle Rechte vorbehalten. |
+                    <a href="#" id="impressum-link" class="impressum-link">Impressum</a>
+                </div>
+                <div class="footer-social">
                     <a href="#" class="footer-social-btn" id="footer-instagram" title="Instagram" target="_blank" rel="noopener">
-                            <i class="fab fa-instagram"></i>
-                        </a>
+                        <i class="fab fa-instagram"></i>
+                    </a>
                     <a href="#" class="footer-social-btn" id="footer-tiktok" title="TikTok" target="_blank" rel="noopener">
-                            <i class="fab fa-tiktok"></i>
-                        </a>
+                        <i class="fab fa-tiktok"></i>
+                    </a>
                     <a href="#" class="footer-social-btn" id="footer-twitter" title="X (Twitter)" target="_blank" rel="noopener">
-                            <i class="fa-solid fa-x"></i>
-                        </a>
-                    </div>
-
-            </div>
-            <div class="copyright">
-                Copyright © 2025 Marvin Weiss. Alle Rechte vorbehalten. |
-                <a href="#" id="impressum-link" class="impressum-link">Impressum</a>
+                        <i class="fa-solid fa-x"></i>
+                    </a>
+                </div>
             </div>
         </footer>
     </div>
@@ -455,33 +625,6 @@
     <!-- Notification System -->
     <div id="notification-container" class="notification-container"></div>
     
-    <!-- Willkommens-Modal -->
-    <div id="welcome-modal" class="modal">
-        <div class="modal-content welcome-content">
-            <h2>Willkommen bei HigherCellF Games!</h2>
-            <div class="important-notice">
-                <i class="fas fa-exclamation-triangle"></i>
-                <strong>WICHTIG: DIESE SEITE IST KEIN STORE/SHOP!</strong>
-            </div>
-            <p>
-                Hier findest du eine Sammlung von Spielen, die du nach Genre filtern, und Vorschläge einreichen kannst.<br><br>
-                <b>So funktioniert's:</b><br>
-                <ul style="text-align:left; margin: 1em 0 1em 1.5em;">
-                    <li>Nutze die <b>Genre-Filter</b> links, um Spiele nach deinem Geschmack zu finden.</li>
-                    <li>Mit den <b>Tabs</b> oben kannst du zwischen allen, unreleased und gespielten Spielen wechseln.</li>
-                    <li>Über <b>Zufälliges Spiel</b> bekommst du einen Spieletipp.</li>
-                    <li>Du kannst <b>eigene Vorschläge</b> einreichen – einfach auf "Spiel vorschlagen" klicken!</li>
-                </ul>
-                Viel Spaß beim Stöbern und Entdecken! 🎮
-            </p>
-            <button id="welcome-ok-btn" class="save-btn" style="margin-top: 1.5em; min-width: 180px;">Okay, Verstanden</button>
-            <div style="margin-top: 1.2em; text-align:center;">
-                <label style="cursor:pointer; font-size:1em;">
-                    <input type="checkbox" id="welcome-hide-today" style="margin-right:8px; vertical-align:middle;">Heute nicht mehr anzeigen
-                </label>
-            </div>
-        </div>
-    </div>
 
     <!-- Impressum Modal -->
     <div id="imprint-modal" class="modal hidden">

@@ -1259,32 +1259,6 @@ class GamingPlatform {
                             <p>Lade Spielinformationen von Steam...</p>
                         </div>
                     </div>
-                    
-                    <div class="game-detail-info">
-                        <h3>Spielinformationen</h3>
-                        <div class="info-grid">
-                            <div class="info-item">
-                                <span class="info-label">Entwickler:</span>
-                                <span class="info-value loading-text">Lädt...</span>
-                            </div>
-                            <div class="info-item">
-                                <span class="info-label">Publisher:</span>
-                                <span class="info-value loading-text">Lädt...</span>
-                            </div>
-                            <div class="info-item">
-                                <span class="info-label">Veröffentlichung:</span>
-                                <span class="info-value loading-text">Lädt...</span>
-                            </div>
-                            <div class="info-item">
-                                <span class="info-label">Preis:</span>
-                                <span class="info-value loading-text">Lädt...</span>
-                            </div>
-                            <div class="info-item">
-                                <span class="info-label">Bewertung:</span>
-                                <span class="info-value loading-text">Lädt...</span>
-                            </div>
-                        </div>
-                    </div>
                 </div>
                 
                 <div class="game-detail-actions">
@@ -1292,15 +1266,16 @@ class GamingPlatform {
                         <i class="fab fa-steam"></i>
                         Auf Steam ansehen
                     </a>
-                    <a href="https://www.youtube.com/results?search_query=${encodeURIComponent(game.name + ' trailer')}" target="_blank" class="trailer-btn">
-                        <i class="fab fa-youtube"></i>
-                        Trailer ansehen
+                    <a href="https://steamdb.info/app/${this.extractSteamAppId(game.link)}/" target="_blank" class="trailer-btn">
+                        <i class="fas fa-database"></i>
+                        SteamDB
                     </a>
                 </div>
             </div>
         `;
         
         document.body.appendChild(modal);
+        
         
         // Load Steam data
         await this.loadSteamGameData(game, modal);
@@ -1352,6 +1327,22 @@ class GamingPlatform {
         } catch (error) {
             console.error('Error loading Steam data:', error);
             console.log('Falling back to local game data');
+            
+            // Show user-friendly error message
+            const descriptionElement = modal.querySelector('.game-detail-description');
+            if (descriptionElement) {
+                const errorDiv = document.createElement('div');
+                errorDiv.style.cssText = 'margin-top: 15px; padding: 10px; background: rgba(255, 107, 107, 0.1); border-left: 3px solid #ff6b6b; border-radius: 5px;';
+                errorDiv.innerHTML = `
+                    <small style="color: #ff6b6b;">
+                        <i class="fas fa-exclamation-triangle"></i> 
+                        Steam-Daten konnten nicht geladen werden. 
+                        <a href="${game.link}" target="_blank" style="color: #ff6b6b;">Auf Steam ansehen</a> für aktuelle Informationen.
+                    </small>
+                `;
+                descriptionElement.appendChild(errorDiv);
+            }
+            
             this.updateGameInfoWithFallback(modal, game);
         }
     }
@@ -1365,8 +1356,15 @@ class GamingPlatform {
     }
 
     async fetchSteamData(appId) {
+        const proxies = [
+            'https://api.allorigins.win/raw?url=',
+            'https://cors-anywhere.herokuapp.com/',
+            'https://api.codetabs.com/v1/proxy?quest='
+        ];
+        
+        // Try direct Steam API first
         try {
-            // Try direct Steam API first
+            console.log('Trying direct Steam API...');
             const response = await fetch(`https://store.steampowered.com/api/appdetails?appids=${appId}&l=german`, {
                 mode: 'cors',
                 headers: {
@@ -1381,31 +1379,45 @@ class GamingPlatform {
             const data = await response.json();
             
             if (data[appId] && data[appId].success) {
+                console.log('Direct Steam API successful!');
                 return data[appId].data;
             }
             throw new Error('Steam data not found');
             
         } catch (error) {
-            console.warn('Direct Steam API failed, trying CORS proxy:', error);
+            console.warn('Direct Steam API failed:', error);
             
-            // Fallback: Use CORS proxy for local development
-            try {
-                const proxyResponse = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(`https://store.steampowered.com/api/appdetails?appids=${appId}&l=german`)}`);
-                
-                if (!proxyResponse.ok) {
-                    throw new Error(`Proxy error! status: ${proxyResponse.status}`);
+            // Try multiple CORS proxies
+            for (let i = 0; i < proxies.length; i++) {
+                try {
+                    console.log(`Trying proxy ${i + 1}/${proxies.length}: ${proxies[i]}`);
+                    
+                    const proxyUrl = proxies[i] + encodeURIComponent(`https://store.steampowered.com/api/appdetails?appids=${appId}&l=german`);
+                    const proxyResponse = await fetch(proxyUrl, {
+                        headers: {
+                            'Accept': 'application/json',
+                        }
+                    });
+                    
+                    if (!proxyResponse.ok) {
+                        throw new Error(`Proxy ${i + 1} error! status: ${proxyResponse.status}`);
+                    }
+                    
+                    const data = await proxyResponse.json();
+                    
+                    if (data[appId] && data[appId].success) {
+                        console.log(`Proxy ${i + 1} successful!`);
+                        return data[appId].data;
+                    }
+                    throw new Error(`Steam data not found via proxy ${i + 1}`);
+                    
+                } catch (proxyError) {
+                    console.warn(`Proxy ${i + 1} failed:`, proxyError);
+                    if (i === proxies.length - 1) {
+                        // Last proxy failed
+                        throw new Error('All Steam API methods failed - CORS restrictions');
+                    }
                 }
-                
-                const data = await proxyResponse.json();
-                
-                if (data[appId] && data[appId].success) {
-                    return data[appId].data;
-                }
-                throw new Error('Steam data not found via proxy');
-                
-            } catch (proxyError) {
-                console.warn('CORS proxy also failed:', proxyError);
-                throw new Error('Unable to fetch Steam data - CORS restrictions in local development');
             }
         }
     }
@@ -1417,41 +1429,6 @@ class GamingPlatform {
             <h3>Beschreibung</h3>
             <p>${steamData.short_description || game.description || 'Keine Beschreibung verfügbar.'}</p>
         `;
-
-        // Update game info
-        const infoItems = modal.querySelectorAll('.info-item');
-        
-        // Developer
-        if (infoItems[0]) {
-            infoItems[0].querySelector('.info-value').textContent = steamData.developers ? steamData.developers.join(', ') : 'Unbekannt';
-        }
-        
-        // Publisher
-        if (infoItems[1]) {
-            infoItems[1].querySelector('.info-value').textContent = steamData.publishers ? steamData.publishers.join(', ') : 'Unbekannt';
-        }
-        
-        // Release Date
-        if (infoItems[2]) {
-            const releaseDate = steamData.release_date ? new Date(steamData.release_date.date).toLocaleDateString('de-DE') : 'Unbekannt';
-            infoItems[2].querySelector('.info-value').textContent = releaseDate;
-        }
-        
-        // Price
-        if (infoItems[3]) {
-            const price = steamData.price_overview ? 
-                `${steamData.price_overview.final_formatted}` : 
-                (steamData.is_free ? 'Kostenlos' : 'Unbekannt');
-            infoItems[3].querySelector('.info-value').textContent = price;
-        }
-        
-        // Rating
-        if (infoItems[4]) {
-            const rating = steamData.total_reviews ? 
-                `${Math.round((steamData.total_reviews.positive / steamData.total_reviews.total) * 100)}% positiv (${steamData.total_reviews.total} Bewertungen)` : 
-                'Keine Bewertungen';
-            infoItems[4].querySelector('.info-value').textContent = rating;
-        }
     }
 
     updateGameInfoWithFallback(modal, game) {
@@ -1463,21 +1440,13 @@ class GamingPlatform {
             <div style="margin-top: 15px; padding: 10px; background: rgba(255, 193, 7, 0.1); border-left: 3px solid #ffc107; border-radius: 5px;">
                 <small style="color: #ffc107;">
                     <i class="fas fa-info-circle"></i> 
-                    Steam-Daten nicht verfügbar (lokaler Test). 
+                    Steam-Daten nicht verfügbar (CORS-Beschränkungen). 
                     <a href="${game.link}" target="_blank" style="color: #ffc107;">Auf Steam ansehen</a> für aktuelle Informationen.
                 </small>
             </div>
         `;
-
-        // Update with fallback data
-        const infoItems = modal.querySelectorAll('.info-item');
-        
-        if (infoItems[0]) infoItems[0].querySelector('.info-value').textContent = game.developer || 'Unbekannt';
-        if (infoItems[1]) infoItems[1].querySelector('.info-value').textContent = game.publisher || 'Unbekannt';
-        if (infoItems[2]) infoItems[2].querySelector('.info-value').textContent = game.releaseDate || 'Unbekannt';
-        if (infoItems[3]) infoItems[3].querySelector('.info-value').textContent = game.price || 'Unbekannt';
-        if (infoItems[4]) infoItems[4].querySelector('.info-value').textContent = game.rating || 'Unbekannt';
     }
+
 
     closeGameDetailModal(modal) {
         // Restore background scrolling

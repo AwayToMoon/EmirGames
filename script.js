@@ -483,6 +483,14 @@ class GamingPlatform {
                 await this.bulkUpdateGenres();
             });
         }
+
+        // Validate Steam Links
+        const validateLinksBtn = document.getElementById('validate-steam-links-btn');
+        if (validateLinksBtn) {
+            validateLinksBtn.addEventListener('click', async () => {
+                await this.validateSteamLinks();
+            });
+        }
     }
 
     setupStreamerEvents() {
@@ -645,6 +653,7 @@ class GamingPlatform {
             // Erst Migrationen ausführen
             await this.migrateUnreleasedFlag();
             await this.migrateGenresToEnglish();
+            await this.migrateSteamLinks();
             
             // Dann alles andere parallel laden
             await Promise.all([
@@ -1262,14 +1271,24 @@ class GamingPlatform {
                 </div>
                 
                 <div class="game-detail-actions">
-                    <a href="${game.link}" target="_blank" class="steam-btn">
-                        <i class="fab fa-steam"></i>
-                        Auf Steam ansehen
-                    </a>
-                    <a href="https://steamdb.info/app/${this.extractSteamAppId(game.link)}/" target="_blank" class="trailer-btn">
-                        <i class="fas fa-database"></i>
-                        SteamDB
-                    </a>
+                    ${(() => {
+                        const steamLink = game.steamLink || game.link;
+                        return this.isValidSteamLink(steamLink) ? `
+                            <a href="${steamLink}" target="_blank" class="steam-btn">
+                                <i class="fab fa-steam"></i>
+                                Auf Steam ansehen
+                            </a>
+                            <a href="https://steamdb.info/app/${this.extractSteamAppId(steamLink)}/" target="_blank" class="trailer-btn">
+                                <i class="fas fa-database"></i>
+                                SteamDB
+                            </a>
+                        ` : `
+                            <div class="steam-btn-disabled">
+                                <i class="fas fa-exclamation-triangle"></i>
+                                Ungültiger Steam-Link
+                            </div>
+                        `;
+                    })()}
                 </div>
             </div>
         `;
@@ -1307,10 +1326,20 @@ class GamingPlatform {
 
     async loadSteamGameData(game, modal) {
         try {
+            // Get the correct Steam link (check both fields)
+            const steamLink = game.steamLink || game.link;
+            
+            // Validate Steam link first
+            if (!steamLink || !this.isValidSteamLink(steamLink)) {
+                console.warn('Invalid or missing Steam link, using fallback data');
+                this.updateGameInfoWithFallback(modal, game);
+                return;
+            }
+
             // Extract Steam App ID from Steam URL
-            const steamAppId = this.extractSteamAppId(game.link);
+            const steamAppId = this.extractSteamAppId(steamLink);
             console.log('Steam App ID:', steamAppId);
-            console.log('Game Link:', game.link);
+            console.log('Game Link:', steamLink);
             
             if (!steamAppId) {
                 console.warn('No Steam App ID found, using fallback data');
@@ -1345,6 +1374,14 @@ class GamingPlatform {
             
             this.updateGameInfoWithFallback(modal, game);
         }
+    }
+
+    isValidSteamLink(steamUrl) {
+        if (!steamUrl || typeof steamUrl !== 'string') return false;
+        
+        // Check if it's a valid Steam store URL
+        const steamPattern = /^https?:\/\/(store\.steampowered\.com|steamcommunity\.com)\/app\/\d+/;
+        return steamPattern.test(steamUrl);
     }
 
     extractSteamAppId(steamUrl) {
@@ -1415,7 +1452,7 @@ class GamingPlatform {
                     console.warn(`Proxy ${i + 1} failed:`, proxyError);
                     if (i === proxies.length - 1) {
                         // Last proxy failed
-                        throw new Error('All Steam API methods failed - CORS restrictions');
+                        throw new Error('Steam API nicht verfügbar - CORS-Beschränkungen oder Netzwerkfehler');
                     }
                 }
             }
@@ -1434,16 +1471,30 @@ class GamingPlatform {
     updateGameInfoWithFallback(modal, game) {
         // Update description
         const descriptionElement = modal.querySelector('.game-detail-description');
+        
+        // Check if Steam link is valid (check both fields)
+        const steamLink = game.steamLink || game.link;
+        const hasValidSteamLink = this.isValidSteamLink(steamLink);
+        
         descriptionElement.innerHTML = `
             <h3>Beschreibung</h3>
             <p>${game.description || 'Keine Beschreibung verfügbar.'}</p>
-            <div style="margin-top: 15px; padding: 10px; background: rgba(255, 193, 7, 0.1); border-left: 3px solid #ffc107; border-radius: 5px;">
-                <small style="color: #ffc107;">
-                    <i class="fas fa-info-circle"></i> 
-                    Steam-Daten nicht verfügbar (CORS-Beschränkungen). 
-                    <a href="${game.link}" target="_blank" style="color: #ffc107;">Auf Steam ansehen</a> für aktuelle Informationen.
-                </small>
-            </div>
+            ${hasValidSteamLink ? `
+                <div style="margin-top: 15px; padding: 10px; background: rgba(255, 193, 7, 0.1); border-left: 3px solid #ffc107; border-radius: 5px;">
+                    <small style="color: #ffc107;">
+                        <i class="fas fa-info-circle"></i> 
+                        Steam-Daten nicht verfügbar (CORS-Beschränkungen). 
+                        <a href="${steamLink}" target="_blank" style="color: #ffc107;">Auf Steam ansehen</a> für aktuelle Informationen.
+                    </small>
+                </div>
+            ` : `
+                <div style="margin-top: 15px; padding: 10px; background: rgba(239, 68, 68, 0.1); border-left: 3px solid #ef4444; border-radius: 5px;">
+                    <small style="color: #ef4444;">
+                        <i class="fas fa-exclamation-triangle"></i> 
+                        Ungültiger oder fehlender Steam-Link. Bitte kontaktieren Sie den Administrator.
+                    </small>
+                </div>
+            `}
         `;
     }
 
@@ -1924,6 +1975,101 @@ class GamingPlatform {
         }
     }
 
+    // Function to validate and fix Steam links
+    async validateSteamLinks() {
+        try {
+            this.showNotification('Validiere Steam-Links...', 'info');
+            const snapshot = await db.collection('games').get();
+            const invalidGames = [];
+            const validGames = [];
+            
+            snapshot.forEach(doc => {
+                const game = doc.data();
+                if (!game.isPending) {
+                    const steamLink = game.steamLink || game.link;
+                    if (!this.isValidSteamLink(steamLink)) {
+                        invalidGames.push({
+                            id: doc.id,
+                            name: game.name,
+                            link: steamLink
+                        });
+                    } else {
+                        validGames.push({
+                            id: doc.id,
+                            name: game.name
+                        });
+                    }
+                }
+            });
+            
+            if (invalidGames.length > 0) {
+                console.warn('Found games with invalid Steam links:', invalidGames);
+                this.showNotification(`${invalidGames.length} Spiele haben ungültige Steam-Links`, 'warning');
+                
+                // Show detailed modal with invalid games
+                this.showInvalidLinksModal(invalidGames);
+            } else {
+                this.showNotification(`Alle ${validGames.length} Spiele haben gültige Steam-Links! ✅`, 'success');
+            }
+            
+            return invalidGames;
+        } catch (error) {
+            console.error('Error validating Steam links:', error);
+            this.showNotification('Fehler beim Validieren der Steam-Links', 'error');
+            return [];
+        }
+    }
+
+    showInvalidLinksModal(invalidGames) {
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.style.display = 'flex';
+        
+        let gamesListHtml = '';
+        invalidGames.forEach(game => {
+            gamesListHtml += `
+                <div class="invalid-game-item">
+                    <div class="game-info">
+                        <h4>${game.name}</h4>
+                        <p class="invalid-link">${game.link || 'Kein Link vorhanden'}</p>
+                    </div>
+                    <div class="game-actions">
+                        <button onclick="gamingPlatform.editGame('${game.id}')" class="edit-invalid-btn">
+                            <i class="fas fa-edit"></i> Bearbeiten
+                        </button>
+                    </div>
+                </div>
+            `;
+        });
+        
+        modal.innerHTML = `
+            <div class="modal-content">
+                <span class="close-modal">&times;</span>
+                <h2><i class="fas fa-exclamation-triangle"></i> Ungültige Steam-Links gefunden</h2>
+                <div class="invalid-games-list">
+                    ${gamesListHtml}
+                </div>
+                <div class="modal-actions">
+                    <button onclick="this.closest('.modal').remove()" class="close-btn">
+                        <i class="fas fa-times"></i> Schließen
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        modal.querySelector('.close-modal').onclick = () => {
+            modal.remove();
+        };
+        
+        modal.onclick = (e) => {
+            if (e.target === modal) {
+                modal.remove();
+            }
+        };
+    }
+
     async migrateUnreleasedFlag() {
         try {
             const snapshot = await db.collection('games').get();
@@ -1998,6 +2144,32 @@ class GamingPlatform {
         } catch (error) {
             console.error('Genre migration error:', error);
             // Continue even if genre migration fails
+        }
+    }
+
+    async migrateSteamLinks() {
+        try {
+            const snapshot = await db.collection('games').get();
+            const batch = db.batch();
+            let needsUpdate = false;
+            
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                
+                // If game has 'link' but no 'steamLink', copy it
+                if (data.link && !data.steamLink) {
+                    batch.update(db.collection('games').doc(doc.id), { steamLink: data.link });
+                    needsUpdate = true;
+                }
+            });
+            
+            if (needsUpdate) {
+                await batch.commit();
+                console.log('Steam links migration completed');
+            }
+        } catch (error) {
+            console.error('Steam links migration error:', error);
+            // Continue even if migration fails
         }
     }
 

@@ -39,17 +39,31 @@ class GamingPlatform {
     async init() {
         try {
             this.showLoading();
+            
+            // Set a timeout to hide loading indicator after 10 seconds as fallback
+            const loadingTimeout = setTimeout(() => {
+                this.hideLoading();
+                console.warn('Loading timeout reached, hiding loading indicator');
+            }, 10000);
+            
             await this.setupEventListeners();
             await this.loadInitialData();
+            
+            // Clear timeout and hide loading
+            clearTimeout(loadingTimeout);
             this.hideLoading();
             this.showNotification('Plattform erfolgreich geladen! 🎮', 'success');
         } catch (error) {
             console.error('Initialization error:', error);
+            this.hideLoading();
             this.showNotification('Fehler beim Laden der Plattform', 'error');
         }
     }
 
     async setupEventListeners() {
+        // Navigation Events
+        this.setupNavigationEvents();
+        
         // Admin Panel Events
         this.setupAdminEvents();
         
@@ -75,36 +89,392 @@ class GamingPlatform {
         this.setupKeyboardEvents();
     }
 
-    setupAdminEvents() {
-        // Admin Login
-        document.getElementById('admin-login-btn').addEventListener('click', () => {
+    setupNavigationEvents() {
+        // Navigation Links
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const page = link.dataset.page;
+                this.switchPage(page);
+            });
+        });
+
+        // Support Button
+        const supportBtn = document.getElementById('support-btn');
+        if (supportBtn) {
+            supportBtn.addEventListener('click', () => {
+                this.openSupportModal();
+            });
+        }
+
+        // Main Login Button
+        const mainLoginBtn = document.getElementById('main-login-btn');
+        if (mainLoginBtn) {
+            mainLoginBtn.addEventListener('click', () => {
+                this.showLoginOptions();
+            });
+        }
+
+        // Social Media Buttons
+        this.setupSocialMediaButtons();
+
+        // Action Buttons
+        this.setupActionButtons();
+
+        // FAQ Toggle
+        this.setupFAQToggle();
+
+    }
+
+    switchPage(page) {
+        // Hide all pages
+        document.querySelectorAll('.page-content').forEach(p => {
+            p.classList.remove('active');
+        });
+
+        // Remove active class from all nav links
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.classList.remove('active');
+        });
+
+        // Show selected page
+        const targetPage = document.getElementById(`${page}-page`);
+        if (targetPage) {
+            targetPage.classList.add('active');
+        }
+
+        // Add active class to clicked nav link
+        const activeLink = document.querySelector(`[data-page="${page}"]`);
+        if (activeLink) {
+            activeLink.classList.add('active');
+        }
+
+        // Ensure loading indicator is hidden when switching pages
+        this.hideLoading();
+
+        // Load content based on page
+        if (page === 'games') {
+            this.renderGames();
+        }
+    }
+
+    showLoginOptions() {
+        // Create login options modal
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.style.display = 'flex';
+        modal.innerHTML = `
+            <div class="modal-content login-content">
+                <span class="close-modal">&times;</span>
+                <h2><i class="fas fa-user-shield"></i> Login Optionen</h2>
+                <div class="login-options">
+                    <button id="admin-login-option" class="login-option-btn">
+                        <i class="fas fa-user-shield"></i>
+                        Admin Login
+                    </button>
+                    <button id="streamer-login-option" class="login-option-btn">
+                        <i class="fas fa-gamepad"></i>
+                        Streamer Login
+                    </button>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // Event listeners for login options
+        modal.querySelector('#admin-login-option').addEventListener('click', () => {
+            modal.remove();
             this.openModal('login-modal');
         });
+        
+        modal.querySelector('#streamer-login-option').addEventListener('click', () => {
+            modal.remove();
+            this.openModal('streamer-login-modal');
+        });
+        
+        modal.querySelector('.close-modal').addEventListener('click', () => {
+            modal.remove();
+        });
+        
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.remove();
+            }
+        });
+    }
 
-        document.getElementById('login-submit').addEventListener('click', async () => {
-            await this.handleAdminLogin();
+    openSupportModal() {
+        // Create support modal if it doesn't exist
+        let supportModal = document.getElementById('support-modal');
+        if (!supportModal) {
+            supportModal = document.createElement('div');
+            supportModal.id = 'support-modal';
+            supportModal.className = 'modal';
+            supportModal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2><i class="fas fa-heart"></i> Supportet mich</h2>
+                        <button class="close-btn" onclick="this.closest('.modal').style.display='none'">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Vielen Dank für dein Interesse, mich zu unterstützen! 💖</p>
+                        <div class="support-options">
+                            <a href="https://www.paypal.com/paypalme/away21" target="_blank" class="support-option">
+                                <i class="fab fa-paypal"></i>
+                                PayPal
+                            </a>
+                            <a href="https://streamelements.com/away2moon/tip" target="_blank" class="support-option">
+                                <i class="fas fa-donate"></i>
+                                StreamElements
+                            </a>
+                        </div>
+                        <p class="support-note">Jede Unterstützung hilft mir dabei, bessere Inhalte zu erstellen! 🙏</p>
+                    </div>
+                </div>
+            `;
+            document.body.appendChild(supportModal);
+        }
+        supportModal.style.display = 'flex';
+    }
+
+    setupSocialMediaButtons() {
+        // TikTok Button
+        const tiktokBtn = document.getElementById('social-tiktok');
+        if (tiktokBtn) {
+            tiktokBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                window.open('https://www.tiktok.com/@creator_emir999', '_blank');
+            });
+        }
+
+        // Instagram Button
+        const instagramBtn = document.getElementById('social-instagram');
+        if (instagramBtn) {
+            instagramBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                window.open('https://www.instagram.com/highercellffx/', '_blank');
+            });
+        }
+
+        // Discord Button
+        const discordBtn = document.getElementById('social-discord');
+        if (discordBtn) {
+            discordBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                window.open('https://discord.com/invite/32HKVGXePw', '_blank');
+            });
+        }
+
+        // YouTube Button
+        const youtubeBtn = document.getElementById('social-youtube');
+        if (youtubeBtn) {
+            youtubeBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                window.open('https://www.youtube.com/@flyonkukirin', '_blank');
+            });
+        }
+    }
+
+    setupActionButtons() {
+        // Random Game Button
+        const randomGameBtn = document.getElementById('random-game-btn');
+        if (randomGameBtn) {
+            randomGameBtn.addEventListener('click', () => {
+                this.showRandomGame();
+            });
+        }
+
+        // Suggest Game Button
+        const suggestGameBtn = document.getElementById('suggest-game-btn');
+        if (suggestGameBtn) {
+            suggestGameBtn.addEventListener('click', () => {
+                this.openModal('suggest-form');
+            });
+        }
+    }
+
+    showRandomGame() {
+        // Get all games from the current view
+        const gameElements = document.querySelectorAll('.game:not(.hidden)');
+        if (gameElements.length === 0) {
+            this.showNotification('Keine Spiele verfügbar!', 'error');
+            return;
+        }
+
+        // Pick a random game
+        const randomIndex = Math.floor(Math.random() * gameElements.length);
+        const randomGame = gameElements[randomIndex];
+        
+        // Add pulsing animation to the button
+        const randomBtn = document.getElementById('random-game-btn');
+        if (randomBtn) {
+            randomBtn.style.animation = 'pulse 0.6s ease-in-out';
+            setTimeout(() => {
+                randomBtn.style.animation = '';
+            }, 600);
+        }
+
+        // Scroll to the random game
+        randomGame.scrollIntoView({ 
+            behavior: 'smooth', 
+            block: 'center' 
         });
 
-        document.getElementById('login-cancel').addEventListener('click', () => {
-            this.closeModal('login-modal');
+        // Add strong highlight effect
+        randomGame.style.transform = 'scale(1.1)';
+        randomGame.style.boxShadow = '0 0 40px rgba(99, 102, 241, 1), 0 0 80px rgba(139, 92, 246, 0.8)';
+        randomGame.style.border = '3px solid #6366f1';
+        randomGame.style.zIndex = '1000';
+        randomGame.style.position = 'relative';
+        
+        // Add pulsing border animation
+        randomGame.style.animation = 'randomGamePulse 2s ease-in-out';
+        
+        // Reset after 3 seconds
+        setTimeout(() => {
+            randomGame.style.transform = '';
+            randomGame.style.boxShadow = '';
+            randomGame.style.border = '';
+            randomGame.style.zIndex = '';
+            randomGame.style.position = '';
+            randomGame.style.animation = '';
+        }, 3000);
+
+        this.showNotification('🎲 Zufälliges Spiel ausgewählt!', 'success');
+    }
+
+    setupFAQToggle() {
+        const faqItems = document.querySelectorAll('.faq-item');
+        faqItems.forEach(item => {
+            const question = item.querySelector('.faq-question');
+            if (question) {
+                question.addEventListener('click', () => {
+                    // Close all other FAQ items
+                    faqItems.forEach(otherItem => {
+                        if (otherItem !== item) {
+                            otherItem.classList.remove('active');
+                        }
+                    });
+                    
+                    // Toggle current item
+                    item.classList.toggle('active');
+                });
+            }
         });
+    }
+
+    async loadFeaturedGames() {
+        try {
+            const snapshot = await db.collection("games").get();
+            const games = [];
+            
+            snapshot.forEach(doc => {
+                const gameData = doc.data();
+                if (!gameData.isPending && !gameData.unreleased && !gameData.played) {
+                    games.push({ id: doc.id, ...gameData });
+                }
+            });
+
+            // Take first 6 games for featured section
+            const featuredGames = games.slice(0, 6);
+            const featuredContainer = document.getElementById('featured-game-list');
+            
+            if (featuredContainer) {
+                featuredContainer.innerHTML = '';
+                if (featuredGames.length > 0) {
+                    featuredGames.forEach(game => {
+                        const gameElement = this.createGamePreviewElement(game);
+                        featuredContainer.appendChild(gameElement);
+                    });
+                } else {
+                    featuredContainer.innerHTML = '<p style="color: #94a3b8; text-align: center; padding: 20px;">Keine Spiele verfügbar</p>';
+                }
+            }
+        } catch (error) {
+            console.error('Error loading featured games:', error);
+            // Show fallback content if no games are available
+            const featuredContainer = document.getElementById('featured-game-list');
+            if (featuredContainer) {
+                featuredContainer.innerHTML = '<p style="color: #94a3b8; text-align: center; padding: 20px;">Keine Spiele verfügbar</p>';
+            }
+        }
+    }
+
+    createGamePreviewElement(game) {
+        const gameElement = document.createElement('div');
+        gameElement.className = 'game-preview-card';
+        gameElement.innerHTML = `
+            <img src="${game.image}" alt="${game.name}" loading="lazy">
+            <div class="game-preview-content">
+                <h3>${game.name}</h3>
+                <div class="game-preview-genres">
+                    ${this.createGenreTags(game.genres)}
+                </div>
+            </div>
+        `;
+
+        // Add click event to open game
+        gameElement.addEventListener('click', () => {
+            window.open(game.link, '_blank');
+        });
+
+        return gameElement;
+    }
+
+    setupAdminEvents() {
+        // Admin Login
+        const adminLoginBtn = document.getElementById('admin-login-btn');
+        if (adminLoginBtn) {
+            adminLoginBtn.addEventListener('click', () => {
+                this.openModal('login-modal');
+            });
+        }
+
+        const loginSubmit = document.getElementById('login-submit');
+        if (loginSubmit) {
+            loginSubmit.addEventListener('click', async () => {
+                await this.handleAdminLogin();
+            });
+        }
+
+        const loginCancel = document.getElementById('login-cancel');
+        if (loginCancel) {
+            loginCancel.addEventListener('click', () => {
+                this.closeModal('login-modal');
+            });
+        }
 
         // Admin Panel Buttons
-        document.getElementById('add-game-btn').addEventListener('click', () => {
-            this.openGameForm();
-        });
+        const addGameBtn = document.getElementById('add-game-btn');
+        if (addGameBtn) {
+            addGameBtn.addEventListener('click', () => {
+                this.openGameForm();
+            });
+        }
 
-        document.getElementById('edit-games-btn').addEventListener('click', () => {
-            this.toggleEditMode();
-        });
+        const editGamesBtn = document.getElementById('edit-games-btn');
+        if (editGamesBtn) {
+            editGamesBtn.addEventListener('click', () => {
+                this.toggleEditMode();
+            });
+        }
 
-        document.getElementById('edit-social-btn').addEventListener('click', () => {
-            this.openSocialForm();
-        });
+        const editSocialBtn = document.getElementById('edit-social-btn');
+        if (editSocialBtn) {
+            editSocialBtn.addEventListener('click', () => {
+                this.openSocialForm();
+            });
+        }
 
-        document.getElementById('view-suggestions-btn').addEventListener('click', () => {
-            this.viewSuggestions();
-        });
+        const viewSuggestionsBtn = document.getElementById('view-suggestions-btn');
+        if (viewSuggestionsBtn) {
+            viewSuggestionsBtn.addEventListener('click', () => {
+                this.viewSuggestions();
+            });
+        }
 
         // Bulk-Update Genres
         const updateBtn = document.getElementById('update-genres-btn');
@@ -117,54 +487,84 @@ class GamingPlatform {
 
     setupStreamerEvents() {
         // Streamer Login
-        document.getElementById('streamer-login-btn').addEventListener('click', () => {
-            this.openModal('streamer-login-modal');
-        });
+        const streamerLoginBtn = document.getElementById('streamer-login-btn');
+        if (streamerLoginBtn) {
+            streamerLoginBtn.addEventListener('click', () => {
+                this.openModal('streamer-login-modal');
+            });
+        }
 
-        document.getElementById('streamer-login-submit').addEventListener('click', async () => {
-            await this.handleStreamerLogin();
-        });
+        const streamerLoginSubmit = document.getElementById('streamer-login-submit');
+        if (streamerLoginSubmit) {
+            streamerLoginSubmit.addEventListener('click', async () => {
+                await this.handleStreamerLogin();
+            });
+        }
 
-        document.getElementById('streamer-login-cancel').addEventListener('click', () => {
-            this.closeModal('streamer-login-modal');
-        });
+        const streamerLoginCancel = document.getElementById('streamer-login-cancel');
+        if (streamerLoginCancel) {
+            streamerLoginCancel.addEventListener('click', () => {
+                this.closeModal('streamer-login-modal');
+            });
+        }
 
         // Enter key for streamer login
-        document.getElementById('streamer-password').addEventListener('keypress', async (e) => {
-            if (e.key === 'Enter') {
-                await this.handleStreamerLogin();
-            }
-        });
+        const streamerPassword = document.getElementById('streamer-password');
+        if (streamerPassword) {
+            streamerPassword.addEventListener('keypress', async (e) => {
+                if (e.key === 'Enter') {
+                    await this.handleStreamerLogin();
+                }
+            });
+        }
     }
 
     setupGameEvents() {
         // Game Form Events
-        document.getElementById('steam-link').addEventListener('input', this.debounce(async (e) => {
-            await this.handleSteamLinkInput(e.target.value);
-        }, 500));
+        const steamLink = document.getElementById('steam-link');
+        if (steamLink) {
+            steamLink.addEventListener('input', this.debounce(async (e) => {
+                await this.handleSteamLinkInput(e.target.value);
+            }, 500));
+        }
 
-        document.getElementById('save-game').addEventListener('click', async () => {
-            await this.saveGame();
-        });
+        const saveGame = document.getElementById('save-game');
+        if (saveGame) {
+            saveGame.addEventListener('click', async () => {
+                await this.saveGame();
+            });
+        }
 
         // Suggest Game Events
-        document.getElementById('suggest-game-btn').addEventListener('click', () => {
-            this.openModal('suggest-form');
-        });
+        const suggestGameBtn = document.getElementById('suggest-game-btn');
+        if (suggestGameBtn) {
+            suggestGameBtn.addEventListener('click', () => {
+                this.openModal('suggest-form');
+            });
+        }
 
-        document.getElementById('suggest-steam-link').addEventListener('input', this.debounce(async (e) => {
-            await this.handleSuggestSteamLinkInput(e.target.value);
-        }, 500));
+        const suggestSteamLink = document.getElementById('suggest-steam-link');
+        if (suggestSteamLink) {
+            suggestSteamLink.addEventListener('input', this.debounce(async (e) => {
+                await this.handleSuggestSteamLinkInput(e.target.value);
+            }, 500));
+        }
 
-        document.getElementById('submit-suggestion').addEventListener('click', async () => {
-            await this.submitSuggestion();
-        });
+        const submitSuggestion = document.getElementById('submit-suggestion');
+        if (submitSuggestion) {
+            submitSuggestion.addEventListener('click', async () => {
+                await this.submitSuggestion();
+            });
+        }
     }
 
     setupSocialEvents() {
-        document.getElementById('save-social').addEventListener('click', async () => {
-            await this.saveSocialLinks();
-        });
+        const saveSocial = document.getElementById('save-social');
+        if (saveSocial) {
+            saveSocial.addEventListener('click', async () => {
+                await this.saveSocialLinks();
+            });
+        }
     }
 
     setupFilterEvents() {
@@ -211,10 +611,6 @@ class GamingPlatform {
     }
 
     setupRandomizerEvents() {
-        document.getElementById('game-randomizer').addEventListener('click', async () => {
-            await this.startRandomizer();
-        });
-
         // Add event listeners for randomizer buttons
         document.addEventListener('click', (e) => {
             if (e.target.id === 'play-random-game') {
@@ -227,11 +623,14 @@ class GamingPlatform {
 
     setupKeyboardEvents() {
         // Enter key for login
-        document.getElementById('admin-password').addEventListener('keypress', async (e) => {
-            if (e.key === 'Enter') {
-                await this.handleAdminLogin();
-            }
-        });
+        const adminPassword = document.getElementById('admin-password');
+        if (adminPassword) {
+            adminPassword.addEventListener('keypress', async (e) => {
+                if (e.key === 'Enter') {
+                    await this.handleAdminLogin();
+                }
+            });
+        }
 
         // Escape key for modals
         document.addEventListener('keydown', (e) => {
@@ -242,17 +641,21 @@ class GamingPlatform {
     }
 
     async loadInitialData() {
-        // Erst Migrationen ausführen
-        await this.migrateUnreleasedFlag();
-        await this.migrateGenresToEnglish();
-        
-        // Dann alles andere parallel laden
-        await Promise.all([
-            this.loadSocialLinks(),
-            this.renderGames(),
-            this.updateGenreFilterButtons(),
-            this.updateSuggestionCount()
-        ]);
+        try {
+            // Erst Migrationen ausführen
+            await this.migrateUnreleasedFlag();
+            await this.migrateGenresToEnglish();
+            
+            // Dann alles andere parallel laden
+            await Promise.all([
+                this.loadSocialLinks(),
+                this.updateGenreFilterButtons(),
+                this.updateSuggestionCount()
+            ]);
+        } catch (error) {
+            console.error('Error in loadInitialData:', error);
+            // Continue even if some data fails to load
+        }
     }
 
     // Admin Functions
@@ -602,6 +1005,7 @@ class GamingPlatform {
             }
         } catch (error) {
             console.error("Error loading social links:", error);
+            // Continue even if social links fail to load
         }
     }
 
@@ -717,7 +1121,9 @@ class GamingPlatform {
         try {
             this.showLoading();
             const gameList = document.getElementById("game-list");
-            gameList.innerHTML = "";
+            if (gameList) {
+                gameList.innerHTML = "";
+            }
             
             const snapshot = await db.collection("games").get();
             let games = [];
@@ -735,11 +1141,13 @@ class GamingPlatform {
             this.sortGames(games);
             
             // Render games with animation
-            games.forEach((game, index) => {
-                const gameElement = this.createGameElement(game);
-                gameElement.style.animationDelay = `${index * 0.1}s`;
-                gameList.appendChild(gameElement);
-            });
+            if (gameList) {
+                games.forEach((game, index) => {
+                    const gameElement = this.createGameElement(game);
+                    gameElement.style.animationDelay = `${index * 0.1}s`;
+                    gameList.appendChild(gameElement);
+                });
+            }
 
             this.hideLoading();
         } catch (error) {
@@ -791,19 +1199,14 @@ class GamingPlatform {
             <img src="${game.image}" alt="${game.name}" loading="lazy">
             <div class="game-content">
                 <h2>${game.name}</h2>
-                ${game.description ? `<div class="game-description">${game.description}</div>` : ''}
-                <div class="game-divider"></div>
-                <div class="game-genres">
-                    ${this.createGenreTags(game.genres)}
-                </div>
                 ${this.createAdminButtons(game)}
                 ${this.createStreamerButtons(game)}
             </div>
         `;
 
-        // Add click event to open game
+        // Add click event to open game detail page
         gameElement.querySelector('img').addEventListener('click', () => {
-            window.open(game.link, '_blank');
+            this.openGameDetail(game);
         });
 
         // Animate in
@@ -814,6 +1217,276 @@ class GamingPlatform {
         }, 100);
 
         return gameElement;
+    }
+
+    openGameDetail(game) {
+        // Show game detail modal
+        this.showGameDetailModal(game);
+    }
+
+    async showGameDetailModal(game) {
+        // Prevent background scrolling
+        document.body.style.overflow = 'hidden';
+        
+        // Create game detail modal with loading state
+        const modal = document.createElement('div');
+        modal.className = 'modal game-detail-modal';
+        modal.style.display = 'flex';
+        
+        modal.innerHTML = `
+            <div class="modal-content game-detail-content">
+                <div class="game-detail-header">
+                    <button class="close-modal" onclick="this.closest('.modal').remove()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                
+                <div class="game-detail-hero">
+                    <img src="${game.image}" alt="${game.name}" class="game-detail-image">
+                    <div class="game-detail-overlay">
+                        <h1 class="game-detail-title">${game.name}</h1>
+                        <div class="game-detail-genres">
+                            ${(game.genres || []).map(genre => `<span class="genre-tag">${genre}</span>`).join('')}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="game-detail-body">
+                    <div class="game-detail-description">
+                        <h3>Beschreibung</h3>
+                        <div class="loading-placeholder">
+                            <div class="loading-spinner"></div>
+                            <p>Lade Spielinformationen von Steam...</p>
+                        </div>
+                    </div>
+                    
+                    <div class="game-detail-info">
+                        <h3>Spielinformationen</h3>
+                        <div class="info-grid">
+                            <div class="info-item">
+                                <span class="info-label">Entwickler:</span>
+                                <span class="info-value loading-text">Lädt...</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Publisher:</span>
+                                <span class="info-value loading-text">Lädt...</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Veröffentlichung:</span>
+                                <span class="info-value loading-text">Lädt...</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Preis:</span>
+                                <span class="info-value loading-text">Lädt...</span>
+                            </div>
+                            <div class="info-item">
+                                <span class="info-label">Bewertung:</span>
+                                <span class="info-value loading-text">Lädt...</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="game-detail-actions">
+                    <a href="${game.link}" target="_blank" class="steam-btn">
+                        <i class="fab fa-steam"></i>
+                        Auf Steam ansehen
+                    </a>
+                    <a href="https://www.youtube.com/results?search_query=${encodeURIComponent(game.name + ' trailer')}" target="_blank" class="trailer-btn">
+                        <i class="fab fa-youtube"></i>
+                        Trailer ansehen
+                    </a>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // Load Steam data
+        await this.loadSteamGameData(game, modal);
+        
+        // Close modal when clicking outside
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                this.closeGameDetailModal(modal);
+            }
+        });
+        
+        // Close modal with close button
+        const closeBtn = modal.querySelector('.close-modal');
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => {
+                this.closeGameDetailModal(modal);
+            });
+        }
+        
+        // Close modal with Escape key
+        const handleEscape = (e) => {
+            if (e.key === 'Escape') {
+                this.closeGameDetailModal(modal);
+                document.removeEventListener('keydown', handleEscape);
+            }
+        };
+        document.addEventListener('keydown', handleEscape);
+    }
+
+    async loadSteamGameData(game, modal) {
+        try {
+            // Extract Steam App ID from Steam URL
+            const steamAppId = this.extractSteamAppId(game.link);
+            console.log('Steam App ID:', steamAppId);
+            console.log('Game Link:', game.link);
+            
+            if (!steamAppId) {
+                console.warn('No Steam App ID found, using fallback data');
+                this.updateGameInfoWithFallback(modal, game);
+                return;
+            }
+
+            // Fetch Steam data
+            console.log('Fetching Steam data for App ID:', steamAppId);
+            const steamData = await this.fetchSteamData(steamAppId);
+            console.log('Steam data received:', steamData);
+            this.updateGameInfo(modal, steamData, game);
+            
+        } catch (error) {
+            console.error('Error loading Steam data:', error);
+            console.log('Falling back to local game data');
+            this.updateGameInfoWithFallback(modal, game);
+        }
+    }
+
+    extractSteamAppId(steamUrl) {
+        if (!steamUrl) return null;
+        
+        // Extract App ID from Steam URL
+        const match = steamUrl.match(/store\.steampowered\.com\/app\/(\d+)/);
+        return match ? match[1] : null;
+    }
+
+    async fetchSteamData(appId) {
+        try {
+            // Try direct Steam API first
+            const response = await fetch(`https://store.steampowered.com/api/appdetails?appids=${appId}&l=german`, {
+                mode: 'cors',
+                headers: {
+                    'Accept': 'application/json',
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            
+            if (data[appId] && data[appId].success) {
+                return data[appId].data;
+            }
+            throw new Error('Steam data not found');
+            
+        } catch (error) {
+            console.warn('Direct Steam API failed, trying CORS proxy:', error);
+            
+            // Fallback: Use CORS proxy for local development
+            try {
+                const proxyResponse = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(`https://store.steampowered.com/api/appdetails?appids=${appId}&l=german`)}`);
+                
+                if (!proxyResponse.ok) {
+                    throw new Error(`Proxy error! status: ${proxyResponse.status}`);
+                }
+                
+                const data = await proxyResponse.json();
+                
+                if (data[appId] && data[appId].success) {
+                    return data[appId].data;
+                }
+                throw new Error('Steam data not found via proxy');
+                
+            } catch (proxyError) {
+                console.warn('CORS proxy also failed:', proxyError);
+                throw new Error('Unable to fetch Steam data - CORS restrictions in local development');
+            }
+        }
+    }
+
+    updateGameInfo(modal, steamData, game) {
+        // Update description
+        const descriptionElement = modal.querySelector('.game-detail-description');
+        descriptionElement.innerHTML = `
+            <h3>Beschreibung</h3>
+            <p>${steamData.short_description || game.description || 'Keine Beschreibung verfügbar.'}</p>
+        `;
+
+        // Update game info
+        const infoItems = modal.querySelectorAll('.info-item');
+        
+        // Developer
+        if (infoItems[0]) {
+            infoItems[0].querySelector('.info-value').textContent = steamData.developers ? steamData.developers.join(', ') : 'Unbekannt';
+        }
+        
+        // Publisher
+        if (infoItems[1]) {
+            infoItems[1].querySelector('.info-value').textContent = steamData.publishers ? steamData.publishers.join(', ') : 'Unbekannt';
+        }
+        
+        // Release Date
+        if (infoItems[2]) {
+            const releaseDate = steamData.release_date ? new Date(steamData.release_date.date).toLocaleDateString('de-DE') : 'Unbekannt';
+            infoItems[2].querySelector('.info-value').textContent = releaseDate;
+        }
+        
+        // Price
+        if (infoItems[3]) {
+            const price = steamData.price_overview ? 
+                `${steamData.price_overview.final_formatted}` : 
+                (steamData.is_free ? 'Kostenlos' : 'Unbekannt');
+            infoItems[3].querySelector('.info-value').textContent = price;
+        }
+        
+        // Rating
+        if (infoItems[4]) {
+            const rating = steamData.total_reviews ? 
+                `${Math.round((steamData.total_reviews.positive / steamData.total_reviews.total) * 100)}% positiv (${steamData.total_reviews.total} Bewertungen)` : 
+                'Keine Bewertungen';
+            infoItems[4].querySelector('.info-value').textContent = rating;
+        }
+    }
+
+    updateGameInfoWithFallback(modal, game) {
+        // Update description
+        const descriptionElement = modal.querySelector('.game-detail-description');
+        descriptionElement.innerHTML = `
+            <h3>Beschreibung</h3>
+            <p>${game.description || 'Keine Beschreibung verfügbar.'}</p>
+            <div style="margin-top: 15px; padding: 10px; background: rgba(255, 193, 7, 0.1); border-left: 3px solid #ffc107; border-radius: 5px;">
+                <small style="color: #ffc107;">
+                    <i class="fas fa-info-circle"></i> 
+                    Steam-Daten nicht verfügbar (lokaler Test). 
+                    <a href="${game.link}" target="_blank" style="color: #ffc107;">Auf Steam ansehen</a> für aktuelle Informationen.
+                </small>
+            </div>
+        `;
+
+        // Update with fallback data
+        const infoItems = modal.querySelectorAll('.info-item');
+        
+        if (infoItems[0]) infoItems[0].querySelector('.info-value').textContent = game.developer || 'Unbekannt';
+        if (infoItems[1]) infoItems[1].querySelector('.info-value').textContent = game.publisher || 'Unbekannt';
+        if (infoItems[2]) infoItems[2].querySelector('.info-value').textContent = game.releaseDate || 'Unbekannt';
+        if (infoItems[3]) infoItems[3].querySelector('.info-value').textContent = game.price || 'Unbekannt';
+        if (infoItems[4]) infoItems[4].querySelector('.info-value').textContent = game.rating || 'Unbekannt';
+    }
+
+    closeGameDetailModal(modal) {
+        // Restore background scrolling
+        document.body.style.overflow = '';
+        
+        // Remove modal
+        if (modal && modal.parentNode) {
+            modal.remove();
+        }
     }
 
     createGenreTags(genres) {
@@ -1148,7 +1821,10 @@ class GamingPlatform {
 
     hideLoading() {
         this.isLoading = false;
-        document.getElementById('loading-indicator').classList.add('hidden');
+        const loadingIndicator = document.getElementById('loading-indicator');
+        if (loadingIndicator) {
+            loadingIndicator.classList.add('hidden');
+        }
     }
 
     showNotification(message, type = 'info') {
@@ -1207,26 +1883,29 @@ class GamingPlatform {
             });
 
             const container = document.querySelector('.genre-filter-buttons');
-            const existingButtons = container.querySelectorAll('.genre-filter-btn:not([data-genre="all"])');
+            if (container) {
+                const existingButtons = container.querySelectorAll('.genre-filter-btn:not([data-genre="all"])');
 
-            existingButtons.forEach(btn => {
-                if (!genreSet.has(btn.dataset.genre)) {
-                    btn.remove();
-                }
-            });
+                existingButtons.forEach(btn => {
+                    if (!genreSet.has(btn.dataset.genre)) {
+                        btn.remove();
+                    }
+                });
 
-            Array.from(genreSet).sort().forEach(genre => {
-                if (!container.querySelector(`[data-genre="${genre}"]`)) {
-                    const btn = document.createElement('button');
-                    btn.className = 'genre-filter-btn';
-                    btn.dataset.genre = genre;
-                    btn.innerHTML = `<i class="fas fa-${this.getGenreIcon(genre)}"></i> ${genre}`;
-                    btn.addEventListener('click', () => this.handleGenreFilter(genre));
-                    container.appendChild(btn);
-                }
-            });
+                Array.from(genreSet).sort().forEach(genre => {
+                    if (!container.querySelector(`[data-genre="${genre}"]`)) {
+                        const btn = document.createElement('button');
+                        btn.className = 'genre-filter-btn';
+                        btn.dataset.genre = genre;
+                        btn.innerHTML = `<i class="fas fa-${this.getGenreIcon(genre)}"></i> ${genre}`;
+                        btn.addEventListener('click', () => this.handleGenreFilter(genre));
+                        container.appendChild(btn);
+                    }
+                });
+            }
         } catch (error) {
             console.error('Error updating genre filters:', error);
+            // Continue even if genre filters fail to load
         }
     }
 
@@ -1262,14 +1941,17 @@ class GamingPlatform {
             const count = snapshot.size;
             const badge = document.getElementById('suggestion-count');
             
-            if (count > 0) {
-                badge.textContent = count;
-                badge.classList.remove('hidden');
-            } else {
-                badge.classList.add('hidden');
+            if (badge) {
+                if (count > 0) {
+                    badge.textContent = count;
+                    badge.classList.remove('hidden');
+                } else {
+                    badge.classList.add('hidden');
+                }
             }
         } catch (error) {
             console.error('Error updating suggestion count:', error);
+            // Continue even if suggestion count fails to load
         }
     }
 
@@ -1292,6 +1974,7 @@ class GamingPlatform {
             }
         } catch (error) {
             console.error('Migration error:', error);
+            // Continue even if migration fails
         }
     }
 
@@ -1345,6 +2028,7 @@ class GamingPlatform {
             }
         } catch (error) {
             console.error('Genre migration error:', error);
+            // Continue even if genre migration fails
         }
     }
 
@@ -1461,25 +2145,6 @@ class GamingPlatform {
 
 // Initialize the platform when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    // Willkommens-Modal: Zeige immer, außer für heute ausgeblendet
-    const today = new Date().toISOString().slice(0, 10);
-    const hideDate = localStorage.getItem('welcome_hide_date');
-    if (hideDate !== today) {
-        const modal = document.getElementById('welcome-modal');
-        modal.classList.remove('hidden');
-        modal.style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-        document.getElementById('welcome-ok-btn').onclick = () => {
-            if (document.getElementById('welcome-hide-today').checked) {
-                localStorage.setItem('welcome_hide_date', today);
-            } else {
-                localStorage.removeItem('welcome_hide_date');
-            }
-            modal.classList.add('hidden');
-            modal.style.display = 'none';
-            document.body.style.overflow = 'auto';
-        };
-    }
     window.gamingPlatform = new GamingPlatform();
 });
 

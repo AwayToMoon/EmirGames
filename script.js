@@ -229,12 +229,12 @@ class GamingPlatform {
         if (!supportModal) {
             supportModal = document.createElement('div');
             supportModal.id = 'support-modal';
-            supportModal.className = 'modal';
+            supportModal.className = 'modal support-modal-no-close';
             supportModal.innerHTML = `
                 <div class="modal-content">
                     <div class="modal-header">
                         <h2><i class="fas fa-heart"></i> Supportet mich</h2>
-                        <button class="close-btn" onclick="this.closest('.modal').style.display='none'">
+                        <button class="close-modal" onclick="this.closest('.modal').remove()">
                             <i class="fas fa-times"></i>
                         </button>
                     </div>
@@ -614,14 +614,18 @@ class GamingPlatform {
         // Close Modal Buttons
         document.querySelectorAll('.close-modal').forEach(button => {
             button.addEventListener('click', () => {
-                this.closeModal(button.closest('.modal').id);
+                const modal = button.closest('.modal');
+                // Don't close support modal
+                if (!modal.classList.contains('support-modal-no-close')) {
+                    this.closeModal(modal.id);
+                }
             });
         });
 
         // Modal Overlay Click
         document.querySelectorAll('.modal').forEach(modal => {
             modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
+                if (e.target === modal && !modal.classList.contains('support-modal-no-close')) {
                     this.closeModal(modal.id);
                 }
             });
@@ -662,6 +666,11 @@ class GamingPlatform {
         // Escape key for modals
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
+                // Don't close support modal with escape key
+                const supportModal = document.getElementById('support-modal');
+                if (supportModal && supportModal.style.display === 'flex') {
+                    return;
+                }
                 this.closeAllModals();
             }
         });
@@ -1895,7 +1904,10 @@ class GamingPlatform {
 
     closeAllModals() {
         document.querySelectorAll('.modal:not(.hidden)').forEach(modal => {
-            this.closeModal(modal.id);
+            // Don't close support modal
+            if (!modal.classList.contains('support-modal-no-close')) {
+                this.closeModal(modal.id);
+            }
         });
     }
 

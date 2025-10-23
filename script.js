@@ -703,6 +703,9 @@ class GamingPlatform {
             
             // Update login button state
             this.updateLoginButton();
+            
+            // Setze Standard-Footer-Links falls keine in der Datenbank vorhanden sind
+            this.setDefaultFooterLinks();
         } catch (error) {
             console.error('Error in loadInitialData:', error);
             // Continue even if some data fails to load
@@ -1234,11 +1237,31 @@ class GamingPlatform {
                 const data = doc.data();
                 this.updateSocialLinks(data);
                 this.populateSocialForm(data);
+            } else {
+                // Wenn keine Daten in der Datenbank vorhanden sind, setze Standard-Links
+                this.setDefaultFooterLinks();
             }
         } catch (error) {
             console.error("Error loading social links:", error);
             // Continue even if social links fail to load
+            this.setDefaultFooterLinks();
         }
+    }
+
+    setDefaultFooterLinks() {
+        // Setze Standard-Footer-Links für HigherCellF
+        const defaultLinks = {
+            'footer-instagram': 'https://www.instagram.com/awaytomoon22/',
+            'footer-tiktok': 'https://www.tiktok.com/@away2moon',
+            'footer-twitter': 'https://twitter.com/Away2Moon'
+        };
+
+        Object.entries(defaultLinks).forEach(([id, url]) => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.href = url;
+            }
+        });
     }
 
     updateSocialLinks(data) {
@@ -1254,7 +1277,7 @@ class GamingPlatform {
 
         Object.entries(socialElements).forEach(([id, url]) => {
             const element = document.getElementById(id);
-            if (element && url) {
+            if (element && url && url !== '#') {
                 element.href = url;
             }
         });

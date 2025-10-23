@@ -905,7 +905,7 @@ class GamingPlatform {
             const doc = await db.collection("settings").doc("social").get();
             if (doc.exists) {
                 const data = doc.data();
-                if (data.cornerImage && data.cornerImage !== '#') {
+                if (data.cornerImage && data.cornerImage !== '#' && data.cornerImage !== 'https://cdn.discordapp.com/attachments/955678413526532106/1430237227115352145/8bit_emir.png?ex=68fb05f7&is=68f9b477&hm=05ccf7eb9eb48266d30fdfaf47debc60c3386759fe9001c0454a215ff79f5b5a') {
                     const cornerImageElement = document.getElementById('corner-image');
                     if (cornerImageElement) {
                         cornerImageElement.src = data.cornerImage;
@@ -1274,7 +1274,7 @@ class GamingPlatform {
         if (data.headerLogo) document.getElementById("header-logo").src = data.headerLogo;
         if (data.logo) document.getElementById("favicon").href = data.logo;
         if (data.adminLogo) document.getElementById("admin-logo").src = data.adminLogo;
-        if (data.cornerImage) document.getElementById("corner-image").src = data.cornerImage;
+        if (data.cornerImage && data.cornerImage !== '#') document.getElementById("corner-image").src = data.cornerImage;
     }
 
     populateSocialForm(data) {

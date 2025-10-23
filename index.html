@@ -115,9 +115,9 @@
                 <i class="fas fa-edit"></i>
                 Spiele bearbeiten
             </button>
-            <button id="edit-social-btn" class="admin-btn">
-                <i class="fas fa-share-alt"></i>
-                Social Media Links bearbeiten
+            <button id="edit-corner-image-btn" class="admin-btn">
+                <i class="fas fa-image"></i>
+                Corner Image bearbeiten
             </button>
             <button id="view-suggestions-btn" class="admin-btn">
                 <i class="fas fa-lightbulb"></i>
@@ -166,8 +166,8 @@
                     </p>
                 </div>
 
-                <!-- Social Media Section -->
-                <div class="social-media-section">
+                <!-- Social Media Section - Hidden -->
+                <div class="social-media-section hidden">
                     <div class="social-media-container">
                         <h3>Folge HigherCellF auf Social Media</h3>
                         <div class="social-media-buttons">
@@ -376,7 +376,7 @@
                                 <i class="fas fa-envelope"></i>
                             </div>
                             <h3>Schreib uns</h3>
-                            <a href="mailto:highercellfgames@outlook.com" class="contact-link">highercellfgames@outlook.com</a>
+                            <a href="mailto:marvinweiss28@gmail.com" class="contact-link">marvinweiss28@gmail.com</a>
                         </div>
                         
                         <div class="contact-card">
@@ -429,65 +429,32 @@
                 </div>
             </div>
 
-        <!-- Social Media Form Modal -->
-            <div id="social-form" class="modal hidden">
+        <!-- Corner Image Form Modal -->
+            <div id="corner-image-form" class="modal hidden">
                 <div class="modal-content">
                     <span class="close-modal">&times;</span>
-                <h2><i class="fas fa-share-alt"></i> Social Media Links bearbeiten</h2>
+                <h2><i class="fas fa-image"></i> Corner Image bearbeiten</h2>
                 
                 <div class="form-section">
-                    <h3>Header Social Media</h3>
+                    <h3>Corner Image</h3>
                     <div class="form-group">
-                        <label for="tiktok-link">TikTok URL</label>
-                    <input type="text" id="tiktok-link" placeholder="TikTok URL">
+                        <label for="corner-image-url">Corner Image URL</label>
+                        <input type="text" id="corner-image-url" placeholder="Corner Image URL (empfohlen: 200x200px)">
+                        <small style="color: #94a3b8; margin-top: 5px; display: block;">
+                            Geben Sie die URL zu Ihrem gewünschten Bild ein. Empfohlene Größe: 200x200px
+                        </small>
                     </div>
+                    
                     <div class="form-group">
-                        <label for="discord-link">Discord URL</label>
-                    <input type="text" id="discord-link" placeholder="Discord URL">
-                    </div>
-                    <div class="form-group">
-                        <label for="instagram-link">Instagram URL</label>
-                    <input type="text" id="instagram-link" placeholder="Instagram URL">
-                    </div>
-                    <div class="form-group">
-                        <label for="kick-link">Kick URL</label>
-                    <input type="text" id="kick-link" placeholder="Kick URL">
-                    </div>
-                </div>
-
-                <div class="form-section">
-                    <h3>Footer Social Media</h3>
-                    <div class="form-group">
-                        <label for="footer-instagram-link">Footer Instagram URL</label>
-                    <input type="text" id="footer-instagram-link" placeholder="Footer Instagram URL">
-                    </div>
-                    <div class="form-group">
-                        <label for="footer-tiktok-link">Footer TikTok URL</label>
-                    <input type="text" id="footer-tiktok-link" placeholder="Footer TikTok URL">
-                    </div>
-                    <div class="form-group">
-                        <label for="footer-twitter-link">Footer Twitter URL</label>
-                    <input type="text" id="footer-twitter-link" placeholder="Footer Twitter URL">
+                        <label for="corner-image-preview">Vorschau</label>
+                        <div id="corner-image-preview" style="margin-top: 10px; text-align: center;">
+                            <img id="preview-image" src="" alt="Vorschau" style="max-width: 150px; max-height: 150px; border-radius: 10px; display: none;">
+                            <p id="no-preview" style="color: #94a3b8; font-style: italic;">Keine Vorschau verfügbar</p>
+                        </div>
                     </div>
                 </div>
 
-                <div class="form-section">
-                    <h3>Logo URLs</h3>
-                    <div class="form-group">
-                        <label for="header-logo-link">Header Logo URL</label>
-                    <input type="text" id="header-logo-link" placeholder="Header Logo URL (empfohlen: 40x40px)">
-                    </div>
-                    <div class="form-group">
-                        <label for="logo-link">Tab Icon URL</label>
-                    <input type="text" id="logo-link" placeholder="Tab Icon URL (32x32px empfohlen)">
-                    </div>
-                    <div class="form-group">
-                        <label for="admin-logo-link">Admin Logo URL</label>
-                    <input type="text" id="admin-logo-link" placeholder="Admin Logo URL (empfohlen: 40x40px)">
-                    </div>
-                </div>
-
-                <button id="save-social" class="save-btn">
+                <button id="save-corner-image" class="save-btn">
                     <i class="fas fa-save"></i>
                     Speichern
                 </button>
@@ -575,13 +542,13 @@
                     <a href="#" id="impressum-link" class="impressum-link">Impressum</a>
                 </div>
                 <div class="footer-social">
-                    <a href="#" class="footer-social-btn" id="footer-instagram" title="Instagram" target="_blank" rel="noopener">
+                    <a href="https://www.instagram.com/awaytomoon22/" class="footer-social-btn" id="footer-instagram" title="Instagram" target="_blank" rel="noopener">
                         <i class="fab fa-instagram"></i>
                     </a>
-                    <a href="#" class="footer-social-btn" id="footer-tiktok" title="TikTok" target="_blank" rel="noopener">
+                    <a href="https://www.tiktok.com/@away2moon" class="footer-social-btn" id="footer-tiktok" title="TikTok" target="_blank" rel="noopener">
                         <i class="fab fa-tiktok"></i>
                     </a>
-                    <a href="#" class="footer-social-btn" id="footer-twitter" title="X (Twitter)" target="_blank" rel="noopener">
+                    <a href="https://twitter.com/Away2Moon" class="footer-social-btn" id="footer-twitter" title="X (Twitter)" target="_blank" rel="noopener">
                         <i class="fa-solid fa-x"></i>
                     </a>
                 </div>
@@ -591,7 +558,18 @@
     
     <!-- Corner Image - Outside Footer -->
                     <div class="corner-image">
-                        <img src="https://i.imgur.com/PQrHi8j.png" alt="Corner Image">
+                        <a href="#" id="corner-image-link" target="_blank" rel="noopener">
+                            <img id="corner-image" src="https://i.imgur.com/PQrHi8j.png" alt="Corner Image">
+                            <div class="click-hint">
+                                <span>KLICK MICH</span>
+                            </div>
+                        </a>
+                        <div class="speech-bubble">
+                            <div class="speech-bubble-content">
+                                <span class="speech-text">Follow him to be a King</span>
+                                <div class="speech-bubble-tail"></div>
+                            </div>
+                        </div>
                     </div>
     
     <!-- Randomizer Modal -->
@@ -636,7 +614,7 @@
             <span class="close-modal">&times;</span>
             <h2><i class="fas fa-scale-balanced"></i> Impressum</h2>
             <p><b>Betreiber dieser Website</b>: Marvin Weiss</p>
-            <p><b>Kontakt</b>: E-Mail: <a href="mailto:highercellfgames@outlook.com">highercellfgames@outlook.com</a></p>
+            <p><b>Kontakt</b>: E-Mail: <a href="mailto:marvinweiss28@gmail.com">marvinweiss28@gmail.com</a></p>
             <p><b>Inhaltlich Verantwortlicher</b> gemäß § 55 Abs. 2 RStV: Marvin Weiss</p>
             <p style="margin-top:12px; opacity:0.85;">
                 Alle Inhalte wurden mit größter Sorgfalt erstellt. Für die Richtigkeit, Vollständigkeit und
@@ -717,7 +695,7 @@
 
         // Close modals when clicking outside
         document.addEventListener('click', (e) => {
-            if (e.target.classList.contains('modal')) {
+            if (e.target.classList.contains('modal') && !e.target.classList.contains('support-modal-no-close')) {
                 e.target.classList.add('hidden');
                 e.target.style.display = 'none';
                 document.body.style.overflow = 'auto';
@@ -729,8 +707,11 @@
             if (e.key === 'Escape') {
                 const openModals = document.querySelectorAll('.modal:not(.hidden)');
                 openModals.forEach(modal => {
-                    modal.classList.add('hidden');
-                    modal.style.display = 'none';
+                    // Don't close support modal
+                    if (!modal.classList.contains('support-modal-no-close')) {
+                        modal.classList.add('hidden');
+                        modal.style.display = 'none';
+                    }
                 });
                 document.body.style.overflow = 'auto';
         }

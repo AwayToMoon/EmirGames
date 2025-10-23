@@ -82,8 +82,11 @@ class GamingPlatform {
         // Game Management Events
         this.setupGameEvents();
         
-        // Social Media Events
-        this.setupSocialEvents();
+        // Corner Image Events
+        this.setupCornerImageEvents();
+        
+        // Corner Image Click Events
+        this.setupCornerImageClickEvents();
         
         // Filter and Tab Events
         this.setupFilterEvents();
@@ -481,10 +484,10 @@ class GamingPlatform {
             });
         }
 
-        const editSocialBtn = document.getElementById('edit-social-btn');
-        if (editSocialBtn) {
-            editSocialBtn.addEventListener('click', () => {
-                this.openSocialForm();
+        const editCornerImageBtn = document.getElementById('edit-corner-image-btn');
+        if (editCornerImageBtn) {
+            editCornerImageBtn.addEventListener('click', () => {
+                this.openCornerImageForm();
             });
         }
 
@@ -585,11 +588,18 @@ class GamingPlatform {
         }
     }
 
-    setupSocialEvents() {
-        const saveSocial = document.getElementById('save-social');
-        if (saveSocial) {
-            saveSocial.addEventListener('click', async () => {
-                await this.saveSocialLinks();
+    setupCornerImageEvents() {
+        const saveCornerImage = document.getElementById('save-corner-image');
+        if (saveCornerImage) {
+            saveCornerImage.addEventListener('click', async () => {
+                await this.saveCornerImage();
+            });
+        }
+
+        const cornerImageUrl = document.getElementById('corner-image-url');
+        if (cornerImageUrl) {
+            cornerImageUrl.addEventListener('input', (e) => {
+                this.updateCornerImagePreview(e.target.value);
             });
         }
     }
@@ -686,6 +696,7 @@ class GamingPlatform {
             // Dann alles andere parallel laden
             await Promise.all([
                 this.loadSocialLinks(),
+                this.loadCornerImageOnStartup(),
                 this.updateGenreFilterButtons(),
                 this.updateSuggestionCount()
             ]);
@@ -868,9 +879,138 @@ class GamingPlatform {
             '<i class="fas fa-edit"></i> Spiele bearbeiten';
     }
 
-    openSocialForm() {
-        this.loadSocialLinks();
-        this.openModal('social-form');
+    openCornerImageForm() {
+        this.loadCornerImageData();
+        this.openModal('corner-image-form');
+    }
+
+    async loadCornerImageData() {
+        try {
+            const doc = await db.collection("settings").doc("social").get();
+            if (doc.exists) {
+                const data = doc.data();
+                const cornerImageUrl = document.getElementById('corner-image-url');
+                if (cornerImageUrl) {
+                    cornerImageUrl.value = data.cornerImage || '';
+                    this.updateCornerImagePreview(data.cornerImage || '');
+                }
+            }
+        } catch (error) {
+            console.error("Error loading corner image data:", error);
+        }
+    }
+
+    async loadCornerImageOnStartup() {
+        try {
+            const doc = await db.collection("settings").doc("social").get();
+            if (doc.exists) {
+                const data = doc.data();
+                if (data.cornerImage && data.cornerImage !== '#') {
+                    const cornerImageElement = document.getElementById('corner-image');
+                    if (cornerImageElement) {
+                        cornerImageElement.src = data.cornerImage;
+                    }
+                }
+            }
+        } catch (error) {
+            console.error("Error loading corner image on startup:", error);
+        }
+    }
+
+    updateCornerImagePreview(url) {
+        const previewImage = document.getElementById('preview-image');
+        const noPreview = document.getElementById('no-preview');
+        
+        if (url && url.trim() && url !== '#') {
+            previewImage.src = url;
+            previewImage.style.display = 'block';
+            noPreview.style.display = 'none';
+        } else {
+            previewImage.style.display = 'none';
+            noPreview.style.display = 'block';
+        }
+    }
+
+    async saveCornerImage() {
+        const cornerImageUrl = document.getElementById('corner-image-url').value.trim();
+        
+        if (!cornerImageUrl) {
+            this.showNotification('Bitte geben Sie eine Corner Image URL ein!', 'error');
+            return;
+        }
+
+        try {
+            // Update the corner image directly
+            document.getElementById('corner-image').src = cornerImageUrl;
+            
+            // Save to database
+            await db.collection("settings").doc("social").set({
+                cornerImage: cornerImageUrl
+            }, { merge: true });
+            
+            this.closeModal('corner-image-form');
+            this.showNotification('Corner Image erfolgreich aktualisiert! 🖼️', 'success');
+        } catch (error) {
+            console.error("Error saving corner image:", error);
+            this.showNotification('Fehler beim Speichern des Corner Images', 'error');
+        }
+    }
+
+    setupCornerImageClickEvents() {
+        const cornerImageLink = document.getElementById('corner-image-link');
+        if (cornerImageLink) {
+            cornerImageLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.showSocialMediaOptions();
+            });
+        }
+    }
+
+    showSocialMediaOptions() {
+        // Create social media options modal
+        const modal = document.createElement('div');
+        modal.className = 'modal';
+        modal.style.display = 'flex';
+        modal.innerHTML = `
+            <div class="modal-content social-options-content">
+                <span class="close-modal">&times;</span>
+                <h2><i class="fas fa-share-alt"></i> Folge HigherCellF</h2>
+                <p style="text-align: center; margin-bottom: 20px; color: #94a3b8;">
+                    Wähle eine Social Media Plattform aus:
+                </p>
+                <div class="social-options-grid">
+                    <a href="https://www.tiktok.com/@creator_emir999" target="_blank" class="social-option-card">
+                        <i class="fab fa-tiktok"></i>
+                        <span>TikTok</span>
+                    </a>
+                    <a href="https://www.instagram.com/highercellffx/" target="_blank" class="social-option-card">
+                        <i class="fab fa-instagram"></i>
+                        <span>Instagram</span>
+                    </a>
+                    <a href="https://discord.com/invite/32HKVGXePw" target="_blank" class="social-option-card">
+                        <i class="fab fa-discord"></i>
+                        <span>Discord</span>
+                    </a>
+                    <a href="https://www.youtube.com/@flyonkukirin" target="_blank" class="social-option-card">
+                        <i class="fab fa-youtube"></i>
+                        <span>YouTube</span>
+                    </a>
+                </div>
+            </div>
+        `;
+        
+        document.body.appendChild(modal);
+        
+        // Close modal events
+        modal.querySelector('.close-modal').addEventListener('click', () => {
+            modal.remove();
+        });
+        
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.remove();
+            }
+        });
     }
 
     // Game Management Functions
@@ -1134,6 +1274,7 @@ class GamingPlatform {
         if (data.headerLogo) document.getElementById("header-logo").src = data.headerLogo;
         if (data.logo) document.getElementById("favicon").href = data.logo;
         if (data.adminLogo) document.getElementById("admin-logo").src = data.adminLogo;
+        if (data.cornerImage) document.getElementById("corner-image").src = data.cornerImage;
     }
 
     populateSocialForm(data) {
@@ -1147,7 +1288,8 @@ class GamingPlatform {
             'footer-twitter-link': data.footerTwitter || '',
             'header-logo-link': data.headerLogo || '',
             'logo-link': data.logo || '',
-            'admin-logo-link': data.adminLogo || ''
+            'admin-logo-link': data.adminLogo || '',
+            'corner-image-link': data.cornerImage || ''
         };
 
         Object.entries(formFields).forEach(([id, value]) => {
@@ -1168,7 +1310,8 @@ class GamingPlatform {
                 footerTwitter: document.getElementById("footer-twitter-link").value || "#",
                 logo: document.getElementById("logo-link").value || "#",
                 headerLogo: document.getElementById("header-logo-link").value || "#",
-                adminLogo: document.getElementById("admin-logo-link").value || "#"
+                adminLogo: document.getElementById("admin-logo-link").value || "#",
+                cornerImage: document.getElementById("corner-image-link").value || "#"
             };
 
             await db.collection("settings").doc("social").set(formData);

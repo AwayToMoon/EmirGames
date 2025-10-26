@@ -74,6 +74,9 @@ class GamingPlatform {
         // Navigation Events
         this.setupNavigationEvents();
         
+        // Mobile Menu Events
+        this.setupMobileMenuEvents();
+        
         // Admin Panel Events
         this.setupAdminEvents();
         
@@ -103,6 +106,11 @@ class GamingPlatform {
         
         // Halloween Theme Events
         this.setupHalloweenEvents();
+        
+        // Window resize events
+        window.addEventListener('resize', () => {
+            this.handleWindowResize();
+        });
     }
 
     setupNavigationEvents() {
@@ -112,6 +120,9 @@ class GamingPlatform {
                 e.preventDefault();
                 const page = link.dataset.page;
                 this.switchPage(page);
+                
+                // Close mobile menu if open
+                this.closeMobileMenu();
             });
         });
 
@@ -147,6 +158,60 @@ class GamingPlatform {
         // FAQ Toggle
         this.setupFAQToggle();
 
+    }
+
+    setupMobileMenuEvents() {
+        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+        const mainNavigation = document.getElementById('main-navigation');
+        
+        if (mobileMenuToggle && mainNavigation) {
+            mobileMenuToggle.addEventListener('click', () => {
+                this.toggleMobileMenu();
+            });
+            
+            // Close menu when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!mainNavigation.contains(e.target) && !mobileMenuToggle.contains(e.target)) {
+                    this.closeMobileMenu();
+                }
+            });
+            
+            // Close menu on escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') {
+                    this.closeMobileMenu();
+                }
+            });
+        }
+    }
+
+    toggleMobileMenu() {
+        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+        const mainNavigation = document.getElementById('main-navigation');
+        
+        if (mobileMenuToggle && mainNavigation) {
+            mobileMenuToggle.classList.toggle('active');
+            mainNavigation.classList.toggle('active');
+            document.body.style.overflow = mainNavigation.classList.contains('active') ? 'hidden' : 'auto';
+        }
+    }
+
+    closeMobileMenu() {
+        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+        const mainNavigation = document.getElementById('main-navigation');
+        
+        if (mobileMenuToggle && mainNavigation) {
+            mobileMenuToggle.classList.remove('active');
+            mainNavigation.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+    }
+
+    // Handle window resize for mobile menu
+    handleWindowResize() {
+        if (window.innerWidth > 768) {
+            this.closeMobileMenu();
+        }
     }
 
     switchPage(page) {

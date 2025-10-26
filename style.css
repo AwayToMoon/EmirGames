@@ -433,20 +433,18 @@ body::before {
     display: flex;
     align-items: center;
     gap: 10px;
-    padding: 14px 24px;
+    padding: 15px 30px;
     background: linear-gradient(45deg, #6366f1, #8b5cf6);
     color: white;
     border: none;
     border-radius: 12px;
     font-weight: 600;
-    font-size: 1rem;
+    font-size: 1.1rem;
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
-    min-width: 160px;
+    min-width: 180px;
     justify-content: center;
-    min-height: 48px;
-    touch-action: manipulation;
 }
 
 .action-btn:hover {
@@ -1001,7 +999,7 @@ body::before {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 12px;
     justify-content: center;
 }
 
@@ -1024,11 +1022,6 @@ body::before {
     min-height: 45px;
     white-space: nowrap;
     flex-shrink: 0;
-    touch-action: manipulation;
-}
-
-.genre-text {
-    transition: all 0.3s ease;
 }
 
 .genre-filter-btn::before {
@@ -1065,15 +1058,14 @@ body::before {
 .game-tabs-container {
     display: flex;
     justify-content: center;
-    gap: 8px;
+    gap: 20px;
     margin: 30px 0;
-    flex-wrap: wrap;
 }
 
 .game-tab-btn {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
-    padding: 12px 20px;
+    padding: 12px 24px;
     border-radius: 25px;
     color: white;
     font-weight: 600;
@@ -1082,19 +1074,6 @@ body::before {
     backdrop-filter: blur(10px);
     position: relative;
     overflow: hidden;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    white-space: nowrap;
-    min-height: 44px;
-    touch-action: manipulation;
-    flex: 1;
-    min-width: 120px;
-    justify-content: center;
-}
-
-.tab-text {
-    transition: all 0.3s ease;
 }
 
 .game-tab-btn::before {
@@ -1127,9 +1106,9 @@ body::before {
 /* Game List */
 #game-list {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 20px;
-    padding: 20px 10px;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 25px;
+    padding: 20px 0;
 }
 
 .game {
@@ -1368,14 +1347,13 @@ body::before {
     backdrop-filter: blur(20px);
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 20px;
-    padding: 30px;
+    padding: 40px;
     max-width: 700px;
-    width: 95%;
+    width: 90%;
     max-height: 85vh;
     overflow-y: auto;
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
     position: relative;
-    margin: 20px;
 }
 
 .modal-content h2 {
@@ -1391,18 +1369,15 @@ body::before {
 
 .modal-content input, .modal-content textarea {
     width: 100%;
-    padding: 14px 16px;
+    padding: 15px;
     margin-bottom: 15px;
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 15px;
     background: rgba(255, 255, 255, 0.1);
     color: white;
-    font-size: 16px;
+    font-size: 1rem;
     transition: all 0.3s ease;
     backdrop-filter: blur(10px);
-    min-height: 48px;
-    touch-action: manipulation;
-    box-sizing: border-box;
 }
 
 .modal-content input:focus, .modal-content textarea:focus {
@@ -2154,22 +2129,9 @@ body::before {
     }
     
     .modal-content {
-        padding: 20px;
-        margin: 10px;
-        max-width: 98%;
-        width: 98%;
-    }
-    
-    .modal-content input, .modal-content textarea {
-        font-size: 16px;
-        padding: 16px;
-        min-height: 52px;
-    }
-    
-    .save-btn {
-        padding: 16px 24px;
-        font-size: 16px;
-        min-height: 52px;
+        padding: 25px;
+        margin: 20px;
+        max-width: 95%;
     }
     
     .made-by-container {
@@ -2191,263 +2153,31 @@ body::before {
     }
 }
 
-/* Small Mobile Screens */
 @media (max-width: 480px) {
-    /* Header adjustments */
-    .modern-header {
-        margin: 3px;
-        width: calc(100% - 6px);
+    .content-container {
+        padding: 0 10px;
     }
     
-    .nav-container {
-        padding: 8px 10px;
-        gap: 8px;
+    .header {
+        padding: 15px 20px;
     }
     
-    .logo-icon {
-        width: 30px;
-        height: 30px;
+    .site-title {
+        font-size: 1.8rem;
     }
     
-    .brand-primary {
-        font-size: 0.95rem;
-    }
-    
-    .brand-secondary {
-        font-size: 0.7rem;
-    }
-    
-    .support-btn, .login-btn, .halloween-toggle-btn {
-        padding: 6px 8px;
-        font-size: 0.75rem;
-        min-height: 36px;
-        min-width: 36px;
-    }
-    
-    .support-btn i, .login-btn i, .halloween-toggle-btn i {
-        font-size: 14px;
-    }
-    
-    .nav-right {
-        gap: 4px;
-    }
-    
-    /* Content adjustments */
-    .main-content {
-        margin: 3px;
-        width: calc(100% - 6px);
-    }
-    
-    .start-hero {
-        padding: 15px 10px;
-    }
-    
-    .start-hero h1 {
-        font-size: 1.6rem;
-    }
-    
-    .start-hero .important-notice {
-        font-size: 0.8rem;
-        padding: 10px 12px;
-    }
-    
-    .start-hero p {
-        font-size: 0.85rem;
-    }
-    
-    .start-hero li {
-        font-size: 0.8rem;
-    }
-    
-    /* Games page adjustments */
-    .games-header {
-        padding: 15px 10px;
-    }
-    
-    .games-header h1 {
-        font-size: 1.6rem;
-    }
-    
-    .action-btn {
-        padding: 12px 16px;
-        font-size: 0.9rem;
-        min-height: 44px;
-    }
-    
-    /* Genre filter adjustments */
-    .genre-filter-container {
-        margin: 15px 10px;
-        padding: 12px;
-        width: calc(100% - 20px);
-    }
-    
-    .genre-filter-btn {
-        padding: 8px 10px;
-        font-size: 0.75rem;
-        min-height: 40px;
-        min-width: 70px;
-        max-width: 100px;
-    }
-    
-    /* Game tabs adjustments */
-    .game-tabs-container {
-        margin: 15px 10px;
-        width: calc(100% - 20px);
-    }
-    
-    .game-tab-btn {
-        padding: 10px 12px;
-        font-size: 0.75rem;
-        min-height: 40px;
-        min-width: 80px;
-    }
-    
-    /* Game list adjustments */
-    #game-list {
-        padding: 10px;
-        gap: 12px;
+    .social-btn {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
     }
     
     .game-content {
-        padding: 12px;
+        padding: 15px;
     }
     
     .game h2 {
-        font-size: 1.1rem;
-    }
-    
-    .game-description {
-        font-size: 0.8rem;
-    }
-    
-    .genre-tag {
-        font-size: 0.7rem;
-        padding: 3px 6px;
-    }
-    
-    /* Modal adjustments */
-    .modal-content {
-        padding: 15px;
-        margin: 5px;
-        width: calc(100% - 10px);
-        max-width: calc(100% - 10px);
-    }
-    
-    .modal-content h2 {
         font-size: 1.2rem;
-    }
-    
-    .modal-content input, .modal-content textarea {
-        font-size: 16px;
-        padding: 12px;
-        min-height: 44px;
-    }
-    
-    .save-btn {
-        padding: 12px 16px;
-        font-size: 16px;
-        min-height: 44px;
-    }
-    
-    /* Corner image adjustments */
-    .corner-image {
-        width: 50px;
-        height: 50px;
-        bottom: 10px;
-        right: 10px;
-    }
-    
-    .click-hint {
-        font-size: 0.6rem;
-        padding: 2px 4px;
-        bottom: -20px;
-    }
-    
-    .speech-bubble {
-        bottom: 60px;
-        right: -10px;
-    }
-    
-    .speech-bubble-content {
-        font-size: 0.7rem;
-        padding: 6px 8px;
-    }
-    
-    /* Footer adjustments */
-    .footer-content {
-        padding: 15px 10px;
-    }
-    
-    .made-by {
-        font-size: 0.8rem;
-    }
-    
-    .copyright {
-        font-size: 0.7rem;
-    }
-}
-
-/* ========================================
-   END OF MOBILE RESPONSIVE DESIGN
-   ======================================== */
-
-/* Additional mobile optimizations are now included in the main mobile section above */
-
-/* Very small screens */
-@media (max-width: 360px) {
-    .nav-container {
-        padding: 8px 10px;
-        gap: 8px;
-    }
-    
-    .brand-primary {
-        font-size: 0.9rem;
-    }
-    
-    .brand-secondary {
-        font-size: 0.65rem;
-    }
-    
-    .logo-icon {
-        width: 28px;
-        height: 28px;
-    }
-    
-    .support-btn, .login-btn, .halloween-toggle-btn {
-        padding: 6px 8px;
-        font-size: 0.7rem;
-        min-height: 32px;
-        min-width: 32px;
-    }
-    
-    .support-btn i, .login-btn i, .halloween-toggle-btn i {
-        font-size: 12px;
-    }
-    
-    .nav-right {
-        gap: 4px;
-    }
-    
-    .genre-filter-btn {
-        padding: 6px 10px;
-        font-size: 0.75rem;
-        min-width: 60px;
-    }
-    
-    .game-tab-btn {
-        padding: 6px 10px;
-        font-size: 0.75rem;
-        min-width: 80px;
-    }
-    
-    .action-btn {
-        padding: 12px 16px;
-        font-size: 0.9rem;
-    }
-    
-    .modal-content {
-        padding: 12px;
-        margin: 3px;
     }
 }
 
@@ -2753,20 +2483,16 @@ body::before {
     background: linear-gradient(45deg, #6366f1, #8b5cf6);
     color: #ffffff;
     border: none;
-    padding: 14px 24px;
+    padding: 12px 24px;
     border-radius: 8px;
-    font-size: 16px;
+    font-size: 14px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
-    gap: 8px;
+        gap: 8px;
     box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
-    min-height: 48px;
-    touch-action: manipulation;
-    justify-content: center;
-    width: 100%;
 }
 
 .save-btn:hover {
@@ -2965,41 +2691,6 @@ body::before {
     z-index: 2;
 }
 
-/* Mobile Menu Toggle */
-.mobile-menu-toggle {
-    display: none;
-    flex-direction: column;
-    justify-content: space-around;
-    width: 30px;
-    height: 30px;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    z-index: 1001;
-}
-
-.hamburger-line {
-    width: 100%;
-    height: 3px;
-    background: linear-gradient(45deg, #6366f1, #8b5cf6);
-    border-radius: 2px;
-    transition: all 0.3s ease;
-    transform-origin: center;
-}
-
-.mobile-menu-toggle.active .hamburger-line:nth-child(1) {
-    transform: rotate(45deg) translate(6px, 6px);
-}
-
-.mobile-menu-toggle.active .hamburger-line:nth-child(2) {
-    opacity: 0;
-}
-
-.mobile-menu-toggle.active .hamburger-line:nth-child(3) {
-    transform: rotate(-45deg) translate(6px, -6px);
-}
-
 /* Brand Section */
 .brand-section {
     display: flex;
@@ -3058,7 +2749,6 @@ body::before {
 .main-navigation {
     display: flex;
     gap: 8px;
-    transition: all 0.3s ease;
 }
 
 .nav-link {
@@ -3075,11 +2765,6 @@ body::before {
     border: 1px solid rgba(255, 255, 255, 0.1);
     position: relative;
     overflow: hidden;
-    white-space: nowrap;
-}
-
-.nav-text {
-    transition: all 0.3s ease;
 }
 
 .nav-link::before {
@@ -3704,405 +3389,32 @@ body::before {
     width: 100%;
 }
 
-/* ========================================
-   MOBILE RESPONSIVE DESIGN - COMPLETE OVERHAUL
-   ======================================== */
-
-/* Mobile Menu Toggle */
-.mobile-menu-toggle {
-    display: none;
-    flex-direction: column;
-    justify-content: space-around;
-    width: 30px;
-    height: 30px;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 0;
-    z-index: 1001;
-}
-
-.hamburger-line {
-    width: 100%;
-    height: 3px;
-    background: linear-gradient(45deg, #6366f1, #8b5cf6);
-    border-radius: 2px;
-    transition: all 0.3s ease;
-    transform-origin: center;
-}
-
-.mobile-menu-toggle.active .hamburger-line:nth-child(1) {
-    transform: rotate(45deg) translate(6px, 6px);
-}
-
-.mobile-menu-toggle.active .hamburger-line:nth-child(2) {
-    opacity: 0;
-}
-
-.mobile-menu-toggle.active .hamburger-line:nth-child(3) {
-    transform: rotate(-45deg) translate(6px, -6px);
-}
-
-/* Mobile Base Styles */
+/* Responsive Design */
 @media (max-width: 768px) {
-    /* Global Mobile Fixes */
-    * {
-        box-sizing: border-box;
-    }
-    
-    html, body {
-        overflow-x: hidden;
-        width: 100%;
-    }
-    
-    .content-container {
-        padding: 0;
-        margin: 0;
-        width: 100%;
-        overflow-x: hidden;
-    }
-    
-    /* Mobile Header */
-    .modern-header {
-        margin: 5px;
-        width: calc(100% - 10px);
-        border-radius: 12px;
-    }
-    
     .nav-container {
-        padding: 10px 15px;
-        flex-wrap: nowrap;
-        gap: 10px;
-    }
-    
-    .brand-section {
-        flex-shrink: 0;
-        min-width: 0;
-    }
-    
-    .logo-icon {
-        width: 35px;
-        height: 35px;
-    }
-    
-    .brand-primary {
-        font-size: 1.1rem;
-    }
-    
-    .brand-secondary {
-        font-size: 0.8rem;
-    }
-    
-    /* Mobile Menu Toggle */
-    .mobile-menu-toggle {
-        display: flex;
-    }
-    
-    /* Mobile Navigation */
-    .main-navigation {
-        position: fixed;
-        top: 0;
-        left: -100%;
-        width: 80%;
-        height: 100vh;
-        background: rgba(0, 0, 0, 0.95);
-        backdrop-filter: blur(20px);
         flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        gap: 30px;
-        transition: left 0.3s ease;
-        z-index: 1000;
+        gap: 20px;
         padding: 20px;
     }
     
-    .main-navigation.active {
-        left: 0;
-    }
-    
-    .nav-link {
-        padding: 15px 30px;
-        font-size: 18px;
-        width: 100%;
-        text-align: center;
+    .main-navigation {
+        flex-wrap: wrap;
         justify-content: center;
+        gap: 15px;
     }
     
-    .nav-text {
-        display: block;
-    }
-    
-    /* Mobile Right Buttons */
     .nav-right {
-        gap: 6px;
-        display: flex;
-        align-items: center;
-        flex-shrink: 0;
-    }
-    
-    .support-text, .login-text, .halloween-text {
-        display: none;
-    }
-    
-    .support-btn, .login-btn, .halloween-toggle-btn {
-        padding: 8px 10px;
-        font-size: 0.8rem;
-        min-height: 40px;
-        min-width: 40px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    
-    .support-btn i, .login-btn i, .halloween-toggle-btn i {
-        font-size: 16px;
-    }
-    
-    /* Mobile Main Content */
-    .main-content {
-        margin: 5px;
-        width: calc(100% - 10px);
-        overflow-x: hidden;
-    }
-    
-    .page-content {
+        flex-direction: column;
+        gap: 15px;
         width: 100%;
-        overflow-x: hidden;
     }
     
-    /* Mobile Start Page */
     .start-hero {
-        padding: 20px 15px;
-        width: 100%;
-        box-sizing: border-box;
+        padding: 40px 20px;
     }
     
     .start-hero h1 {
-        font-size: 1.8rem;
-        line-height: 1.2;
-        margin-bottom: 20px;
-        text-align: center;
-    }
-    
-    .start-hero .important-notice {
-        font-size: 0.85rem;
-        padding: 12px 15px;
-        margin: 20px 0;
-        line-height: 1.3;
-        text-align: center;
-    }
-    
-    .start-hero p {
-        font-size: 0.9rem;
-        line-height: 1.5;
-        margin-bottom: 20px;
-        text-align: left;
-    }
-    
-    .start-hero ul {
-        padding-left: 20px;
-        margin: 20px 0;
-    }
-    
-    .start-hero li {
-        font-size: 0.85rem;
-        margin-bottom: 8px;
-        line-height: 1.4;
-    }
-    
-    /* Mobile Games Page */
-    .games-header {
-        padding: 20px 15px;
-        width: 100%;
-        box-sizing: border-box;
-    }
-    
-    .games-header h1 {
-        font-size: 1.8rem;
-        text-align: center;
-        margin-bottom: 20px;
-    }
-    
-    .action-buttons {
-        flex-direction: column;
-        gap: 15px;
-        align-items: center;
-        margin: 20px 0;
-        width: 100%;
-    }
-    
-    .action-btn {
-        width: 100%;
-        max-width: 280px;
-        padding: 14px 20px;
-        font-size: 0.95rem;
-        min-height: 48px;
-    }
-    
-    /* Mobile Genre Filter */
-    .genre-filter-container {
-        margin: 20px 15px;
-        padding: 15px;
-        width: calc(100% - 30px);
-        box-sizing: border-box;
-    }
-    
-    .genre-filter-container h3 {
-        font-size: 1.1rem;
-        text-align: center;
-        margin-bottom: 15px;
-    }
-    
-    .genre-filter-buttons {
-        gap: 8px;
-        justify-content: center;
-        flex-wrap: wrap;
-        width: 100%;
-    }
-    
-    .genre-filter-btn {
-        padding: 10px 14px;
-        font-size: 0.8rem;
-        min-height: 44px;
-        flex: 1;
-        min-width: 80px;
-        max-width: 120px;
-        justify-content: center;
-    }
-    
-    .genre-text {
-        font-size: 0.8rem;
-    }
-    
-    /* Mobile Game Tabs */
-    .game-tabs-container {
-        gap: 8px;
-        margin: 20px 15px;
-        width: calc(100% - 30px);
-        box-sizing: border-box;
-    }
-    
-    .game-tab-btn {
-        padding: 12px 16px;
-        font-size: 0.8rem;
-        min-height: 44px;
-        flex: 1;
-        min-width: 100px;
-        justify-content: center;
-    }
-    
-    .tab-text {
-        font-size: 0.8rem;
-    }
-    
-    /* Mobile Game List */
-    #game-list {
-        grid-template-columns: 1fr;
-        gap: 15px;
-        padding: 15px;
-        width: 100%;
-        box-sizing: border-box;
-    }
-    
-    .game {
-        margin: 0;
-        width: 100%;
-        box-sizing: border-box;
-    }
-    
-    .game-content {
-        padding: 15px;
-    }
-    
-    .game h2 {
-        font-size: 1.2rem;
-        margin-bottom: 10px;
-    }
-    
-    .game-description {
-        font-size: 0.85rem;
-        line-height: 1.4;
-    }
-    
-    .genre-tag {
-        font-size: 0.75rem;
-        padding: 4px 8px;
-    }
-    
-    /* Mobile Modals */
-    .modal-content {
-        padding: 20px;
-        margin: 10px;
-        width: calc(100% - 20px);
-        max-width: calc(100% - 20px);
-        box-sizing: border-box;
-    }
-    
-    .modal-content h2 {
-        font-size: 1.4rem;
-        margin-bottom: 20px;
-        text-align: center;
-    }
-    
-    .modal-content input, .modal-content textarea {
-        font-size: 16px;
-        padding: 14px;
-        min-height: 48px;
-        width: 100%;
-        box-sizing: border-box;
-    }
-    
-    .save-btn {
-        padding: 14px 20px;
-        font-size: 16px;
-        min-height: 48px;
-        width: 100%;
-    }
-    
-    /* Mobile Corner Image */
-    .corner-image {
-        width: 60px;
-        height: 60px;
-        bottom: 15px;
-        right: 15px;
-    }
-    
-    .click-hint {
-        font-size: 0.7rem;
-        padding: 3px 6px;
-        bottom: -25px;
-    }
-    
-    .speech-bubble {
-        bottom: 70px;
-        right: -5px;
-    }
-    
-    .speech-bubble-content {
-        font-size: 0.8rem;
-        padding: 8px 10px;
-    }
-    
-    /* Mobile Footer */
-    .footer-container {
-        width: 100%;
-        box-sizing: border-box;
-    }
-    
-    .footer-content {
-        padding: 20px 15px;
-        width: 100%;
-        box-sizing: border-box;
-    }
-    
-    .made-by {
-        font-size: 0.9rem;
-        text-align: center;
-    }
-    
-    .copyright {
-        font-size: 0.8rem;
-        text-align: center;
+        font-size: 2.5rem;
     }
     
     .start-hero .important-notice {
@@ -4159,80 +3471,18 @@ body::before {
     }
     
     .genre-filter-container {
-        margin: 10px;
-        padding: 15px;
-        width: calc(100% - 20px);
-        box-sizing: border-box;
+        margin: 20px;
+        padding: 20px;
     }
     
     .genre-filter-buttons {
-        gap: 6px;
-        justify-content: center;
-        flex-wrap: wrap;
-        width: 100%;
+        gap: 8px;
     }
     
     .genre-filter-btn {
-        padding: 10px 14px;
-        font-size: 0.85rem;
-        min-height: 44px;
-        flex: 1;
-        min-width: 80px;
-        max-width: 120px;
-        justify-content: center;
-    }
-    
-    .genre-text {
-        font-size: 0.8rem;
-    }
-    
-    .game-tabs-container {
-        gap: 6px;
-        margin: 20px 10px;
-        width: calc(100% - 20px);
-        box-sizing: border-box;
-    }
-    
-    .game-tab-btn {
-        padding: 10px 16px;
-        font-size: 0.85rem;
-        min-height: 44px;
-        flex: 1;
-        min-width: 100px;
-    }
-    
-    .tab-text {
-        font-size: 0.8rem;
-    }
-    
-    #game-list {
-        grid-template-columns: 1fr;
-        gap: 15px;
-        padding: 10px;
-        width: 100%;
-        box-sizing: border-box;
-    }
-    
-    .game {
-        margin: 0;
-        width: 100%;
-        box-sizing: border-box;
-    }
-    
-    .action-buttons {
-        flex-direction: column;
-        gap: 15px;
-        align-items: center;
-        width: 100%;
-        padding: 0 10px;
-        box-sizing: border-box;
-    }
-    
-    .action-btn {
-        width: 100%;
-        max-width: 300px;
-        padding: 16px 24px;
-        font-size: 1rem;
+        padding: 8px 12px;
+        font-size: 0.9rem;
+        min-height: 40px;
     }
     
     #admin-panel, .streamer-panel {

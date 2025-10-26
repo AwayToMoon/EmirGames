@@ -2193,16 +2193,36 @@ body::before {
 
 @media (max-width: 480px) {
     .content-container {
-        padding: 0 5px;
+        padding: 0;
+        margin: 0;
+        width: 100%;
+        overflow-x: hidden;
     }
     
     .modern-header {
-        margin: 10px;
+        margin: 5px;
         border-radius: 12px;
+        width: calc(100% - 10px);
+        box-sizing: border-box;
     }
     
     .nav-container {
         padding: 12px 15px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .main-content {
+        margin: 5px;
+        width: calc(100% - 10px);
+        box-sizing: border-box;
+        overflow-x: hidden;
+    }
+    
+    .page-content {
+        width: 100%;
+        box-sizing: border-box;
+        overflow-x: hidden;
     }
     
     .brand-text {
@@ -2268,11 +2288,33 @@ body::before {
         font-size: 1.1rem;
     }
     
+    .genre-filter-container {
+        margin: 5px;
+        padding: 10px;
+        width: calc(100% - 10px);
+        box-sizing: border-box;
+    }
+    
+    .genre-filter-buttons {
+        gap: 4px;
+        justify-content: center;
+        flex-wrap: wrap;
+        width: 100%;
+    }
+    
     .genre-filter-btn {
         padding: 8px 12px;
         font-size: 0.8rem;
         min-height: 40px;
         min-width: 70px;
+        max-width: 100px;
+        flex: 1;
+    }
+    
+    .game-tabs-container {
+        margin: 10px 5px;
+        width: calc(100% - 10px);
+        box-sizing: border-box;
     }
     
     .game-tab-btn {
@@ -2280,6 +2322,13 @@ body::before {
         font-size: 0.8rem;
         min-height: 40px;
         min-width: 90px;
+        flex: 1;
+    }
+    
+    #game-list {
+        padding: 5px;
+        width: 100%;
+        box-sizing: border-box;
     }
     
     .action-btn {
@@ -2309,8 +2358,9 @@ body::before {
     .modal-content {
         padding: 15px;
         margin: 5px;
-        width: 99%;
-        max-width: 99%;
+        width: calc(100% - 10px);
+        max-width: calc(100% - 10px);
+        box-sizing: border-box;
     }
     
     .modal-content h2 {
@@ -2331,6 +2381,13 @@ body::before {
     
     .footer-content {
         padding: 20px 15px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .footer-container {
+        width: 100%;
+        box-sizing: border-box;
     }
     
     .made-by {
@@ -2342,10 +2399,10 @@ body::before {
     }
     
     .corner-image {
-        width: 80px;
-        height: 80px;
-        bottom: 20px;
-        right: 20px;
+        width: 60px;
+        height: 60px;
+        bottom: 15px;
+        right: 15px;
     }
     
     .corner-image img {
@@ -2366,6 +2423,21 @@ body::before {
 
 /* Mobile-specific optimizations */
 @media (max-width: 768px) {
+    /* Fix viewport issues */
+    * {
+        box-sizing: border-box;
+    }
+    
+    body {
+        overflow-x: hidden;
+        width: 100%;
+    }
+    
+    html {
+        overflow-x: hidden;
+        width: 100%;
+    }
+    
     /* Improve touch targets */
     button, .nav-link, .genre-filter-btn, .game-tab-btn, .action-btn {
         min-height: 44px;
@@ -2385,10 +2457,26 @@ body::before {
     /* Better spacing for mobile */
     .main-content {
         margin: 10px;
+        width: calc(100% - 20px);
+        box-sizing: border-box;
     }
     
     .page-content {
         padding: 0 5px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    /* Ensure all containers fit in viewport */
+    .games-header {
+        width: 100%;
+        box-sizing: border-box;
+        padding: 0 10px;
+    }
+    
+    .games-controls {
+        width: 100%;
+        box-sizing: border-box;
     }
 }
 
@@ -3738,6 +3826,33 @@ body::before {
         display: none;
     }
     
+    /* Fix mobile layout issues */
+    .content-container {
+        padding: 0;
+        margin: 0;
+        width: 100%;
+        overflow-x: hidden;
+    }
+    
+    .modern-header {
+        margin: 10px;
+        width: calc(100% - 20px);
+        box-sizing: border-box;
+    }
+    
+    .main-content {
+        margin: 10px;
+        width: calc(100% - 20px);
+        box-sizing: border-box;
+        overflow-x: hidden;
+    }
+    
+    .page-content {
+        width: 100%;
+        box-sizing: border-box;
+        overflow-x: hidden;
+    }
+    
     .start-hero {
         padding: 40px 20px;
     }
@@ -3800,13 +3915,17 @@ body::before {
     }
     
     .genre-filter-container {
-        margin: 20px;
-        padding: 20px;
+        margin: 10px;
+        padding: 15px;
+        width: calc(100% - 20px);
+        box-sizing: border-box;
     }
     
     .genre-filter-buttons {
         gap: 6px;
         justify-content: center;
+        flex-wrap: wrap;
+        width: 100%;
     }
     
     .genre-filter-btn {
@@ -3815,6 +3934,7 @@ body::before {
         min-height: 44px;
         flex: 1;
         min-width: 80px;
+        max-width: 120px;
         justify-content: center;
     }
     
@@ -3824,7 +3944,9 @@ body::before {
     
     .game-tabs-container {
         gap: 6px;
-        margin: 20px 0;
+        margin: 20px 10px;
+        width: calc(100% - 20px);
+        box-sizing: border-box;
     }
     
     .game-tab-btn {
@@ -3842,17 +3964,24 @@ body::before {
     #game-list {
         grid-template-columns: 1fr;
         gap: 15px;
-        padding: 10px 5px;
+        padding: 10px;
+        width: 100%;
+        box-sizing: border-box;
     }
     
     .game {
         margin: 0;
+        width: 100%;
+        box-sizing: border-box;
     }
     
     .action-buttons {
         flex-direction: column;
         gap: 15px;
         align-items: center;
+        width: 100%;
+        padding: 0 10px;
+        box-sizing: border-box;
     }
     
     .action-btn {

@@ -2191,98 +2191,37 @@ body::before {
     }
 }
 
+/* Small Mobile Screens */
 @media (max-width: 480px) {
-    .content-container {
-        padding: 0;
-        margin: 0;
-        width: 100%;
-        overflow-x: hidden;
-    }
-    
+    /* Header adjustments */
     .modern-header {
-        margin: 5px;
-        border-radius: 12px;
-        width: calc(100% - 10px);
-        box-sizing: border-box;
+        margin: 3px;
+        width: calc(100% - 6px);
     }
     
     .nav-container {
-        padding: 10px 12px;
-        width: 100%;
-        box-sizing: border-box;
-        flex-wrap: nowrap;
-        gap: 10px;
+        padding: 8px 10px;
+        gap: 8px;
     }
     
-    .brand-section {
-        flex-shrink: 0;
-        min-width: 0;
-    }
-    
-    .brand-text {
-        font-size: 0.8rem;
+    .logo-icon {
+        width: 30px;
+        height: 30px;
     }
     
     .brand-primary {
-        font-size: 1rem;
+        font-size: 0.95rem;
     }
     
     .brand-secondary {
         font-size: 0.7rem;
     }
     
-    .logo-icon {
-        width: 32px;
-        height: 32px;
-    }
-    
-    .main-content {
-        margin: 5px;
-        width: calc(100% - 10px);
-        box-sizing: border-box;
-        overflow-x: hidden;
-    }
-    
-    .page-content {
-        width: 100%;
-        box-sizing: border-box;
-        overflow-x: hidden;
-    }
-    
-    .brand-text {
-        font-size: 0.9rem;
-    }
-    
-    .brand-primary {
-        font-size: 1.1rem;
-    }
-    
-    .brand-secondary {
-        font-size: 0.8rem;
-    }
-    
-    .nav-right {
-        gap: 8px;
-    }
-    
-    .support-btn, .login-btn {
-        padding: 8px 10px;
+    .support-btn, .login-btn, .halloween-toggle-btn {
+        padding: 6px 8px;
         font-size: 0.75rem;
         min-height: 36px;
         min-width: 36px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    
-    .halloween-toggle-btn {
-        padding: 8px 10px;
-        font-size: 0.75rem;
-        min-height: 36px;
-        min-width: 36px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
     }
     
     .support-btn i, .login-btn i, .halloween-toggle-btn i {
@@ -2290,164 +2229,127 @@ body::before {
     }
     
     .nav-right {
-        gap: 6px;
-        flex-wrap: nowrap;
+        gap: 4px;
+    }
+    
+    /* Content adjustments */
+    .main-content {
+        margin: 3px;
+        width: calc(100% - 6px);
     }
     
     .start-hero {
-        padding: 20px 10px;
-        width: 100%;
-        box-sizing: border-box;
+        padding: 15px 10px;
     }
     
     .start-hero h1 {
-        font-size: 1.8rem;
-        line-height: 1.2;
-        margin-bottom: 15px;
+        font-size: 1.6rem;
     }
     
     .start-hero .important-notice {
         font-size: 0.8rem;
         padding: 10px 12px;
-        margin: 15px 0;
-        line-height: 1.3;
     }
     
     .start-hero p {
-        font-size: 0.9rem;
-        line-height: 1.5;
-        margin-bottom: 15px;
-    }
-    
-    .start-hero ul {
-        padding-left: 15px;
-        margin: 15px 0;
+        font-size: 0.85rem;
     }
     
     .start-hero li {
-        font-size: 0.85rem;
-        margin-bottom: 6px;
-        line-height: 1.4;
+        font-size: 0.8rem;
+    }
+    
+    /* Games page adjustments */
+    .games-header {
+        padding: 15px 10px;
     }
     
     .games-header h1 {
-        font-size: 2rem;
-    }
-    
-    .genre-filter-container h3 {
-        font-size: 1.1rem;
-    }
-    
-    .genre-filter-container {
-        margin: 5px;
-        padding: 10px;
-        width: calc(100% - 10px);
-        box-sizing: border-box;
-    }
-    
-    .genre-filter-buttons {
-        gap: 4px;
-        justify-content: center;
-        flex-wrap: wrap;
-        width: 100%;
-    }
-    
-    .genre-filter-btn {
-        padding: 8px 12px;
-        font-size: 0.8rem;
-        min-height: 40px;
-        min-width: 70px;
-        max-width: 100px;
-        flex: 1;
-    }
-    
-    .game-tabs-container {
-        margin: 10px 5px;
-        width: calc(100% - 10px);
-        box-sizing: border-box;
-    }
-    
-    .game-tab-btn {
-        padding: 8px 12px;
-        font-size: 0.8rem;
-        min-height: 40px;
-        min-width: 90px;
-        flex: 1;
-    }
-    
-    #game-list {
-        padding: 5px;
-        width: 100%;
-        box-sizing: border-box;
+        font-size: 1.6rem;
     }
     
     .action-btn {
-        padding: 14px 20px;
-        font-size: 0.95rem;
+        padding: 12px 16px;
+        font-size: 0.9rem;
         min-height: 44px;
     }
     
+    /* Genre filter adjustments */
+    .genre-filter-container {
+        margin: 15px 10px;
+        padding: 12px;
+        width: calc(100% - 20px);
+    }
+    
+    .genre-filter-btn {
+        padding: 8px 10px;
+        font-size: 0.75rem;
+        min-height: 40px;
+        min-width: 70px;
+        max-width: 100px;
+    }
+    
+    /* Game tabs adjustments */
+    .game-tabs-container {
+        margin: 15px 10px;
+        width: calc(100% - 20px);
+    }
+    
+    .game-tab-btn {
+        padding: 10px 12px;
+        font-size: 0.75rem;
+        min-height: 40px;
+        min-width: 80px;
+    }
+    
+    /* Game list adjustments */
+    #game-list {
+        padding: 10px;
+        gap: 12px;
+    }
+    
     .game-content {
-        padding: 15px;
+        padding: 12px;
     }
     
     .game h2 {
-        font-size: 1.2rem;
+        font-size: 1.1rem;
     }
     
     .game-description {
-        font-size: 0.9rem;
-        line-height: 1.5;
+        font-size: 0.8rem;
     }
     
     .genre-tag {
-        font-size: 0.75rem;
-        padding: 4px 8px;
+        font-size: 0.7rem;
+        padding: 3px 6px;
     }
     
+    /* Modal adjustments */
     .modal-content {
         padding: 15px;
         margin: 5px;
         width: calc(100% - 10px);
         max-width: calc(100% - 10px);
-        box-sizing: border-box;
     }
     
     .modal-content h2 {
-        font-size: 1.4rem;
+        font-size: 1.2rem;
     }
     
     .modal-content input, .modal-content textarea {
         font-size: 16px;
-        padding: 14px;
-        min-height: 48px;
+        padding: 12px;
+        min-height: 44px;
     }
     
     .save-btn {
-        padding: 14px 20px;
+        padding: 12px 16px;
         font-size: 16px;
-        min-height: 48px;
+        min-height: 44px;
     }
     
-    .footer-content {
-        padding: 20px 15px;
-        width: 100%;
-        box-sizing: border-box;
-    }
-    
-    .footer-container {
-        width: 100%;
-        box-sizing: border-box;
-    }
-    
-    .made-by {
-        font-size: 0.9rem;
-    }
-    
-    .copyright {
-        font-size: 0.8rem;
-    }
-    
+    /* Corner image adjustments */
     .corner-image {
         width: 50px;
         height: 50px;
@@ -2471,80 +2373,25 @@ body::before {
         padding: 6px 8px;
     }
     
-    .corner-image img {
-        width: 100%;
-        height: 100%;
+    /* Footer adjustments */
+    .footer-content {
+        padding: 15px 10px;
     }
     
-    .click-hint {
-        font-size: 0.7rem;
-        padding: 4px 8px;
-    }
-    
-    .speech-bubble-content {
+    .made-by {
         font-size: 0.8rem;
-        padding: 8px 12px;
+    }
+    
+    .copyright {
+        font-size: 0.7rem;
     }
 }
 
-/* Mobile-specific optimizations */
-@media (max-width: 768px) {
-    /* Fix viewport issues */
-    * {
-        box-sizing: border-box;
-    }
-    
-    body {
-        overflow-x: hidden;
-        width: 100%;
-    }
-    
-    html {
-        overflow-x: hidden;
-        width: 100%;
-    }
-    
-    /* Improve touch targets */
-    button, .nav-link, .genre-filter-btn, .game-tab-btn, .action-btn {
-        min-height: 44px;
-        touch-action: manipulation;
-    }
-    
-    /* Prevent zoom on input focus */
-    input, textarea, select {
-        font-size: 16px;
-    }
-    
-    /* Improve scrolling */
-    .modal-content {
-        -webkit-overflow-scrolling: touch;
-    }
-    
-    /* Better spacing for mobile */
-    .main-content {
-        margin: 10px;
-        width: calc(100% - 20px);
-        box-sizing: border-box;
-    }
-    
-    .page-content {
-        padding: 0 5px;
-        width: 100%;
-        box-sizing: border-box;
-    }
-    
-    /* Ensure all containers fit in viewport */
-    .games-header {
-        width: 100%;
-        box-sizing: border-box;
-        padding: 0 10px;
-    }
-    
-    .games-controls {
-        width: 100%;
-        box-sizing: border-box;
-    }
-}
+/* ========================================
+   END OF MOBILE RESPONSIVE DESIGN
+   ======================================== */
+
+/* Additional mobile optimizations are now included in the main mobile section above */
 
 /* Very small screens */
 @media (max-width: 360px) {
@@ -3857,13 +3704,101 @@ body::before {
     width: 100%;
 }
 
-/* Responsive Design */
+/* ========================================
+   MOBILE RESPONSIVE DESIGN - COMPLETE OVERHAUL
+   ======================================== */
+
 /* Mobile Menu Toggle */
+.mobile-menu-toggle {
+    display: none;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 30px;
+    height: 30px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    z-index: 1001;
+}
+
+.hamburger-line {
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(45deg, #6366f1, #8b5cf6);
+    border-radius: 2px;
+    transition: all 0.3s ease;
+    transform-origin: center;
+}
+
+.mobile-menu-toggle.active .hamburger-line:nth-child(1) {
+    transform: rotate(45deg) translate(6px, 6px);
+}
+
+.mobile-menu-toggle.active .hamburger-line:nth-child(2) {
+    opacity: 0;
+}
+
+.mobile-menu-toggle.active .hamburger-line:nth-child(3) {
+    transform: rotate(-45deg) translate(6px, -6px);
+}
+
+/* Mobile Base Styles */
 @media (max-width: 768px) {
+    /* Global Mobile Fixes */
+    * {
+        box-sizing: border-box;
+    }
+    
+    html, body {
+        overflow-x: hidden;
+        width: 100%;
+    }
+    
+    .content-container {
+        padding: 0;
+        margin: 0;
+        width: 100%;
+        overflow-x: hidden;
+    }
+    
+    /* Mobile Header */
+    .modern-header {
+        margin: 5px;
+        width: calc(100% - 10px);
+        border-radius: 12px;
+    }
+    
+    .nav-container {
+        padding: 10px 15px;
+        flex-wrap: nowrap;
+        gap: 10px;
+    }
+    
+    .brand-section {
+        flex-shrink: 0;
+        min-width: 0;
+    }
+    
+    .logo-icon {
+        width: 35px;
+        height: 35px;
+    }
+    
+    .brand-primary {
+        font-size: 1.1rem;
+    }
+    
+    .brand-secondary {
+        font-size: 0.8rem;
+    }
+    
+    /* Mobile Menu Toggle */
     .mobile-menu-toggle {
         display: flex;
     }
     
+    /* Mobile Navigation */
     .main-navigation {
         position: fixed;
         top: 0;
@@ -3897,26 +3832,20 @@ body::before {
         display: block;
     }
     
-    .nav-container {
-        padding: 15px 20px;
-    }
-    
+    /* Mobile Right Buttons */
     .nav-right {
-        gap: 8px;
+        gap: 6px;
         display: flex;
         align-items: center;
+        flex-shrink: 0;
     }
     
-    .support-text, .login-text {
-        display: none;
-    }
-    
-    .halloween-text {
+    .support-text, .login-text, .halloween-text {
         display: none;
     }
     
     .support-btn, .login-btn, .halloween-toggle-btn {
-        padding: 8px 12px;
+        padding: 8px 10px;
         font-size: 0.8rem;
         min-height: 40px;
         min-width: 40px;
@@ -3929,39 +3858,251 @@ body::before {
         font-size: 16px;
     }
     
-    /* Fix mobile layout issues */
-    .content-container {
-        padding: 0;
-        margin: 0;
-        width: 100%;
-        overflow-x: hidden;
-    }
-    
-    .modern-header {
-        margin: 10px;
-        width: calc(100% - 20px);
-        box-sizing: border-box;
-    }
-    
+    /* Mobile Main Content */
     .main-content {
-        margin: 10px;
-        width: calc(100% - 20px);
-        box-sizing: border-box;
+        margin: 5px;
+        width: calc(100% - 10px);
         overflow-x: hidden;
     }
     
     .page-content {
         width: 100%;
-        box-sizing: border-box;
         overflow-x: hidden;
     }
     
+    /* Mobile Start Page */
     .start-hero {
-        padding: 40px 20px;
+        padding: 20px 15px;
+        width: 100%;
+        box-sizing: border-box;
     }
     
     .start-hero h1 {
-        font-size: 2.5rem;
+        font-size: 1.8rem;
+        line-height: 1.2;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+    
+    .start-hero .important-notice {
+        font-size: 0.85rem;
+        padding: 12px 15px;
+        margin: 20px 0;
+        line-height: 1.3;
+        text-align: center;
+    }
+    
+    .start-hero p {
+        font-size: 0.9rem;
+        line-height: 1.5;
+        margin-bottom: 20px;
+        text-align: left;
+    }
+    
+    .start-hero ul {
+        padding-left: 20px;
+        margin: 20px 0;
+    }
+    
+    .start-hero li {
+        font-size: 0.85rem;
+        margin-bottom: 8px;
+        line-height: 1.4;
+    }
+    
+    /* Mobile Games Page */
+    .games-header {
+        padding: 20px 15px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .games-header h1 {
+        font-size: 1.8rem;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+        gap: 15px;
+        align-items: center;
+        margin: 20px 0;
+        width: 100%;
+    }
+    
+    .action-btn {
+        width: 100%;
+        max-width: 280px;
+        padding: 14px 20px;
+        font-size: 0.95rem;
+        min-height: 48px;
+    }
+    
+    /* Mobile Genre Filter */
+    .genre-filter-container {
+        margin: 20px 15px;
+        padding: 15px;
+        width: calc(100% - 30px);
+        box-sizing: border-box;
+    }
+    
+    .genre-filter-container h3 {
+        font-size: 1.1rem;
+        text-align: center;
+        margin-bottom: 15px;
+    }
+    
+    .genre-filter-buttons {
+        gap: 8px;
+        justify-content: center;
+        flex-wrap: wrap;
+        width: 100%;
+    }
+    
+    .genre-filter-btn {
+        padding: 10px 14px;
+        font-size: 0.8rem;
+        min-height: 44px;
+        flex: 1;
+        min-width: 80px;
+        max-width: 120px;
+        justify-content: center;
+    }
+    
+    .genre-text {
+        font-size: 0.8rem;
+    }
+    
+    /* Mobile Game Tabs */
+    .game-tabs-container {
+        gap: 8px;
+        margin: 20px 15px;
+        width: calc(100% - 30px);
+        box-sizing: border-box;
+    }
+    
+    .game-tab-btn {
+        padding: 12px 16px;
+        font-size: 0.8rem;
+        min-height: 44px;
+        flex: 1;
+        min-width: 100px;
+        justify-content: center;
+    }
+    
+    .tab-text {
+        font-size: 0.8rem;
+    }
+    
+    /* Mobile Game List */
+    #game-list {
+        grid-template-columns: 1fr;
+        gap: 15px;
+        padding: 15px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .game {
+        margin: 0;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .game-content {
+        padding: 15px;
+    }
+    
+    .game h2 {
+        font-size: 1.2rem;
+        margin-bottom: 10px;
+    }
+    
+    .game-description {
+        font-size: 0.85rem;
+        line-height: 1.4;
+    }
+    
+    .genre-tag {
+        font-size: 0.75rem;
+        padding: 4px 8px;
+    }
+    
+    /* Mobile Modals */
+    .modal-content {
+        padding: 20px;
+        margin: 10px;
+        width: calc(100% - 20px);
+        max-width: calc(100% - 20px);
+        box-sizing: border-box;
+    }
+    
+    .modal-content h2 {
+        font-size: 1.4rem;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+    
+    .modal-content input, .modal-content textarea {
+        font-size: 16px;
+        padding: 14px;
+        min-height: 48px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .save-btn {
+        padding: 14px 20px;
+        font-size: 16px;
+        min-height: 48px;
+        width: 100%;
+    }
+    
+    /* Mobile Corner Image */
+    .corner-image {
+        width: 60px;
+        height: 60px;
+        bottom: 15px;
+        right: 15px;
+    }
+    
+    .click-hint {
+        font-size: 0.7rem;
+        padding: 3px 6px;
+        bottom: -25px;
+    }
+    
+    .speech-bubble {
+        bottom: 70px;
+        right: -5px;
+    }
+    
+    .speech-bubble-content {
+        font-size: 0.8rem;
+        padding: 8px 10px;
+    }
+    
+    /* Mobile Footer */
+    .footer-container {
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .footer-content {
+        padding: 20px 15px;
+        width: 100%;
+        box-sizing: border-box;
+    }
+    
+    .made-by {
+        font-size: 0.9rem;
+        text-align: center;
+    }
+    
+    .copyright {
+        font-size: 0.8rem;
+        text-align: center;
     }
     
     .start-hero .important-notice {

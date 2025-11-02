@@ -9,7 +9,6 @@ class GamingPlatform {
         this.originalGamesOrder = [];
         this.isLoading = false;
         this.isStreamerLoggedIn = false;
-        this.isHalloweenTheme = false;
         
         this.init();
     }
@@ -74,9 +73,6 @@ class GamingPlatform {
         // Navigation Events
         this.setupNavigationEvents();
         
-        // Mobile Menu Events
-        this.setupMobileMenuEvents();
-        
         // Admin Panel Events
         this.setupAdminEvents();
         
@@ -103,14 +99,6 @@ class GamingPlatform {
         
         // Keyboard Events
         this.setupKeyboardEvents();
-        
-        // Halloween Theme Events
-        this.setupHalloweenEvents();
-        
-        // Window resize events
-        window.addEventListener('resize', () => {
-            this.handleWindowResize();
-        });
     }
 
     setupNavigationEvents() {
@@ -120,9 +108,6 @@ class GamingPlatform {
                 e.preventDefault();
                 const page = link.dataset.page;
                 this.switchPage(page);
-                
-                // Close mobile menu if open
-                this.closeMobileMenu();
             });
         });
 
@@ -158,60 +143,6 @@ class GamingPlatform {
         // FAQ Toggle
         this.setupFAQToggle();
 
-    }
-
-    setupMobileMenuEvents() {
-        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
-        const mainNavigation = document.getElementById('main-navigation');
-        
-        if (mobileMenuToggle && mainNavigation) {
-            mobileMenuToggle.addEventListener('click', () => {
-                this.toggleMobileMenu();
-            });
-            
-            // Close menu when clicking outside
-            document.addEventListener('click', (e) => {
-                if (!mainNavigation.contains(e.target) && !mobileMenuToggle.contains(e.target)) {
-                    this.closeMobileMenu();
-                }
-            });
-            
-            // Close menu on escape key
-            document.addEventListener('keydown', (e) => {
-                if (e.key === 'Escape') {
-                    this.closeMobileMenu();
-                }
-            });
-        }
-    }
-
-    toggleMobileMenu() {
-        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
-        const mainNavigation = document.getElementById('main-navigation');
-        
-        if (mobileMenuToggle && mainNavigation) {
-            mobileMenuToggle.classList.toggle('active');
-            mainNavigation.classList.toggle('active');
-            document.body.style.overflow = mainNavigation.classList.contains('active') ? 'hidden' : 'auto';
-        }
-    }
-
-    closeMobileMenu() {
-        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
-        const mainNavigation = document.getElementById('main-navigation');
-        
-        if (mobileMenuToggle && mainNavigation) {
-            mobileMenuToggle.classList.remove('active');
-            mainNavigation.classList.remove('active');
-            document.body.style.overflow = 'auto';
-        }
-    }
-
-    // Handle window resize for mobile menu
-    handleWindowResize() {
-        if (window.innerWidth > 768) {
-            this.closeMobileMenu();
-        }
     }
 
     switchPage(page) {
@@ -752,202 +683,6 @@ class GamingPlatform {
                 }
                 this.closeAllModals();
             }
-        });
-    }
-
-    setupHalloweenEvents() {
-        // Halloween Toggle Button
-        const halloweenToggle = document.getElementById('halloween-toggle');
-        if (halloweenToggle) {
-            halloweenToggle.addEventListener('click', () => {
-                this.toggleHalloweenTheme();
-            });
-        }
-
-        // Load saved theme from localStorage
-        this.loadHalloweenTheme();
-    }
-
-    toggleHalloweenTheme() {
-        this.isHalloweenTheme = !this.isHalloweenTheme;
-        
-        if (this.isHalloweenTheme) {
-            this.activateHalloweenTheme();
-        } else {
-            this.deactivateHalloweenTheme();
-        }
-        
-        // Save theme preference
-        localStorage.setItem('halloweenTheme', this.isHalloweenTheme);
-        
-        // Show notification
-        const message = this.isHalloweenTheme ? 
-            '🎃 Halloween-Theme aktiviert! Gruselige Grüße!' : 
-            '👻 Halloween-Theme deaktiviert! Zurück zum normalen Design.';
-        this.showNotification(message, 'success');
-    }
-
-    activateHalloweenTheme() {
-        document.body.classList.add('halloween-theme', 'halloween-transition');
-        
-        // Update button appearance
-        const halloweenBtn = document.getElementById('halloween-toggle');
-        if (halloweenBtn) {
-            halloweenBtn.innerHTML = '<i class="fas fa-skull"></i><span class="halloween-text">Normal</span>';
-            halloweenBtn.title = 'Zurück zum normalen Design';
-        }
-        
-        // Add spooky sound effect (optional)
-        this.playHalloweenSound();
-        
-        // Add special Halloween effects
-        this.addHalloweenEffects();
-    }
-
-    deactivateHalloweenTheme() {
-        document.body.classList.remove('halloween-theme');
-        
-        // Update button appearance
-        const halloweenBtn = document.getElementById('halloween-toggle');
-        if (halloweenBtn) {
-            halloweenBtn.innerHTML = '<i class="fas fa-ghost"></i><span class="halloween-text">Halloween</span>';
-            halloweenBtn.title = 'Halloween-Theme umschalten';
-        }
-        
-        // Remove Halloween effects
-        this.removeHalloweenEffects();
-    }
-
-    loadHalloweenTheme() {
-        const savedTheme = localStorage.getItem('halloweenTheme');
-        if (savedTheme === 'true') {
-            this.isHalloweenTheme = true;
-            this.activateHalloweenTheme();
-        }
-    }
-
-    playHalloweenSound() {
-        // Create a spooky sound effect using Web Audio API
-        try {
-            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
-            const oscillator = audioContext.createOscillator();
-            const gainNode = audioContext.createGain();
-            
-            oscillator.connect(gainNode);
-            gainNode.connect(audioContext.destination);
-            
-            oscillator.frequency.setValueAtTime(200, audioContext.currentTime);
-            oscillator.frequency.exponentialRampToValueAtTime(100, audioContext.currentTime + 0.5);
-            
-            gainNode.gain.setValueAtTime(0.1, audioContext.currentTime);
-            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
-            
-            oscillator.start(audioContext.currentTime);
-            oscillator.stop(audioContext.currentTime + 0.5);
-        } catch (error) {
-            // Silently fail if audio context is not available
-            console.log('Audio context not available');
-        }
-    }
-
-    addHalloweenEffects() {
-        // Add floating bats animation
-        this.createFloatingBats();
-        
-        // Add spooky cursor trail
-        this.addSpookyCursorTrail();
-        
-        // Add Halloween particles
-        this.enhanceHalloweenParticles();
-    }
-
-    removeHalloweenEffects() {
-        // Remove floating bats
-        const bats = document.querySelectorAll('.floating-bat');
-        bats.forEach(bat => bat.remove());
-        
-        // Remove cursor trail
-        const trail = document.getElementById('spooky-cursor-trail');
-        if (trail) {
-            trail.remove();
-        }
-    }
-
-    createFloatingBats() {
-        const batCount = 5;
-        for (let i = 0; i < batCount; i++) {
-            setTimeout(() => {
-                this.createBat();
-            }, i * 2000);
-        }
-    }
-
-    createBat() {
-        const bat = document.createElement('div');
-        bat.className = 'floating-bat';
-        bat.innerHTML = '🦇';
-        bat.style.cssText = `
-            position: fixed;
-            font-size: 20px;
-            z-index: 1000;
-            pointer-events: none;
-            animation: batFly 8s linear infinite;
-            left: -50px;
-            top: ${Math.random() * window.innerHeight}px;
-        `;
-        
-        document.body.appendChild(bat);
-        
-        // Remove bat after animation
-        setTimeout(() => {
-            if (bat.parentNode) {
-                bat.remove();
-            }
-        }, 8000);
-    }
-
-    addSpookyCursorTrail() {
-        const trail = document.createElement('div');
-        trail.id = 'spooky-cursor-trail';
-        trail.style.cssText = `
-            position: fixed;
-            width: 20px;
-            height: 20px;
-            background: radial-gradient(circle, #ff6b35, transparent);
-            border-radius: 50%;
-            pointer-events: none;
-            z-index: 9999;
-            opacity: 0.7;
-            transition: all 0.1s ease;
-        `;
-        
-        document.body.appendChild(trail);
-        
-        let mouseX = 0, mouseY = 0;
-        let trailX = 0, trailY = 0;
-        
-        document.addEventListener('mousemove', (e) => {
-            mouseX = e.clientX;
-            mouseY = e.clientY;
-        });
-        
-        const animateTrail = () => {
-            trailX += (mouseX - trailX) * 0.1;
-            trailY += (mouseY - trailY) * 0.1;
-            
-            trail.style.left = trailX - 10 + 'px';
-            trail.style.top = trailY - 10 + 'px';
-            
-            requestAnimationFrame(animateTrail);
-        };
-        
-        animateTrail();
-    }
-
-    enhanceHalloweenParticles() {
-        const particles = document.querySelectorAll('.particle');
-        particles.forEach(particle => {
-            particle.style.animation = 'halloweenFloat 6s ease-in-out infinite';
         });
     }
 

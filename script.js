@@ -9,6 +9,7 @@ class GamingPlatform {
         this.originalGamesOrder = [];
         this.isLoading = false;
         this.isStreamerLoggedIn = false;
+        this.steamDataCache = new Map(); // Cache für Steam-Daten
         
         this.init();
     }
@@ -1073,14 +1074,46 @@ class GamingPlatform {
     }
 
     async fetchSteamGameData(appid) {
-        const response = await fetch(`https://corsproxy.io/?https://store.steampowered.com/api/appdetails?appids=${appid}&l=english`);
-        const data = await response.json();
-        
-        if (!data[appid] || !data[appid].success) {
-            throw new Error('Spiel nicht gefunden');
+        // Check cache first
+        const cacheKey = `steam_${appid}_en`;
+        const cached = this.getSteamCache(cacheKey);
+        if (cached) {
+            return cached;
         }
         
-        return data[appid].data;
+        try {
+            // Use faster CORS proxy with timeout
+            const controller = new AbortController();
+            const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+            
+            const response = await fetch(`https://corsproxy.io/?https://store.steampowered.com/api/appdetails?appids=${appid}&l=english`, {
+                signal: controller.signal
+            });
+            
+            clearTimeout(timeoutId);
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            
+            if (!data[appid] || !data[appid].success) {
+                throw new Error('Spiel nicht gefunden');
+            }
+            
+            const gameData = data[appid].data;
+            
+            // Cache the result
+            this.setSteamCache(cacheKey, gameData);
+            
+            return gameData;
+        } catch (error) {
+            if (error.name === 'AbortError') {
+                throw new Error('Zeitüberschreitung beim Laden der Steam-Daten');
+            }
+            throw error;
+        }
     }
 
     async bulkUpdateGenres() {
@@ -1588,6 +1621,18 @@ class GamingPlatform {
     }
 
     async loadSteamGameData(game, modal) {
+        // Show loading state immediately
+        const descriptionElement = modal.querySelector('.game-detail-description');
+        if (descriptionElement) {
+            descriptionElement.innerHTML = `
+                <h3>Beschreibung</h3>
+                <div class="loading-placeholder">
+                    <div class="loading-spinner"></div>
+                    <p>Lade Spielinformationen von Steam...</p>
+                </div>
+            `;
+        }
+        
         try {
             // Get the correct Steam link (check both fields)
             const steamLink = game.steamLink || game.link;
@@ -1601,8 +1646,6 @@ class GamingPlatform {
 
             // Extract Steam App ID from Steam URL
             const steamAppId = this.extractSteamAppId(steamLink);
-            console.log('Steam App ID:', steamAppId);
-            console.log('Game Link:', steamLink);
             
             if (!steamAppId) {
                 console.warn('No Steam App ID found, using fallback data');
@@ -1610,32 +1653,39 @@ class GamingPlatform {
                 return;
             }
 
-            // Fetch Steam data
-            console.log('Fetching Steam data for App ID:', steamAppId);
-            const steamData = await this.fetchSteamData(steamAppId);
-            console.log('Steam data received:', steamData);
+            // Fetch Steam data with timeout
+            const steamData = await Promise.race([
+                this.fetchSteamData(steamAppId),
+                new Promise((_, reject) => 
+                    setTimeout(() => reject(new Error('Zeitüberschreitung')), 8000)
+                )
+            ]);
+            
             this.updateGameInfo(modal, steamData, game);
             
         } catch (error) {
             console.error('Error loading Steam data:', error);
-            console.log('Falling back to local game data');
             
             // Show user-friendly error message
-            const descriptionElement = modal.querySelector('.game-detail-description');
             if (descriptionElement) {
-                const errorDiv = document.createElement('div');
-                errorDiv.style.cssText = 'margin-top: 15px; padding: 10px; background: rgba(255, 107, 107, 0.1); border-left: 3px solid #ff6b6b; border-radius: 5px;';
-                errorDiv.innerHTML = `
-                    <small style="color: #ff6b6b;">
-                        <i class="fas fa-exclamation-triangle"></i> 
-                        Steam-Daten konnten nicht geladen werden. 
-                        <a href="${game.link}" target="_blank" style="color: #ff6b6b;">Auf Steam ansehen</a> für aktuelle Informationen.
-                    </small>
+                const errorMessage = error.message.includes('Zeitüberschreitung') 
+                    ? 'Die Anfrage dauerte zu lange. Bitte versuchen Sie es später erneut.'
+                    : 'Steam-Daten konnten nicht geladen werden.';
+                
+                descriptionElement.innerHTML = `
+                    <h3>Beschreibung</h3>
+                    <p>${game.description || 'Keine Beschreibung verfügbar.'}</p>
+                    <div style="margin-top: 15px; padding: 10px; background: rgba(255, 107, 107, 0.1); border-left: 3px solid #ff6b6b; border-radius: 5px;">
+                        <small style="color: #ff6b6b;">
+                            <i class="fas fa-exclamation-triangle"></i> 
+                            ${errorMessage}
+                            <a href="${game.steamLink || game.link}" target="_blank" style="color: #ff6b6b; margin-left: 5px;">Auf Steam ansehen</a> für aktuelle Informationen.
+                        </small>
+                    </div>
                 `;
-                descriptionElement.appendChild(errorDiv);
+            } else {
+                this.updateGameInfoWithFallback(modal, game);
             }
-            
-            this.updateGameInfoWithFallback(modal, game);
         }
     }
 
@@ -1656,78 +1706,207 @@ class GamingPlatform {
     }
 
     async fetchSteamData(appId) {
+        // Check cache first
+        const cacheKey = `steam_${appId}_de`;
+        const cached = this.getSteamCache(cacheKey);
+        if (cached) {
+            return cached;
+        }
+        
+        // Fast CORS proxy - tried and tested
         const proxies = [
+            'https://corsproxy.io/?',
             'https://api.allorigins.win/raw?url=',
-            'https://cors-anywhere.herokuapp.com/',
-            'https://api.codetabs.com/v1/proxy?quest='
+            'https://cors-anywhere.herokuapp.com/'
         ];
         
-        // Try direct Steam API first
+        // Try fastest proxy first (corsproxy.io)
+        const steamUrl = `https://store.steampowered.com/api/appdetails?appids=${appId}&l=german`;
+        
+        // Try proxies in parallel - use first successful response
+        const fetchPromises = proxies.map((proxy, index) => {
+            return this.fetchWithTimeout(
+                proxy + encodeURIComponent(steamUrl),
+                4000, // 4 second timeout per proxy
+                index
+            ).catch(error => {
+                // Return null on error so Promise.race continues
+                return null;
+            });
+        });
+        
+        // Race: Use the first successful response
+        const results = await Promise.allSettled(fetchPromises);
+        
+        // Find first successful result
+        for (const result of results) {
+            if (result.status === 'fulfilled' && result.value) {
+                // Cache the result
+                this.setSteamCache(cacheKey, result.value);
+                return result.value;
+            }
+        }
+        
+        // If all failed, try direct fetch as last resort
         try {
-            console.log('Trying direct Steam API...');
-            const response = await fetch(`https://store.steampowered.com/api/appdetails?appids=${appId}&l=german`, {
-                mode: 'cors',
+            const directResponse = await fetch(`https://store.steampowered.com/api/appdetails?appids=${appId}&l=german`, {
+                mode: 'no-cors'
+            }).catch(() => null);
+            
+            if (directResponse && directResponse.ok) {
+                const data = await directResponse.json();
+                const gameData = data[appId]?.data;
+                if (gameData) {
+                    this.setSteamCache(cacheKey, gameData);
+                    return gameData;
+                }
+            }
+        } catch (e) {
+            // Ignore direct fetch errors
+        }
+        
+        throw new Error('Steam API nicht verfügbar - alle Proxies fehlgeschlagen');
+    }
+    
+    async fetchWithTimeout(url, timeout, proxyIndex) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), timeout);
+        
+        try {
+            const response = await fetch(url, {
+                signal: controller.signal,
                 headers: {
                     'Accept': 'application/json',
                 }
             });
+            
+            clearTimeout(timeoutId);
             
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             
             const data = await response.json();
+            const appId = Object.keys(data)[0];
             
             if (data[appId] && data[appId].success) {
-                console.log('Direct Steam API successful!');
                 return data[appId].data;
             }
             throw new Error('Steam data not found');
-            
         } catch (error) {
-            console.warn('Direct Steam API failed:', error);
-            
-            // Try multiple CORS proxies
-            for (let i = 0; i < proxies.length; i++) {
-                try {
-                    console.log(`Trying proxy ${i + 1}/${proxies.length}: ${proxies[i]}`);
-                    
-                    const proxyUrl = proxies[i] + encodeURIComponent(`https://store.steampowered.com/api/appdetails?appids=${appId}&l=german`);
-                    const proxyResponse = await fetch(proxyUrl, {
-                        headers: {
-                            'Accept': 'application/json',
-                        }
-                    });
-                    
-                    if (!proxyResponse.ok) {
-                        throw new Error(`Proxy ${i + 1} error! status: ${proxyResponse.status}`);
-                    }
-                    
-                    const data = await proxyResponse.json();
-                    
-                    if (data[appId] && data[appId].success) {
-                        console.log(`Proxy ${i + 1} successful!`);
-                        return data[appId].data;
-                    }
-                    throw new Error(`Steam data not found via proxy ${i + 1}`);
-                    
-                } catch (proxyError) {
-                    console.warn(`Proxy ${i + 1} failed:`, proxyError);
-                    if (i === proxies.length - 1) {
-                        // Last proxy failed
-                        throw new Error('Steam API nicht verfügbar - CORS-Beschränkungen oder Netzwerkfehler');
-                    }
+            if (error.name === 'AbortError') {
+                throw new Error(`Proxy ${proxyIndex + 1} timeout`);
+            }
+            throw error;
+        }
+    }
+    
+    // Cache management
+    getSteamCache(key) {
+        // Check memory cache first
+        if (this.steamDataCache.has(key)) {
+            const cached = this.steamDataCache.get(key);
+            // Check if cache is still valid (24 hours)
+            if (Date.now() - cached.timestamp < 24 * 60 * 60 * 1000) {
+                return cached.data;
+            }
+            this.steamDataCache.delete(key);
+        }
+        
+        // Check localStorage cache
+        try {
+            const stored = localStorage.getItem(`steam_cache_${key}`);
+            if (stored) {
+                const cached = JSON.parse(stored);
+                if (Date.now() - cached.timestamp < 24 * 60 * 60 * 1000) {
+                    // Also store in memory cache
+                    this.steamDataCache.set(key, cached);
+                    return cached.data;
                 }
+                localStorage.removeItem(`steam_cache_${key}`);
+            }
+        } catch (e) {
+            console.warn('Cache read error:', e);
+        }
+        
+        return null;
+    }
+    
+    setSteamCache(key, data) {
+        const cacheEntry = {
+            data: data,
+            timestamp: Date.now()
+        };
+        
+        // Store in memory cache
+        this.steamDataCache.set(key, cacheEntry);
+        
+        // Store in localStorage (limit to 50 entries to avoid storage issues)
+        try {
+            const keys = Object.keys(localStorage).filter(k => k.startsWith('steam_cache_'));
+            if (keys.length >= 50) {
+                // Remove oldest entries
+                const entries = keys.map(k => ({
+                    key: k,
+                    timestamp: JSON.parse(localStorage.getItem(k)).timestamp
+                })).sort((a, b) => a.timestamp - b.timestamp);
+                
+                // Remove oldest 10 entries
+                entries.slice(0, 10).forEach(e => localStorage.removeItem(e.key));
+            }
+            
+            localStorage.setItem(`steam_cache_${key}`, JSON.stringify(cacheEntry));
+        } catch (e) {
+            console.warn('Cache write error:', e);
+            // If storage is full, clear old entries
+            if (e.name === 'QuotaExceededError') {
+                const keys = Object.keys(localStorage).filter(k => k.startsWith('steam_cache_'));
+                keys.slice(0, 20).forEach(k => localStorage.removeItem(k));
             }
         }
     }
 
     updateGameInfo(modal, steamData, game) {
-        // Update description
+        // Update description with rich content
         const descriptionElement = modal.querySelector('.game-detail-description');
+        const description = steamData.short_description || game.description || 'Keine Beschreibung verfügbar.';
+        
+        // Add additional info if available
+        let additionalInfo = '';
+        
+        if (steamData.release_date && steamData.release_date.date) {
+            additionalInfo += `<div class="info-item">
+                <span class="info-label"><i class="fas fa-calendar"></i> Veröffentlichung:</span>
+                <span class="info-value">${steamData.release_date.date}</span>
+            </div>`;
+        }
+        
+        if (steamData.developers && steamData.developers.length > 0) {
+            additionalInfo += `<div class="info-item">
+                <span class="info-label"><i class="fas fa-code"></i> Entwickler:</span>
+                <span class="info-value">${steamData.developers.join(', ')}</span>
+            </div>`;
+        }
+        
+        if (steamData.publishers && steamData.publishers.length > 0) {
+            additionalInfo += `<div class="info-item">
+                <span class="info-label"><i class="fas fa-building"></i> Publisher:</span>
+                <span class="info-value">${steamData.publishers.join(', ')}</span>
+            </div>`;
+        }
+        
+        if (steamData.price_overview) {
+            const price = steamData.price_overview.final_formatted || steamData.price_overview.final / 100 + '€';
+            additionalInfo += `<div class="info-item">
+                <span class="info-label"><i class="fas fa-euro-sign"></i> Preis:</span>
+                <span class="info-value">${price}</span>
+            </div>`;
+        }
+        
         descriptionElement.innerHTML = `
             <h3>Beschreibung</h3>
-            <p>${steamData.short_description || game.description || 'Keine Beschreibung verfügbar.'}</p>
+            <p>${description}</p>
+            ${additionalInfo ? `<div class="info-grid" style="margin-top: 20px;">${additionalInfo}</div>` : ''}
         `;
     }
 

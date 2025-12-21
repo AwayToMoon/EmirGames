@@ -692,6 +692,7 @@ class GamingPlatform {
             await this.migrateUnreleasedFlag();
             await this.migrateGenresToEnglish();
             await this.migrateSteamLinks();
+            await this.migrateHorrorFlag();
             
             // Dann alles andere parallel laden
             await Promise.all([
@@ -1390,6 +1391,12 @@ class GamingPlatform {
             snapshot.forEach(doc => {
                 const gameData = doc.data();
                 if (!gameData.isPending) {
+                    // Ensure isHorror flag is set correctly based on genres
+                    const hasHorrorGenre = gameData.genres && Array.isArray(gameData.genres) && gameData.genres.includes('Horror');
+                    if (hasHorrorGenre && !gameData.isHorror) {
+                        gameData.isHorror = true;
+                    }
+                    
                     if (this.shouldShowGame(gameData)) {
                             games.push({ id: doc.id, ...gameData });
                         }
@@ -1454,7 +1461,13 @@ class GamingPlatform {
         gameElement.style.opacity = '0';
         gameElement.style.transform = 'translateY(20px)';
         
+        const isHorror = game.isHorror || (game.genres && game.genres.includes('Horror'));
+        if (isHorror) {
+            gameElement.classList.add('horror-game');
+        }
+        
         gameElement.innerHTML = `
+            ${isHorror ? '<div class="horror-badge"><i class="fas fa-ghost"></i> Horror</div>' : ''}
             <img src="${game.image}" alt="${game.name}" loading="lazy">
             <div class="game-content">
                 <h2>${game.name}</h2>
@@ -1802,6 +1815,8 @@ class GamingPlatform {
             return '';
         }
 
+        const isHorror = game.isHorror || (game.genres && game.genres.includes('Horror'));
+        
         return `
             <div class="admin-buttons">
                 <button class="delete-game" onclick="gamingPlatform.deleteGame('${game.id}')" title="Spiel löschen">
@@ -1815,6 +1830,9 @@ class GamingPlatform {
                 </button>
                 <button class="toggle-played-btn" onclick="gamingPlatform.togglePlayed('${game.id}', ${game.played})" title="${game.played ? 'Als nicht gespielt markieren' : 'Als gespielt markieren'}">
                     <i class="fas fa-${game.played ? 'undo' : 'check-circle'}"></i>
+                </button>
+                <button class="toggle-horror-btn" onclick="gamingPlatform.toggleHorror('${game.id}', ${isHorror})" title="${isHorror ? 'Horror-Markierung entfernen' : 'Als Horror markieren'}">
+                    <i class="fas fa-${isHorror ? 'ghost' : 'ghost'}"></i>
                 </button>
             </div>
         `;
@@ -1910,6 +1928,43 @@ class GamingPlatform {
         } catch (error) {
             console.error("Error toggling played:", error);
             this.showNotification('Fehler beim Umschalten des Status', 'error');
+        }
+    }
+
+    async toggleHorror(gameId, currentStatus) {
+        try {
+            const gameDoc = await db.collection("games").doc(gameId).get();
+            if (!gameDoc.exists) {
+                this.showNotification('Spiel nicht gefunden!', 'error');
+                return;
+            }
+            
+            const gameData = gameDoc.data();
+            const currentGenres = gameData.genres || [];
+            const hasHorrorGenre = currentGenres.includes('Horror');
+            const newHorrorStatus = !currentStatus;
+            
+            let updatedGenres = [...currentGenres];
+            
+            if (newHorrorStatus && !hasHorrorGenre) {
+                // Horror hinzufügen
+                updatedGenres.push('Horror');
+            } else if (!newHorrorStatus && hasHorrorGenre) {
+                // Horror entfernen
+                updatedGenres = updatedGenres.filter(g => g !== 'Horror');
+            }
+            
+            await db.collection("games").doc(gameId).update({ 
+                isHorror: newHorrorStatus,
+                genres: updatedGenres
+            });
+            
+            await this.renderGames();
+            await this.updateGenreFilterButtons();
+            this.showNotification(`Spiel als ${newHorrorStatus ? 'Horror' : 'nicht Horror'} markiert! 👻`, 'success');
+        } catch (error) {
+            console.error("Error toggling horror:", error);
+            this.showNotification('Fehler beim Umschalten der Horror-Markierung', 'error');
         }
     }
 
@@ -2422,6 +2477,38 @@ class GamingPlatform {
             }
         } catch (error) {
             console.error('Steam links migration error:', error);
+            // Continue even if migration fails
+        }
+    }
+
+    async migrateHorrorFlag() {
+        try {
+            const snapshot = await db.collection('games').get();
+            const batch = db.batch();
+            let needsUpdate = false;
+            
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                const hasHorrorGenre = data.genres && Array.isArray(data.genres) && data.genres.includes('Horror');
+                
+                // If game has Horror genre but no isHorror flag, set it
+                if (hasHorrorGenre && !data.isHorror) {
+                    batch.update(db.collection('games').doc(doc.id), { isHorror: true });
+                    needsUpdate = true;
+                }
+                // If game doesn't have Horror genre but has isHorror flag, remove flag
+                else if (!hasHorrorGenre && data.isHorror) {
+                    batch.update(db.collection('games').doc(doc.id), { isHorror: false });
+                    needsUpdate = true;
+                }
+            });
+            
+            if (needsUpdate) {
+                await batch.commit();
+                console.log('Horror flag migration completed');
+            }
+        } catch (error) {
+            console.error('Horror flag migration error:', error);
             // Continue even if migration fails
         }
     }

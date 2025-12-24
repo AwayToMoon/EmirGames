@@ -62,7 +62,7 @@
                 <!-- Logo/Brand Section -->
                 <div class="brand-section">
                     <div class="logo-icon">
-                        <img src="https://cdn.discordapp.com/avatars/1022776761454440539/f3107f62923643f66321dcc16a2d9b5e.png?size=512" alt="HigherCellF Avatar" class="brand-avatar">
+                        <img src="https://cdn.discordapp.com/avatars/1022776761454440539/a38a1d044ac1e9fbcf24ab25bbf4afbb?size=512" alt="HigherCellF Avatar" class="brand-avatar">
                     </div>
                     <div class="brand-text">
                         <span class="brand-primary">HigherCellF</span>
@@ -274,6 +274,10 @@
                                 <i class="fas fa-check-circle"></i>
                                 Played Games
                             </button>
+                            <button id="tab-itchio-games" class="game-tab-btn">
+                                <i class="fas fa-gamepad"></i>
+                                Itch.io Spiele
+                            </button>
                         </nav>
                     </div>
                 </div>
@@ -399,12 +403,19 @@
                     <span class="close-modal">&times;</span>
                 <h2><i class="fas fa-plus-circle"></i> Spiel hinzufügen</h2>
                 <div class="form-group">
-                    <label for="steam-link">Steam-Link</label>
-                    <input type="text" id="steam-link" placeholder="Steam-Link einfügen">
+                    <label for="game-link-type">Plattform</label>
+                    <select id="game-link-type" style="width: 100%; padding: 12px; border-radius: 10px; background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255, 255, 255, 0.2); color: white; font-size: 1rem;">
+                        <option value="steam">Steam</option>
+                        <option value="itchio">Itch.io</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="steam-link" id="link-label">Steam-Link</label>
+                    <input type="text" id="steam-link" placeholder="Steam-Link oder Itch.io-Link einfügen">
                 </div>
                 <div id="steam-fetch-status" class="fetch-status hidden"></div>
                 <div id="steam-preview" class="steam-preview hidden">
-                    <img id="steam-image" src="" alt="Steam Bild">
+                    <img id="steam-image" src="" alt="Spiel Bild">
                     <div class="preview-info">
                         <h3 id="steam-name"></h3>
                         <p id="steam-genres"></p>
@@ -415,11 +426,11 @@
                     <h3><i class="fas fa-edit"></i> Manuelle Bearbeitung</h3>
                     <div class="form-group">
                         <label for="game-name">Spielname</label>
-                        <input type="text" id="game-name" placeholder="Spielname (wird automatisch von Steam geladen)">
+                        <input type="text" id="game-name" placeholder="Spielname (wird automatisch geladen)">
                     </div>
                     <div class="form-group">
                         <label for="game-description">Beschreibung</label>
-                        <textarea id="game-description" rows="4" placeholder="Spielbeschreibung (wird automatisch von Steam geladen)"></textarea>
+                        <textarea id="game-description" rows="4" placeholder="Spielbeschreibung (wird automatisch geladen)"></textarea>
                     </div>
                 </div>
                 <button id="save-game" class="save-btn">

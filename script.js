@@ -552,10 +552,30 @@ class GamingPlatform {
 
     setupGameEvents() {
         // Game Form Events
+        const linkTypeSelect = document.getElementById('game-link-type');
+        if (linkTypeSelect) {
+            linkTypeSelect.addEventListener('change', (e) => {
+                const linkLabel = document.getElementById('link-label');
+                const linkInput = document.getElementById('steam-link');
+                if (e.target.value === 'itchio') {
+                    linkLabel.textContent = 'Itch.io-Link';
+                    linkInput.placeholder = 'Itch.io-Link einfügen (z.B. https://username.itch.io/gamename)';
+                } else {
+                    linkLabel.textContent = 'Steam-Link';
+                    linkInput.placeholder = 'Steam-Link einfügen';
+                }
+                // Reset form when switching
+                linkInput.value = '';
+                document.getElementById('steam-fetch-status').classList.add('hidden');
+                document.getElementById('steam-preview').classList.add('hidden');
+            });
+        }
+
         const steamLink = document.getElementById('steam-link');
         if (steamLink) {
             steamLink.addEventListener('input', this.debounce(async (e) => {
-                await this.handleSteamLinkInput(e.target.value);
+                const linkType = document.getElementById('game-link-type')?.value || 'steam';
+                await this.handleGameLinkInput(e.target.value, linkType);
             }, 500));
         }
 
@@ -1008,7 +1028,7 @@ class GamingPlatform {
     }
 
     // Game Management Functions
-    async handleSteamLinkInput(link) {
+    async handleGameLinkInput(link, linkType = 'steam') {
         const status = document.getElementById("steam-fetch-status");
         const preview = document.getElementById("steam-preview");
         
@@ -1018,6 +1038,12 @@ class GamingPlatform {
             return;
         }
 
+        if (linkType === 'itchio') {
+            await this.handleItchIoLinkInput(link);
+            return;
+        }
+
+        // Original Steam handling
         status.classList.remove('hidden');
         status.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Lade Spieldaten von Steam...';
         preview.classList.add('hidden');
@@ -1035,6 +1061,109 @@ class GamingPlatform {
         } catch (error) {
             console.error('Steam fetch error:', error);
             status.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Fehler beim Laden der Spieldaten!';
+        }
+    }
+
+    async handleSteamLinkInput(link) {
+        await this.handleGameLinkInput(link, 'steam');
+    }
+
+    async handleItchIoLinkInput(link) {
+        const status = document.getElementById("steam-fetch-status");
+        const preview = document.getElementById("steam-preview");
+        
+        if (!this.isValidItchIoLink(link)) {
+            status.classList.remove('hidden');
+            status.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Ungültiger Itch.io-Link! Bitte verwende das Format: https://username.itch.io/gamename';
+            preview.classList.add('hidden');
+            return;
+        }
+
+        status.classList.remove('hidden');
+        status.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Lade Spieldaten von Itch.io...';
+        preview.classList.add('hidden');
+
+        try {
+            const gameData = await this.fetchItchIoGameData(link);
+            this.displaySteamPreview(gameData, 'steam');
+            status.classList.add('hidden');
+        } catch (error) {
+            console.error('Itch.io fetch error:', error);
+            status.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Fehler beim Laden der Spieldaten! Bitte fülle die Felder manuell aus.';
+        }
+    }
+
+    isValidItchIoLink(url) {
+        if (!url || typeof url !== 'string') return false;
+        const itchPattern = /^https?:\/\/([\w-]+)\.itch\.io\/([\w-]+)/;
+        return itchPattern.test(url);
+    }
+
+    async fetchItchIoGameData(url) {
+        try {
+            // Itch.io doesn't have a public API, so we'll extract what we can from the URL
+            // and let the user fill in the rest manually
+            const match = url.match(/https?:\/\/([\w-]+)\.itch\.io\/([\w-]+)/);
+            if (!match) {
+                throw new Error('Invalid Itch.io URL');
+            }
+
+            const [, username, gameName] = match;
+            
+            // Try to fetch the page to get some basic info
+            try {
+                const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(url)}`;
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 5000);
+                
+                const response = await fetch(proxyUrl, {
+                    signal: controller.signal
+                });
+                
+                clearTimeout(timeoutId);
+                
+                if (response.ok) {
+                    const html = await response.text();
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(html, 'text/html');
+                    
+                    // Try to extract title
+                    const title = doc.querySelector('title')?.textContent || 
+                                 doc.querySelector('h1')?.textContent || 
+                                 gameName.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+                    
+                    // Try to extract description
+                    const description = doc.querySelector('meta[name="description"]')?.content || 
+                                      doc.querySelector('.game_description')?.textContent?.trim() || 
+                                      '';
+                    
+                    // Try to extract image
+                    const image = doc.querySelector('meta[property="og:image"]')?.content ||
+                                 doc.querySelector('.screenshot img')?.src ||
+                                 doc.querySelector('img[alt*="cover"]')?.src ||
+                                 '';
+                    
+                    return {
+                        name: title.replace(' - itch.io', '').trim(),
+                        short_description: description,
+                        header_image: image || 'https://img.itch.zone/aW1nLzE2NDU2NDAucG5n/original/itchio-logo.png',
+                        genres: [] // Itch.io doesn't have standardized genres
+                    };
+                }
+            } catch (fetchError) {
+                console.warn('Could not fetch Itch.io page, using fallback data');
+            }
+            
+            // Fallback: return basic data from URL
+            return {
+                name: gameName.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+                short_description: '',
+                header_image: 'https://img.itch.zone/aW1nLzE2NDU2NDAucG5n/original/itchio-logo.png',
+                genres: []
+            };
+        } catch (error) {
+            console.error('Error fetching Itch.io data:', error);
+            throw error;
         }
     }
 
@@ -1173,12 +1302,13 @@ class GamingPlatform {
     }
 
     async saveGame() {
-        const steamLink = document.getElementById('steam-link').value.trim();
+        const linkInput = document.getElementById('steam-link').value.trim();
+        const linkType = document.getElementById('game-link-type')?.value || 'steam';
         const manualName = document.getElementById('game-name').value.trim();
         const manualDescription = document.getElementById('game-description').value.trim();
         
-        if (!steamLink) {
-            this.showNotification('Bitte gib einen Steam-Link ein!', 'error');
+        if (!linkInput) {
+            this.showNotification('Bitte gib einen Link ein!', 'error');
             return;
         }
         
@@ -1188,22 +1318,54 @@ class GamingPlatform {
         }
             
         try {
-            const appid = this.extractSteamAppId(steamLink);
-            if (!appid) {
-                this.showNotification('Ungültiger Steam-Link!', 'error');
-                return;
-            }
+            let gameData;
+            let gameToSave;
 
-            const gameData = await this.fetchSteamGameData(appid);
-            const gameToSave = {
-                name: manualName, // Use manual input instead of Steam data
-                steamLink: steamLink,
-                image: gameData.header_image,
-                genres: (gameData.genres || []).map(g => g.description),
-                description: manualDescription || gameData.short_description || "", // Use manual input, fallback to Steam
-                unreleased: gameData.release_date && gameData.release_date.coming_soon === true,
-                timestamp: firebase.firestore.FieldValue.serverTimestamp()
-            };
+            if (linkType === 'itchio') {
+                if (!this.isValidItchIoLink(linkInput)) {
+                    this.showNotification('Ungültiger Itch.io-Link!', 'error');
+                    return;
+                }
+
+                try {
+                    gameData = await this.fetchItchIoGameData(linkInput);
+                } catch (error) {
+                    // If fetch fails, use fallback data
+                    gameData = {
+                        header_image: 'https://img.itch.zone/aW1nLzE2NDU2NDAucG5n/original/itchio-logo.png',
+                        short_description: ''
+                    };
+                }
+
+                gameToSave = {
+                    name: manualName,
+                    steamLink: linkInput, // Store Itch.io link in steamLink field for compatibility
+                    itchIoLink: linkInput, // Also store in dedicated field
+                    image: gameData.header_image || 'https://img.itch.zone/aW1nLzE2NDU2NDAucG5n/original/itchio-logo.png',
+                    genres: [], // Itch.io games don't have standardized genres
+                    description: manualDescription || gameData.short_description || "",
+                    unreleased: false,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                };
+            } else {
+                // Steam handling
+                const appid = this.extractSteamAppId(linkInput);
+                if (!appid) {
+                    this.showNotification('Ungültiger Steam-Link!', 'error');
+                    return;
+                }
+
+                gameData = await this.fetchSteamGameData(appid);
+                gameToSave = {
+                    name: manualName, // Use manual input instead of Steam data
+                    steamLink: linkInput,
+                    image: gameData.header_image,
+                    genres: (gameData.genres || []).map(g => g.description),
+                    description: manualDescription || gameData.short_description || "", // Use manual input, fallback to Steam
+                    unreleased: gameData.release_date && gameData.release_date.coming_soon === true,
+                    timestamp: firebase.firestore.FieldValue.serverTimestamp()
+                };
+            }
 
             if (this.currentGameId) {
                 // Update existing game
@@ -1463,8 +1625,14 @@ class GamingPlatform {
             showByTab = gameData.unreleased === true && gameData.played !== true;
         } else if (this.currentTab === 'played') {
             showByTab = gameData.played === true;
+        } else if (this.currentTab === 'itchio') {
+            // Show only Itch.io games
+            const link = gameData.steamLink || gameData.link || '';
+            showByTab = this.isValidItchIoLink(link) && !gameData.unreleased && !gameData.played;
         } else {
-            showByTab = !gameData.unreleased && !gameData.played;
+            // Show all games except Itch.io games
+            const link = gameData.steamLink || gameData.link || '';
+            showByTab = !gameData.unreleased && !gameData.played && !this.isValidItchIoLink(link);
         }
         
         if (!showByTab) return false;
@@ -1568,22 +1736,36 @@ class GamingPlatform {
                 
                 <div class="game-detail-actions">
                     ${(() => {
-                        const steamLink = game.steamLink || game.link;
-                        return this.isValidSteamLink(steamLink) ? `
-                            <a href="${steamLink}" target="_blank" class="steam-btn">
-                                <i class="fab fa-steam"></i>
-                                Auf Steam ansehen
-                            </a>
-                            <a href="https://steamdb.info/app/${this.extractSteamAppId(steamLink)}/" target="_blank" class="trailer-btn">
-                                <i class="fas fa-database"></i>
-                                SteamDB
-                            </a>
-                        ` : `
-                            <div class="steam-btn-disabled">
-                                <i class="fas fa-exclamation-triangle"></i>
-                                Ungültiger Steam-Link
-                            </div>
-                        `;
+                        const gameLink = game.steamLink || game.link || game.itchIoLink;
+                        const isItchIo = this.isValidItchIoLink(gameLink);
+                        const isSteam = this.isValidSteamLink(gameLink);
+                        
+                        if (isItchIo) {
+                            return `
+                                <a href="${gameLink}" target="_blank" class="steam-btn" style="background: linear-gradient(45deg, #fa5c5c, #ff6b6b);">
+                                    <i class="fas fa-gamepad"></i>
+                                    Auf Itch.io ansehen
+                                </a>
+                            `;
+                        } else if (isSteam) {
+                            return `
+                                <a href="${gameLink}" target="_blank" class="steam-btn">
+                                    <i class="fab fa-steam"></i>
+                                    Auf Steam ansehen
+                                </a>
+                                <a href="https://steamdb.info/app/${this.extractSteamAppId(gameLink)}/" target="_blank" class="trailer-btn">
+                                    <i class="fas fa-database"></i>
+                                    SteamDB
+                                </a>
+                            `;
+                        } else {
+                            return `
+                                <div class="steam-btn-disabled">
+                                    <i class="fas fa-exclamation-triangle"></i>
+                                    Ungültiger Link
+                                </div>
+                            `;
+                        }
                     })()}
                 </div>
             </div>
@@ -1624,28 +1806,45 @@ class GamingPlatform {
         // Show loading state immediately
         const descriptionElement = modal.querySelector('.game-detail-description');
         if (descriptionElement) {
+            const gameLink = game.steamLink || game.link || game.itchIoLink;
+            const isItchIo = this.isValidItchIoLink(gameLink);
+            const loadingText = isItchIo ? 'Lade Spielinformationen von Itch.io...' : 'Lade Spielinformationen von Steam...';
+            
             descriptionElement.innerHTML = `
                 <h3>Beschreibung</h3>
                 <div class="loading-placeholder">
                     <div class="loading-spinner"></div>
-                    <p>Lade Spielinformationen von Steam...</p>
+                    <p>${loadingText}</p>
                 </div>
             `;
         }
         
         try {
-            // Get the correct Steam link (check both fields)
-            const steamLink = game.steamLink || game.link;
+            // Get the correct game link (check all fields)
+            const gameLink = game.steamLink || game.link || game.itchIoLink;
+            const isItchIo = this.isValidItchIoLink(gameLink);
+            
+            // Handle Itch.io games
+            if (isItchIo) {
+                try {
+                    const itchData = await this.fetchItchIoGameData(gameLink);
+                    this.updateGameInfo(modal, itchData, game);
+                } catch (error) {
+                    console.warn('Could not fetch Itch.io data, using fallback');
+                    this.updateGameInfoWithFallback(modal, game);
+                }
+                return;
+            }
             
             // Validate Steam link first
-            if (!steamLink || !this.isValidSteamLink(steamLink)) {
+            if (!gameLink || !this.isValidSteamLink(gameLink)) {
                 console.warn('Invalid or missing Steam link, using fallback data');
                 this.updateGameInfoWithFallback(modal, game);
                 return;
             }
 
             // Extract Steam App ID from Steam URL
-            const steamAppId = this.extractSteamAppId(steamLink);
+            const steamAppId = this.extractSteamAppId(gameLink);
             
             if (!steamAppId) {
                 console.warn('No Steam App ID found, using fallback data');
@@ -1914,26 +2113,35 @@ class GamingPlatform {
         // Update description
         const descriptionElement = modal.querySelector('.game-detail-description');
         
-        // Check if Steam link is valid (check both fields)
-        const steamLink = game.steamLink || game.link;
-        const hasValidSteamLink = this.isValidSteamLink(steamLink);
+        // Check if link is valid (check all fields)
+        const gameLink = game.steamLink || game.link || game.itchIoLink;
+        const isItchIo = this.isValidItchIoLink(gameLink);
+        const isSteam = this.isValidSteamLink(gameLink);
         
         descriptionElement.innerHTML = `
             <h3>Beschreibung</h3>
             <p>${game.description || 'Keine Beschreibung verfügbar.'}</p>
-            ${hasValidSteamLink ? `
+            ${isItchIo ? `
+                <div style="margin-top: 15px; padding: 10px; background: rgba(250, 92, 92, 0.1); border-left: 3px solid #fa5c5c; border-radius: 5px;">
+                    <small style="color: #fa5c5c;">
+                        <i class="fas fa-info-circle"></i> 
+                        Itch.io-Spiel. 
+                        <a href="${gameLink}" target="_blank" style="color: #fa5c5c;">Auf Itch.io ansehen</a> für aktuelle Informationen.
+                    </small>
+                </div>
+            ` : isSteam ? `
                 <div style="margin-top: 15px; padding: 10px; background: rgba(255, 193, 7, 0.1); border-left: 3px solid #ffc107; border-radius: 5px;">
                     <small style="color: #ffc107;">
                         <i class="fas fa-info-circle"></i> 
                         Steam-Daten nicht verfügbar (CORS-Beschränkungen). 
-                        <a href="${steamLink}" target="_blank" style="color: #ffc107;">Auf Steam ansehen</a> für aktuelle Informationen.
+                        <a href="${gameLink}" target="_blank" style="color: #ffc107;">Auf Steam ansehen</a> für aktuelle Informationen.
                     </small>
                 </div>
             ` : `
                 <div style="margin-top: 15px; padding: 10px; background: rgba(239, 68, 68, 0.1); border-left: 3px solid #ef4444; border-radius: 5px;">
                     <small style="color: #ef4444;">
                         <i class="fas fa-exclamation-triangle"></i> 
-                        Ungültiger oder fehlender Steam-Link. Bitte kontaktieren Sie den Administrator.
+                        Ungültiger oder fehlender Link. Bitte kontaktieren Sie den Administrator.
                     </small>
                 </div>
             `}
@@ -2058,8 +2266,27 @@ class GamingPlatform {
             
             const gameData = gameDoc.data();
             
+            // Determine if it's an Itch.io game
+            const gameLink = gameData.steamLink || gameData.link || gameData.itchIoLink || '';
+            const isItchIo = this.isValidItchIoLink(gameLink);
+            
+            // Set link type selector
+            const linkTypeSelect = document.getElementById('game-link-type');
+            if (linkTypeSelect) {
+                linkTypeSelect.value = isItchIo ? 'itchio' : 'steam';
+                const linkLabel = document.getElementById('link-label');
+                const linkInput = document.getElementById('steam-link');
+                if (isItchIo) {
+                    linkLabel.textContent = 'Itch.io-Link';
+                    linkInput.placeholder = 'Itch.io-Link einfügen (z.B. https://username.itch.io/gamename)';
+                } else {
+                    linkLabel.textContent = 'Steam-Link';
+                    linkInput.placeholder = 'Steam-Link einfügen';
+                }
+            }
+            
             // Populate form with existing data
-            document.getElementById('steam-link').value = gameData.steamLink || '';
+            document.getElementById('steam-link').value = gameLink;
             document.getElementById('steam-name').textContent = gameData.name || '';
             document.getElementById('steam-genres').textContent = (gameData.genres || []).map(g => g.description || g).join(", ");
             
@@ -2313,6 +2540,16 @@ class GamingPlatform {
         // Reset manual fields
         document.getElementById("game-name").value = "";
         document.getElementById("game-description").value = "";
+        
+        // Reset link type selector
+        const linkTypeSelect = document.getElementById('game-link-type');
+        if (linkTypeSelect) {
+            linkTypeSelect.value = 'steam';
+            const linkLabel = document.getElementById('link-label');
+            if (linkLabel) linkLabel.textContent = 'Steam-Link';
+            const linkInput = document.getElementById('steam-link');
+            if (linkInput) linkInput.placeholder = 'Steam-Link einfügen';
+        }
     }
 
     resetSuggestForm() {
@@ -2379,8 +2616,12 @@ class GamingPlatform {
                     includeByTab = game.unreleased === true && game.played !== true && !game.isPending;
                 } else if (this.currentTab === 'played') {
                     includeByTab = game.played === true && !game.isPending;
+                } else if (this.currentTab === 'itchio') {
+                    const link = game.steamLink || game.link || '';
+                    includeByTab = this.isValidItchIoLink(link) && !game.unreleased && !game.played && !game.isPending;
                 } else {
-                    includeByTab = !game.unreleased && !game.played && !game.isPending;
+                    const link = game.steamLink || game.link || '';
+                    includeByTab = !game.unreleased && !game.played && !game.isPending && !this.isValidItchIoLink(link);
                 }
                 if (!includeByTab) return;
 
